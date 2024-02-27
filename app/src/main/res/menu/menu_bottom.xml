@@ -3,16 +3,20 @@
     <item android:id="@+id/HomeFragment"
         android:title="Home"
         android:icon="@drawable/ic_home"/>
+
     <item android:id="@+id/TourMapFragment"
-        android:title="지도"
+        android:title="MAP"
         android:icon="@drawable/ic_map"/>
+
     <item android:id="@+id/AIRecommendFragment"
         android:title="AI"
         android:icon="@drawable/ic_ai"/>
+
     <item android:id="@+id/ToursFragment"
-        android:title="관광지"
+        android:title="TOUR"
         android:icon="@drawable/ic_tour"/>
-    <item android:id="@+id/UserDetailFragment"
-        android:title="내정보"
+
+    <item android:id="@+id/UserFragment"
+        android:title="USER"
         android:icon="@drawable/ic_user"/>
 </menu>

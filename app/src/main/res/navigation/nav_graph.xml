@@ -1,6 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/HomeFragment">
+
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="com.sessac.myaitrip.fragment.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_HomeFragment_to_SearchFragment"
+            app:destination="@id/SearchFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_TourDetailFragment"
+            app:destination="@id/TourDetailFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_NearbyToursFragment"
+            app:destination="@id/NearbyToursFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/TourMapFragment"
+        android:name="com.sessac.myaitrip.fragment.TourMapFragment"
+        android:label="fragment_tourMap"
+        tools:layout="@layout/fragment_ai_recommend">
+    </fragment>
+
+    <fragment
+        android:id="@+id/AIRecommendFragment"
+        android:name="com.sessac.myaitrip.fragment.AIRecommendFragment"
+        android:label="fragment_AIRecommend"
+        tools:layout="@layout/fragment_home">
+    </fragment>
+
+    <fragment
+        android:id="@+id/ToursFragment"
+        android:name="com.sessac.myaitrip.fragment.ToursFragment"
+        android:label="fragment_tours"
+        tools:layout="@layout/fragment_tours">
+    </fragment>
+
+    <fragment
+        android:id="@+id/UserFragment"
+        android:name="com.sessac.myaitrip.fragment.UserFragment"
+        android:label="fragment_user"
+        tools:layout="@layout/fragment_user">
+    </fragment>
+
+    <fragment
+        android:id="@+id/SearchFragment"
+        android:name="com.sessac.myaitrip.fragment.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search">
+    </fragment>
+
+    <fragment
+        android:id="@+id/NearbyToursFragment"
+        android:name="com.sessac.myaitrip.fragment.NearbyToursFragment"
+        android:label="fragment_nearbyTours"
+        tools:layout="@layout/fragment_nearby_tours">
+    </fragment>
+
+    <fragment
+        android:id="@+id/TourDetailFragment"
+        android:name="com.sessac.myaitrip.fragment.TourDetailFragment"
+        android:label="fragment_tourDetail"
+        tools:layout="@layout/fragment_tour_detail">
+    </fragment>
+
+    <fragment
+        android:id="@+id/UserDetailFragment"
+        android:name="com.sessac.myaitrip.fragment.UserDetailFragment"
+        android:label="fragment_userDetail"
+        tools:layout="@layout/fragment_user_detail">
+    </fragment>
+
+    <fragment
+        android:id="@+id/DiaryFragment"
+        android:name="com.sessac.myaitrip.fragment.DiaryFragment"
+        android:label="fragment_diary"
+        tools:layout="@layout/fragment_diary">
+    </fragment>
+
+    <fragment
+        android:id="@+id/LikedToursFragment"
+        android:name="com.sessac.myaitrip.fragment.LikedToursFragment"
+        android:label="fragment_likedTours"
+        tools:layout="@layout/fragment_liked_tours">
+    </fragment>
+
+    <fragment
+        android:id="@+id/SignupProfileFragment"
+        android:name="com.sessac.myaitrip.fragment.SignupProfileFragment"
+        android:label="fragment_signupProfile"
+        tools:layout="@layout/fragment_signup_profile">
+    </fragment>
 
 </navigation>
