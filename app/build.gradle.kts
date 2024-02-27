@@ -49,4 +49,6 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore:24.10.2")    // FireStore Database
+    implementation("com.google.firebase:firebase-storage:20.3.0")       // Storage
 }
