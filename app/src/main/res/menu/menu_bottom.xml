@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/packageFragment"
-        android:title="패키지"
-        android:icon="@drawable/ic_package"/>
-    <item android:id="@+id/lodgingFragment"
-        android:title="숙소"
-        android:icon="@drawable/ic_logding"/>
-    <item android:id="@+id/guideFragment"
-        android:title="가이드"
-        android:icon="@drawable/ic_guide"/>
+    <item android:id="@+id/HomeFragment"
+        android:title="Home"
+        android:icon="@drawable/ic_home"/>
+    <item android:id="@+id/TourMapFragment"
+        android:title="지도"
+        android:icon="@drawable/ic_map"/>
+    <item android:id="@+id/AIRecommendFragment"
+        android:title="AI"
+        android:icon="@drawable/ic_ai"/>
+    <item android:id="@+id/ToursFragment"
+        android:title="관광지"
+        android:icon="@drawable/ic_tour"/>
+    <item android:id="@+id/UserDetailFragment"
+        android:title="내정보"
+        android:icon="@drawable/ic_user"/>
 </menu>
