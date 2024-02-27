@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.MyAiTrip.Splash" parent="Theme.SplashScreen">
+        <item name="android:windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item>
+        <item name="android:windowSplashScreenAnimationDuration">1000</item>
+        <item name="postSplashScreenTheme">@style/Theme.MyAiTrip</item>
+    </style>
+</resources>
