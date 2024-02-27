@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/packageFragment"
+        android:title="패키지"
+        android:icon="@drawable/ic_package"/>
+    <item android:id="@+id/lodgingFragment"
+        android:title="숙소"
+        android:icon="@drawable/ic_logding"/>
+    <item android:id="@+id/guideFragment"
+        android:title="가이드"
+        android:icon="@drawable/ic_guide"/>
+</menu>
