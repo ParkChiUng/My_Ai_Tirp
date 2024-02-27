@@ -1,12 +1,12 @@
-package com.sessac.myaitrip
+package com.sessac.myaitrip.presentation.login
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.sessac.myaitrip.R
 
-class SplashActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
+        setContentView(R.layout.activity_login)
     }
 }
