@@ -11,6 +11,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:text="AI" />
+        android:text="USER" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
