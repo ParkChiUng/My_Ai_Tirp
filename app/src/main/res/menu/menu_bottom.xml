@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/HomeFragment"
-        android:title="Home"
+        android:title="@string/navi_home"
         android:icon="@drawable/ic_home"/>
 
     <item android:id="@+id/TourMapFragment"
-        android:title="MAP"
+        android:title="@string/navi_map"
         android:icon="@drawable/ic_map"/>
 
     <item android:id="@+id/AIRecommendFragment"
-        android:title="AI"
+        android:title="@string/navi_ai"
         android:icon="@drawable/ic_ai"/>
 
     <item android:id="@+id/ToursFragment"
-        android:title="TOUR"
+        android:title="@string/navi_tour"
         android:icon="@drawable/ic_tour"/>
 
     <item android:id="@+id/UserFragment"
-        android:title="USER"
+        android:title="@string/navi_mypage"
         android:icon="@drawable/ic_user"/>
 </menu>
