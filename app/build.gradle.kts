@@ -1,9 +1,16 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
 }
 
+val properties = Properties().apply {
+    load(FileInputStream(rootProject.file("local.properties")))
+}
 android {
     namespace = "com.sessac.myaitrip"
     compileSdk = 34
@@ -14,6 +21,11 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+//        local.properties 내부에서 key값을 가져오는 함수 구현방식
+//        buildConfigField("String","API_KEY", getApiKey("apiKey"))
+
+        manifestPlaceholders["KAKAO_NATIVE_KEY"] = getApiKey("KAKAO_NATIVE_KEY")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -40,6 +52,11 @@ android {
     }
 }
 
+// 2. local.properties 내부에서 key값을 가져오는 함수 구현방식
+fun getApiKey(propertyKey: String): String {
+    return gradleLocalProperties(rootDir).getProperty(propertyKey)
+}
+
 dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
@@ -62,4 +79,7 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+
+    // Kakao Login
+    implementation ("com.kakao.sdk:v2-user:2.19.0")
 }
