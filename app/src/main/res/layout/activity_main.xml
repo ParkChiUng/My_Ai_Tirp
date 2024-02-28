@@ -16,10 +16,16 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bnv_home"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        app:labelVisibilityMode="labeled"
+        app:itemIconTint="@color/selector_bottom_navigation"
+        app:itemTextColor="@color/selector_bottom_navigation"
+        app:itemRippleColor="@android:color/transparent"
+        app:itemActiveIndicatorStyle="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:background="@color/white"
         app:menu="@menu/menu_bottom" />
 

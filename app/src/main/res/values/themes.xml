@@ -27,9 +27,7 @@
 
     <!-- splash Screen Theme -->
     <style name="Theme.MyAiTrip.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@drawable/splash_bg</item>
-        <item name="windowSplashScreenAnimationDuration">1000</item>
-        <item name="postSplashScreenTheme">@style/Theme.MyAiTrip</item>
+        <item name="android:windowBackground">@drawable/splash_bg</item>
     </style>
 
 </resources>
