@@ -2,11 +2,14 @@ package com.sessac.myaitrip.presentation.login
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.sessac.myaitrip.R
+import com.sessac.myaitrip.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityLoginBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        binding = ActivityLoginBinding.inflate(layoutInflater).also {
+            setContentView(it.root)
+        }
     }
 }
