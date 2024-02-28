@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyAiTrip</string>
+    <string name="app_name">마이AI트립</string>
 
     <!-- Bottom Navigation Label -->
     <string name="navi_ai">AI 추천</string>
