@@ -23,7 +23,8 @@ android {
         versionName = "1.0"
 
 //        local.properties 내부에서 key값을 가져오는 함수 구현방식
-//        buildConfigField("String","API_KEY", getApiKey("apiKey"))
+        buildConfigField("String","KAKAO_NATIVE_KEY",
+            "\"${getApiKey("KAKAO_NATIVE_KEY")}\"")
 
         manifestPlaceholders["KAKAO_NATIVE_KEY"] = getApiKey("KAKAO_NATIVE_KEY")
 
@@ -49,12 +50,13 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
 // 2. local.properties 내부에서 key값을 가져오는 함수 구현방식
 fun getApiKey(propertyKey: String): String {
-    return gradleLocalProperties(rootDir).getProperty(propertyKey)
+    return gradleLocalProperties(rootDir).getProperty(propertyKey).toString()
 }
 
 dependencies {
