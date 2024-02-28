@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="text_size_region">15sp</dimen>
-    <dimen name="text_size_content">18sp</dimen>
-    <dimen name="text_size_date">18sp</dimen>
-    <dimen name="text_size_toolbar">20sp</dimen>
 
-    <dimen name="image_size_width">100dp</dimen>
-    <dimen name="image_size_height">100dp</dimen>
-
-    <dimen name="margin_top_content">24dp</dimen>
-    <dimen name="margin_horizontal_content">24dp</dimen>
-    <dimen name="margin_cardview">24dp</dimen>
-    <dimen name="margin_cardview_horizontal">10dp</dimen>
-    <dimen name="margin_cardview_vertical">10dp</dimen>
+    <!-- card view -->
+    <dimen name="card_layout_width">350dp</dimen>
+    <dimen name="card_layout_height">200dp</dimen>
+    <dimen name="card_text_size_tour">18sp</dimen>
+    <dimen name="card_text_size_description">15sp</dimen>
+    <dimen name="card_margin_horizontal">10dp</dimen>
+    <dimen name="card_margin_vertical">10dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
     <dimen name="card_radius">20dp</dimen>
-    <dimen name="margin_bottom_fab">90dp</dimen>
-    <dimen name="margin_end_fab">15dp</dimen>
-    <dimen name="margin_top_photo">10dp</dimen>
-    <dimen name="margin_plus_button">10dp</dimen>
+    <dimen name="card_image_layout">0dp</dimen>
+    <dimen name="card_margin_text_layout">10dp</dimen>
+    <dimen name="card_margin_img_layout">10dp</dimen>
+
+    <!-- view_search.xml -->
+    <dimen name="search_icon">20dp</dimen>
+    <dimen name="margin_search_icon">20dp</dimen>
+
+    <!-- fragmentHome.xml -->
+    <dimen name="f_home_tv_margin_top">30dp</dimen>
+    <dimen name="f_home_rcv_margin_top">10dp</dimen>
+    <dimen name="f_home_tv_text_size">25sp</dimen>
+    <dimen name="f_home_rcv_layout">0dp</dimen>
+
 </resources>
