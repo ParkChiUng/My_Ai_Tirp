@@ -8,6 +8,11 @@
     <string name="navi_tour">둘러보기</string>
     <string name="navi_mypage">마이페이지</string>
 
+    <!-- Fragment_home -->
+    <string name="popular_tour">인기 관광지</string>
+    <string name="location_tour_recommend">지역 별 추천 관광지</string>
+    <string name="nearby_tour_recommend">내 주변 관광지</string>
+
     <!-- Login -->
     <string name="login_title">My Ai \'Trip</string>
     <string name="login_kakao">카카오로 시작하기</string>
