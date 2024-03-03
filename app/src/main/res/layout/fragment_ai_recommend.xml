@@ -43,7 +43,7 @@
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_area_card"
-                app:layout_constraintTop_toBottomOf="@id/tv_location_recommend" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_popular"
