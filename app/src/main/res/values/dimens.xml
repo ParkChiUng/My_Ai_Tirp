@@ -30,4 +30,8 @@
     <dimen name="f_home_rcv_layout">0dp</dimen>
     <dimen name="f_ai_tag_tv_text_size">15sp</dimen>
 
+    <dimen name="image_size_width">100dp</dimen>
+    <dimen name="image_size_height">100dp</dimen>
+    <dimen name="margin_top_photo">10dp</dimen>
+
 </resources>
