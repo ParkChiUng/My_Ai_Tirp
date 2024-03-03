@@ -2,15 +2,170 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:text="USER" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.95" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.98" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/gl_bottom"
+        app:layout_constraintLeft_toLeftOf="@id/gl_left"
+        app:layout_constraintRight_toRightOf="@id/gl_right"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_setting"
+            android:layout_marginTop="@dimen/f_home_rcv_margin_top"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/layout_user"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/iv_setting"
+            app:layout_constraintRight_toRightOf="parent">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/guide_image"
+                android:scaleType="centerCrop"
+                android:layout_width="@dimen/image_size_width"
+                android:layout_height="@dimen/image_size_height"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/splash_bg" />
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textSize="@dimen/f_home_tv_text_size"
+                android:text="@string/name" />
+
+            <Button
+                android:id="@+id/ed_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:backgroundTint="@color/gray_400"
+                android:text="@string/profile"/>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view_line"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="@dimen/margin_search_icon"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@+id/layout_user"/>
+
+        <LinearLayout
+            android:id="@+id/layout_sort"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/margin_search_icon"
+            app:layout_constraintTop_toBottomOf="@id/view_line"
+            app:layout_constraintRight_toRightOf="parent">
+
+            <TextView
+                android:id="@+id/tv_popular"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/f_home_tv_margin_top"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textSize="@dimen/f_ai_tag_tv_text_size"
+                android:text="@string/popular" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_sort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_sort" />
+
+            <TextView
+                android:id="@+id/tv_sort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/card_margin_text_layout"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textSize="@dimen/f_ai_tag_tv_text_size"
+                android:text="@string/latest" />
+
+            <TextView
+                android:id="@+id/tv_view_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/card_margin_text_layout"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textSize="@dimen/f_ai_tag_tv_text_size"
+                android:text="@string/allView" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcv_location_recommend"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintHorizontal_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_small_tour_img_card"
+            app:layout_constraintTop_toBottomOf="@id/layout_sort" />
+
+
+        <TextView
+            android:id="@+id/tv_diary"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:textStyle="bold"
+            android:textSize="@dimen/f_ai_tag_tv_text_size"
+            android:layout_marginTop="@dimen/margin_search_icon"
+            android:text="@string/diary"
+            app:layout_constraintTop_toBottomOf="@+id/rcv_location_recommend"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcv_diary"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/tv_diary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:listitem="@layout/item_full_tour_img_card" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

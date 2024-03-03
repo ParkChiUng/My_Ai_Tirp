@@ -10,7 +10,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_margin="@dimen/margin_search_icon"
+        android:layout_marginTop="@dimen/margin_search_icon"
         android:background="@drawable/search_layout_background">
 
         <androidx.appcompat.widget.AppCompatImageView

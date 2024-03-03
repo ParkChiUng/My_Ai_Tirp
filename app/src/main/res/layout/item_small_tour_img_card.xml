@@ -42,7 +42,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/card_text_size_tour"
                 android:textStyle="bold"
-                tools:text="여행사 이름" />
+                tools:text="여행지 이름" />
 
             <TextView
                 android:id="@+id/tv_tour_description"
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:textSize="@dimen/card_text_size_description"
-                tools:text="여행사 설명" />
+                tools:text="여행지 설명" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
