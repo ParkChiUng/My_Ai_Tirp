@@ -61,7 +61,8 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/tv_popular"
             tools:layout_editor_absoluteX="-64dp"
-            tools:listitem="@layout/item_full_img_card" />
+            tools:listitem="@layout/item_full_tour_img_card"
+            tools:itemCount="5" />
 
         <TextView
             android:id="@+id/tv_location_recommend"
@@ -81,7 +82,7 @@
             android:layout_marginTop="@dimen/f_home_rcv_margin_top"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_small_img_card"
+            tools:listitem="@layout/item_small_tour_img_card"
             app:layout_constraintTop_toBottomOf="@id/tv_location_recommend" />
 
         <TextView
@@ -102,7 +103,7 @@
             android:layout_marginTop="@dimen/f_home_rcv_margin_top"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_small_img_card"
+            tools:listitem="@layout/item_small_tour_img_card"
             app:layout_constraintTop_toBottomOf="@id/tv_nearby_recommend" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
