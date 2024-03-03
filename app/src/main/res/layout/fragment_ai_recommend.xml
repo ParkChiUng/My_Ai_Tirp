@@ -43,7 +43,7 @@
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_area_card"
-                app:layout_constraintTop_toBottomOf="@id/tv_location_recommend" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_popular"
@@ -121,17 +121,6 @@
                 app:layout_constraintTop_toBottomOf="@id/hsv_recommend_tag"
                 tools:layout_editor_absoluteX="-64dp"
                 tools:listitem="@layout/item_full_tour_img_card" />
-
-            <TextView
-                android:id="@+id/tv_location_recommend"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/f_home_tv_margin_top"
-                android:textStyle="bold"
-                android:textSize="@dimen/f_home_tv_text_size"
-                android:text="@string/location_tour_recommend"
-                app:layout_constraintTop_toBottomOf="@id/rcv_popular"
-                app:layout_constraintLeft_toLeftOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
