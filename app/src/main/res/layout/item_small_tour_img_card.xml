@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="150dp"
-    android:layout_height="200dp"
+    android:layout_width="@dimen/card_small_img_layout_width"
+    android:layout_height="@dimen/card_small_img_layout_height"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="@dimen/card_radius"
     android:layout_marginHorizontal="@dimen/card_margin_horizontal"
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_tour"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,6 +21,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:shapeAppearanceOverlay="@style/tourImgRound"
             tools:srcCompat="@tools:sample/avatars" />
 
         <LinearLayout

@@ -2,8 +2,12 @@
 <resources>
 
     <!-- card view -->
-    <dimen name="card_layout_width">350dp</dimen>
-    <dimen name="card_layout_height">200dp</dimen>
+    <dimen name="card_full_img_layout_width">350dp</dimen>
+    <dimen name="card_full_img_layout_height">200dp</dimen>
+    <dimen name="card_small_img_layout_width">150dp</dimen>
+    <dimen name="card_small_img_layout_height">200dp</dimen>
+    <dimen name="card_area_layout_width">70dp</dimen>
+    <dimen name="card_area_layout_height">100dp</dimen>
     <dimen name="card_text_size_tour">18sp</dimen>
     <dimen name="card_text_size_description">15sp</dimen>
     <dimen name="card_margin_horizontal">10dp</dimen>
@@ -13,6 +17,7 @@
     <dimen name="card_image_layout">0dp</dimen>
     <dimen name="card_margin_text_layout">10dp</dimen>
     <dimen name="card_margin_img_layout">10dp</dimen>
+    <dimen name="card_area_text_size">13sp</dimen>
 
     <!-- view_search.xml -->
     <dimen name="search_icon">20dp</dimen>
@@ -23,5 +28,6 @@
     <dimen name="f_home_rcv_margin_top">10dp</dimen>
     <dimen name="f_home_tv_text_size">25sp</dimen>
     <dimen name="f_home_rcv_layout">0dp</dimen>
+    <dimen name="f_ai_tag_tv_text_size">15sp</dimen>
 
 </resources>
