@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.sessac.myaitrip.databinding.FragmentLikedToursBinding
+import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 
 /**
  * 좋아요 목록 페이지

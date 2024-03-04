@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.sessac.myaitrip.databinding.FragmentNearbyToursBinding
+import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 
 /**
  * 내 주변 관광지 페이지
