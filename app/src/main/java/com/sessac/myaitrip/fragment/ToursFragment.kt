@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.sessac.myaitrip.R
 import com.sessac.myaitrip.databinding.FragmentToursBinding
+import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 
 /**
  * 관광지 페이지
