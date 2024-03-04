@@ -1,13 +1,13 @@
 package com.sessac.myaitrip
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.sessac.myaitrip.databinding.ActivityMainBinding
+import com.sessac.myaitrip.presentation.common.ViewBindingBaseActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ViewBindingBaseActivity<ActivityMainBinding>({ActivityMainBinding.inflate(it)}) {
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,8 +19,8 @@ class MainActivity : AppCompatActivity() {
 
         navController = navHostFragment.navController
 
-        val bottomNav: BottomNavigationView = findViewById(R.id.bnv_home)
-
-        bottomNav.setupWithNavController(navController)
+        binding.bnvHome.also { bottomNav ->
+            bottomNav.setupWithNavController(navController)
+        }
     }
 }
