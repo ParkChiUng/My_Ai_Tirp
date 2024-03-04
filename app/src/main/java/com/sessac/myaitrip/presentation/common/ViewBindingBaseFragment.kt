@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
-import com.sessac.myaitrip.fragment.FragmentInflate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import reactivecircus.flowbinding.android.view.clicks
 
+typealias FragmentInflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
 abstract class ViewBindingBaseFragment<VB: ViewBinding>
     (private val inflate: FragmentInflate<VB>): Fragment() {
 
