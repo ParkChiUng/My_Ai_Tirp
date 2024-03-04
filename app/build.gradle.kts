@@ -6,6 +6,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
 }
 
 val properties = Properties().apply {
@@ -27,6 +28,9 @@ android {
             "\"${getApiKey("KAKAO_NATIVE_KEY")}\"")
 
         manifestPlaceholders["KAKAO_NATIVE_KEY"] = getApiKey("KAKAO_NATIVE_KEY")
+
+        buildConfigField("String","TOUR_API_SERVICE_KEY",
+            "\"${getApiKey("TOUR_API_SERVICE_KEY")}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -92,4 +96,10 @@ dependencies {
 
     // Kakao Login
     implementation ("com.kakao.sdk:v2-user:2.19.0")
+
+    // room
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
 }
