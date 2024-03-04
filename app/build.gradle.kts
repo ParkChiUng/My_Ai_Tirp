@@ -1,7 +1,3 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -85,6 +81,8 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 
     // Kakao Login
     implementation ("com.kakao.sdk:v2-user:2.19.0")
