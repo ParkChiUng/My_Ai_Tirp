@@ -72,9 +72,11 @@ dependencies {
     // Splash Screen
     implementation("androidx.core:core-splashscreen:1.0.1")
 
-    // Flow Binding
+    // Flow Binding, RxBinding
     val flowbinding_version = "1.2.0"
     implementation("io.github.reactivecircus.flowbinding:flowbinding-android:${flowbinding_version}")
+//    val rxbinding_version = "4.0.0"
+//    implementation ("com.jakewharton.rxbinding4:rxbinding:${rxbinding_version}")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
