@@ -61,7 +61,9 @@
     <string name="login_kakao">카카오로 시작하기</string>
 
     <!-- Sign Up -->
-    <string name="signup_title">회원가입</string>
-    <string name="signup_nickname">닉네임 (최대 8글자)</string>
-    <string name="signup_submit">완료</string>
+    <string name="register_title">회원가입</string>
+    <string name="register_nickname_hint">닉네임 (최대 8글자)</string>
+    <string name="register_submit">완료</string>
+    <string name="register_profile_description">프로필 사진</string>
+    <string name="register_profile_subdescription">(선택)</string>
 </resources>
