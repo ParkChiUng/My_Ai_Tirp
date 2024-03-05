@@ -83,6 +83,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore:24.10.2")    // FireStore Database
     implementation("com.google.firebase:firebase-storage:20.3.0")       // Storage
+    implementation("com.google.firebase:firebase-auth-ktx")             // Firebase Auth
 
     // Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
