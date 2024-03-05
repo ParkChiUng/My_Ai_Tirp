@@ -16,8 +16,11 @@
     <dimen name="card_radius">20dp</dimen>
     <dimen name="card_image_layout">0dp</dimen>
     <dimen name="card_margin_text_layout">10dp</dimen>
+    <dimen name="card_margin_text_layout2">20dp</dimen>
     <dimen name="card_margin_img_layout">10dp</dimen>
     <dimen name="card_area_text_size">13sp</dimen>
+    <dimen name="scroll_layout">0dp</dimen>
+
 
     <!-- view_search.xml -->
     <dimen name="search_icon">20dp</dimen>
