@@ -5,6 +5,7 @@
     <application
         android:name=".common.MyAiTripApplication"
         android:allowBackup="true"
+        android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_app"
@@ -21,8 +22,13 @@
             android:name=".presentation.progress.ProgressActivity"
             android:exported="false" />
 
+        <service
+            android:name=".service.TourDataUpdateService"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity
-            android:name=".presentation.signup.SignupActivity"
+            android:name=".presentation.signup.RegisterActivity"
             android:exported="false" />
 
         <activity
