@@ -1,8 +1,11 @@
 package com.sessac.myaitrip.data.tour.repository
 
+import androidx.sqlite.db.SimpleSQLiteQuery
 import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.data.tour.TourItem
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 
 class TourRepository private constructor() {
 
@@ -12,8 +15,18 @@ class TourRepository private constructor() {
         tourDao.insertTour(newTourItem)
     }
 
-    fun getTourListByTitle(title: List<String>): Flow<List<TourItem>> {
-        return tourDao.getTourListByTitle(title)
+//    fun getTourListByTitle(title: List<String>): Flow<List<TourItem>> {
+//        return tourDao.getTourListByTitle(title)
+//    }
+
+    suspend fun getTourListByTitle(titles: List<String>): Flow<List<TourItem>> {
+        val result = mutableListOf<String>()
+        for (title in titles) {
+            val tourList = tourDao.getTourListByTitle2(title).first()
+            if(tourList.isNotEmpty())
+                result.add(tourList.first())
+        }
+        return tourDao.getTourListById(result)
     }
 
     companion object {

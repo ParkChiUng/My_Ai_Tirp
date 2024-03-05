@@ -32,6 +32,9 @@ android {
         buildConfigField("String","TOUR_API_SERVICE_KEY",
             "\"${getApiKey("TOUR_API_SERVICE_KEY")}\"")
 
+        buildConfigField("String","GEMINI_API_KEY",
+            "\"${getApiKey("GEMINI_API_KEY")}\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -106,4 +109,7 @@ dependencies {
     // glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    // Gemini
+    implementation("com.google.ai.client.generativeai:generativeai:0.2.1")
 }

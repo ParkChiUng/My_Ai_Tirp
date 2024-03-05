@@ -64,4 +64,8 @@
     <string name="signup_title">회원가입</string>
     <string name="signup_nickname">닉네임 (최대 8글자)</string>
     <string name="signup_submit">완료</string>
+
+    <!-- Gemini -->
+    <string name="recommend_rainy">인천 현재 날씨와 현재 시간을 기준으로 인기순 관광지 10개 추천</string>
+
 </resources>
