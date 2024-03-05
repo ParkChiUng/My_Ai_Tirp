@@ -1,21 +1,36 @@
 package com.sessac.myaitrip.presentation.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
+import com.google.firebase.auth.AuthResult
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.sessac.myaitrip.MainActivity
 import com.sessac.myaitrip.common.KakaoOAuthClient
+import com.sessac.myaitrip.data.UiState
 import com.sessac.myaitrip.databinding.ActivityLoginBinding
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseActivity
+import com.sessac.myaitrip.presentation.common.ViewModelFactory
+import com.sessac.myaitrip.presentation.signup.RegisterActivity
+import com.sessac.myaitrip.util.repeatOnStarted
 
 class LoginActivity : ViewBindingBaseActivity<ActivityLoginBinding>({ActivityLoginBinding.inflate(it)}) {
+
+    private val loginViewModel: LoginViewModel by viewModels() { ViewModelFactory(this) }
+
+    private lateinit var userEmail: String
+    private lateinit var userPassword: String
+
+    private var userNickname: String? = null
+    private var userProfileImageUrl: String? = null
 
     private val KAKAO_TAG = "카카오 로그인"
     private val KAKAO_ERROR_TAG = "카카오 로그인 에러"
     private val kakaoCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-        if (error != null) {
-
+        error?.let {
             Log.e(KAKAO_ERROR_TAG, error.toString())
             when {
                 error.toString() == AuthErrorCause.AccessDenied.toString() -> {
@@ -54,7 +69,9 @@ class LoginActivity : ViewBindingBaseActivity<ActivityLoginBinding>({ActivityLog
                     Log.d(KAKAO_ERROR_TAG, "기타 에러")
                 }
             }
-        } else if (token != null) {
+        }
+
+        token?.let{
             Log.e(KAKAO_TAG, "로그인 성공 ${token.accessToken}")
 
             UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
@@ -71,23 +88,95 @@ class LoginActivity : ViewBindingBaseActivity<ActivityLoginBinding>({ActivityLog
                         if (error != null) {
                             Log.e(KAKAO_TAG, "사용자 정보 요청 실패", error)
                         } else if (user != null) {
+                            Log.d(KAKAO_TAG, "회원번호 = ${user.id}")
                             user.kakaoAccount?.let { userAccount ->
-//                                email = userAccount.email.toString()
+                                userAccount.profile?.let { profile ->
+                                    // 닉네임 (선택사항)
+                                    profile.nickname?.let {
+                                        Log.d(KAKAO_TAG, "닉네임 = $it")
+                                        userNickname = it
+                                    }
 
-                                userAccount.profile?.let {
-//                                    profileImageUrl = it.profileImageUrl
-                                    Log.d(KAKAO_TAG, "프로필 이미지 URL = ${it.profileImageUrl}")
+                                    // 프로필 사진 (선택사항)
+                                    profile.profileImageUrl?.let {
+                                        Log.d(KAKAO_TAG, "프로필 이미지 URL = $it")
+                                        userProfileImageUrl = it
+                                    }
                                 }
 
-                                // TODO. 회원번호 : 회원 ID
-                                tokenInfo.id
+                                // user.id = 회원 ID -> 회원 비밀번호로 사용
+                                userEmail = userAccount.email.toString()
+                                userPassword = user.id.toString()
 
-                                // 이미 존재하는 회원인지?
-//                                loginViewModel.findExistMember(email)
+                                Log.d(KAKAO_TAG, "이메일 = $userEmail")
+                                Log.d(KAKAO_TAG, "비밀번호 = $userPassword")
+
+//                                MyAiTripApplication.getFirebaseAuth().createUserWithEmailAndPassword(userEmail, password)
+                                if(::userEmail.isInitialized && ::userPassword.isInitialized) {
+                                    loginViewModel.login(userEmail, userPassword)
+                                }
+
+                                repeatOnStarted {
+                                    loginViewModel.loginStatus.collect { result -> handleAuthResult(result) }
+                                }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun handleAuthResult(result: UiState<AuthResult>) {
+        when(result) {
+            is UiState.Success -> {
+                with(loginViewModel) {
+                    // 1. DataStore에 값 저장
+                    updateUserPreferenceAutoLogin(true)
+                    result.data?.let{
+                        it.user?.let { user ->
+                            updateUserPreferenceUserId(user.uid)
+                        }
+                    }
+                }
+
+                // 2.메인 화면으로 이동
+                Intent(this@LoginActivity, MainActivity::class.java).also {
+                    it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(it)
+                }
+            }
+            is UiState.Error -> {
+                /*
+                Firebase 인증에서 발생할 수 있는 일반적인 오류들은 다음과 같습니다:
+                    auth/email-already-exists: 제공된 이메일이 이미 다른 사용자에 의해 사용 중인 경우
+                    auth/invalid-email: 제공된 이메일이 유효한 이메일 주소 형식이 아닌 경우1.
+                    auth/operation-not-allowed: 해당 인증 방법이 Firebase 프로젝트에서 활성화되지 않은 경우2.
+                    auth/weak-password: 제공된 비밀번호가 너무 약한 경우2.
+                    auth/wrong-password: 잘못된 비밀번호를 입력한 경우2.
+                    auth/user-disabled: 사용자 계정이 비활성화된 경우2.
+                    auth/too-many-requests: 짧은 시간 동안 너무 많은 요청을 보낸 경우2.
+                    auth/network-request-failed: 네트워크 요청이 실패한 경우2.
+                 */
+                val errorMessage = result.message.toString()
+                Log.e("FirebaseAuthException", result.message.toString())
+
+                // 로그인 오류와 계정이 없을 때는 회원가입 화면으로 이동
+                if( errorMessage.contains("USER_NOT_FOUND", true) ||
+                    errorMessage.contains("INVALID_CREDENTIAL", true) ) {
+
+                    val registerIntent = Intent(this@LoginActivity, RegisterActivity::class.java).apply {
+                        if(this@LoginActivity::userEmail.isInitialized) putExtra("userEmail", userEmail)
+                        if(this@LoginActivity::userPassword.isInitialized) putExtra("userPassword", userPassword)
+                        userNickname?.let{ putExtra("userNickname", it) }
+                        userProfileImageUrl?.let{ putExtra("userProfileImageUrl", it) }
+                    }
+
+                    startActivity(registerIntent)
+                }
+            }
+            is UiState.Loading -> {
+                // TODO. 프로그레스 바 (로그인 중..)
             }
         }
     }

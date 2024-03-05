@@ -2,6 +2,7 @@ package com.sessac.myaitrip.common
 
 import android.app.Application
 import android.content.Context
+import androidx.datastore.dataStore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -9,10 +10,12 @@ import com.kakao.sdk.common.KakaoSdk
 import com.sessac.myaitrip.BuildConfig
 
 class MyAiTripApplication: Application() {
+    private lateinit var dataStore: MyAiTripDataStore
     companion object {
         private lateinit var myAiTripApplication: MyAiTripApplication
         lateinit var appName: String
         private lateinit var firebaseAuth: FirebaseAuth
+
 
         fun getInstance(): MyAiTripApplication = myAiTripApplication
         fun getContext(): Context = getInstance().applicationContext
@@ -30,5 +33,12 @@ class MyAiTripApplication: Application() {
 //        Log.e("keyHash", "keyHash = ${Utility.getKeyHash(this)}")
         KakaoSdk.init(this, BuildConfig.KAKAO_NATIVE_KEY)
         appName = applicationInfo.loadLabel(packageManager).toString()
+        dataStore = MyAiTripDataStore(this)
+    }
+
+    fun getDataStore(): MyAiTripDataStore = run {
+        if(!::dataStore.isInitialized) dataStore = MyAiTripDataStore(this)
+
+        dataStore
     }
 }

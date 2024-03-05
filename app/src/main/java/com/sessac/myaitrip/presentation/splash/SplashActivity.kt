@@ -12,7 +12,9 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
 
-        moveToMain()
+        // TODO. Data Store 값 확인해서 Login or Main으로 이동
+
+        moveToLogin()
     }
 
     private fun moveToMain() {
