@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.signup.SignupActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_signup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/tb_signup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            app:contentInsetStart="0dp"
+            app:layout_scrollFlags="noScroll"
+            app:navigationContentDescription="뒤로가기"
+            app:navigationIcon="@drawable/ic_back">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/signup_title"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:paddingBottom="100dp"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appbar_signup">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_profile_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:text="프로필 사진"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="(선택)"
+                app:layout_constraintBottom_toBottomOf="@id/tv_profile_description"
+                app:layout_constraintStart_toEndOf="@+id/tv_profile_description" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_signup_profile"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="80dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/oval_gray100_border"
+                android:scaleType="centerCrop"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_profile_description"
+                app:shapeAppearanceOverlay="@style/profileImgRounded" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_signup_add_profileImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/oval_white"
+                android:backgroundTint="@color/main_blue"
+                android:padding="10dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_plus_image"
+                app:layout_constraintBottom_toBottomOf="@id/iv_signup_profile"
+                app:layout_constraintEnd_toEndOf="@id/iv_signup_profile"
+                app:tint="@color/white" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lyt_signup_nickName"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_signup_profile">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_signup_nickName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/signup_nickname"
+                    android:inputType="text"
+                    android:maxLength="8"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_join_submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="20dp"
+        android:background="@drawable/selector_btn_blue"
+        android:enabled="false"
+        android:padding="16dp"
+        android:text="@string/signup_submit"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

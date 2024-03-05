@@ -59,4 +59,9 @@
     <!-- Login -->
     <string name="login_title">My Ai \'Trip</string>
     <string name="login_kakao">카카오로 시작하기</string>
+
+    <!-- Sign Up -->
+    <string name="signup_title">회원가입</string>
+    <string name="signup_nickname">닉네임 (최대 8글자)</string>
+    <string name="signup_submit">완료</string>
 </resources>
