@@ -98,6 +98,9 @@ dependencies {
     // Kakao Login
     implementation ("com.kakao.sdk:v2-user:2.19.0")
 
+    // Data Store
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     // room
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
