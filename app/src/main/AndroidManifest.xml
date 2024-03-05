@@ -18,6 +18,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".presentation.progress.ProgressActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".presentation.signup.SignupActivity"
             android:exported="false" />
 
