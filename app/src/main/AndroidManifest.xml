@@ -12,7 +12,6 @@
         android:roundIcon="@mipmap/ic_app_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyAiTrip"
-        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".presentation.login.LoginActivity"
@@ -20,6 +19,10 @@
 
         <activity
             android:name=".presentation.progress.ProgressActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".presentation.signup.SignupActivity"
             android:exported="false" />
 
         <activity
@@ -50,11 +53,6 @@
             android:name=".MainActivity"
             android:exported="true" >
         </activity>
-
-        <service
-            android:name=".service.TourDataUpdateService"
-            android:enabled="true"
-            android:exported="false" />
     </application>
 
 </manifest>
