@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.IBinder
-import android.util.Log
 import com.sessac.myaitrip.api.RetrofitServiceInstance
 import com.sessac.myaitrip.api.TourApiService
+import com.sessac.myaitrip.data.tour.repository.TourRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 class TourDataUpdateService : Service() {
 
     private val apiClient: TourApiService = RetrofitServiceInstance.getTourApiService()
+    private lateinit var tourRepository: TourRepository
 
     private lateinit var sharedPref: SharedPreferences
     private lateinit var broadCastIntent: Intent
@@ -29,6 +30,7 @@ class TourDataUpdateService : Service() {
         prefTotalCount = sharedPref.getInt("lastSaveTotalCount", -1)
         prefPageNumber = sharedPref.getInt("lastSavePageNumber", 1)
         broadCastIntent = Intent("tour_progress")
+        tourRepository = TourRepository.getInstance()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -93,6 +95,8 @@ class TourDataUpdateService : Service() {
 
                 if (tourItems.isNullOrEmpty()) break
 
+                tourRepository.insertTour(tourItems)
+
                 with(sharedPref.edit()) {
                     putInt("lastSaveTotalCount", totalCount)
                     putInt("lastSavePageNumber", prefPageNumber)
@@ -104,8 +108,6 @@ class TourDataUpdateService : Service() {
                 sendBroadcast(broadCastIntent)
 
                 if (++prefPageNumber > lastPageNumber) break
-
-                Log.d("tour list", "tour list : ${tourItems.map { it.title }}")
 
             } else {
                 break

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.widget.ProgressBar
 import com.sessac.myaitrip.MainActivity
@@ -53,7 +54,13 @@ class ProgressActivity :
 
         progressBar = binding.progressBar
 
-        registerReceiver(receiver, IntentFilter("tour_progress"))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Tiramisu 이상에서만 실행되는 코드
+            registerReceiver(receiver, IntentFilter("tour_progress"), RECEIVER_NOT_EXPORTED)
+        } else {
+            // Tiramisu 미만에서 실행되는 코드
+            registerReceiver(receiver, IntentFilter("tour_progress"))
+        }
     }
 
     override fun onDestroy() {

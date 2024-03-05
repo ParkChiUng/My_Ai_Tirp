@@ -1,10 +1,10 @@
-package com.sessac.myaitrip.data
+package com.sessac.myaitrip.data.tour
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "tour_item")
+@Entity(tableName = "tbl_tour")
 data class TourItem(
     @PrimaryKey
     @SerializedName("contentid")
