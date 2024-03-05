@@ -2,8 +2,8 @@ package com.sessac.myaitrip.api
 
 import com.sessac.myaitrip.BuildConfig
 import com.sessac.myaitrip.common.MyAiTripApplication
-import com.sessac.myaitrip.data.ApiResponse
-import com.sessac.myaitrip.data.TourItems
+import com.sessac.myaitrip.data.tour.ApiResponse
+import com.sessac.myaitrip.data.tour.TourItems
 import retrofit2.http.GET
 import retrofit2.http.Query
 
