@@ -14,7 +14,55 @@
     <string name="nearby_tour_recommend">내 주변 관광지</string>
     <string name="view_all">모두 보기</string>
 
+    <!-- Fragment AI -->
+    <string name="ai_recommend_tour">AI 추천 여행지</string>
+    <string name="sunny">#맑은 날</string>
+    <string name="rainy">#우중충 한 날</string>
+    <string name="spring">#봄</string>
+    <string name="summer">#여름</string>
+    <string name="fall">#가을</string>
+    <string name="winter">#겨울</string>
+    <string name="latest">최신순</string>
+    <string-array name="areas">
+        <item>서울</item>
+        <item>경기</item>
+        <item>인천</item>
+        <item>부산</item>
+        <item>대전</item>
+        <item>대구</item>
+        <item>광주</item>
+        <item>세종</item>
+        <item>강원</item>
+        <item>충북</item>
+        <item>충남</item>
+        <item>경북</item>
+        <item>경남</item>
+        <item>전북</item>
+        <item>전남</item>
+        <item>제주</item>
+    </string-array>
+    <string-array name="categories">
+        <item>관광지</item>
+        <item>자연</item>
+        <item>축제</item>
+        <item>숙박</item>
+        <item>쇼핑</item>
+        <item>음식</item>
+    </string-array>
+
+    <!-- fragment user -->
+    <string name="name">엄태경</string>
+    <string name="profile">프로필 보기</string>
+    <string name="popular">내 좋아요 목록</string>
+    <string name="allView">모두 보기</string>
+    <string name="diary">내 다이어리 목록</string>
+
     <!-- Login -->
     <string name="login_title">My Ai \'Trip</string>
     <string name="login_kakao">카카오로 시작하기</string>
+
+    <!-- Sign Up -->
+    <string name="signup_title">회원가입</string>
+    <string name="signup_nickname">닉네임 (최대 8글자)</string>
+    <string name="signup_submit">완료</string>
 </resources>

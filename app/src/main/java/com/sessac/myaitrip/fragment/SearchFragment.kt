@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.sessac.myaitrip.databinding.FragmentSearchBinding
+import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 
 /**
  * 통합 검색 페이지

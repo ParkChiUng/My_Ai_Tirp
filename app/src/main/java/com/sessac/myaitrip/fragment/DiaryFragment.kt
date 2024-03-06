@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.sessac.myaitrip.databinding.FragmentDiaryBinding
+import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 
 /**
  * 다이어리 페이지

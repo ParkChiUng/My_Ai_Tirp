@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!-- tour item 이미지 둥글게 -->
+    <style name="tourImgRound" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10dp</item>
+    </style>
+
+    <!-- 회원 이미지 둥글게 -->
+    <style name="profileImgRounded">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+</resources>
