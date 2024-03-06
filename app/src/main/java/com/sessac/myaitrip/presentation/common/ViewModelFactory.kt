@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.sessac.myaitrip.common.MyAiTripApplication
-import com.sessac.myaitrip.data.repository.user.datastore.UserDataStoreRepository
-import com.sessac.myaitrip.data.repository.user.firebase.FirebaseAuthRepository
+import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
+import com.sessac.myaitrip.data.repository.user.UserRepository
+import com.sessac.myaitrip.data.repository.user.remote.UserRemoteDataSource
 import com.sessac.myaitrip.presentation.login.LoginViewModel
+import com.sessac.myaitrip.presentation.splash.SplashViewModel
 
 class ViewModelFactory(private val context: Context): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -14,9 +16,19 @@ class ViewModelFactory(private val context: Context): ViewModelProvider.Factory 
 
         return when {
             modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
-                val userDataStoreRepository = UserDataStoreRepository(dataStore.userDataStore)
-                val firebaseAuthRepository = FirebaseAuthRepository()
-                LoginViewModel(userDataStoreRepository, firebaseAuthRepository) as T
+                val userLocalDataSource = UserLocalDataSource(dataStore.userDataStore)
+                val userRemoteDataSource = UserRemoteDataSource()
+                val userRepository = UserRepository(userLocalDataSource, userRemoteDataSource)
+
+                LoginViewModel(userRepository) as T
+            }
+
+            modelClass.isAssignableFrom(SplashViewModel::class.java) -> {
+                val userLocalDataSource = UserLocalDataSource(dataStore.userDataStore)
+                val userRemoteDataSource = UserRemoteDataSource()
+                val userRepository = UserRepository(userLocalDataSource, userRemoteDataSource)
+
+                SplashViewModel(userRepository) as T
             }
 
             else -> {

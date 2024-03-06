@@ -1,4 +1,4 @@
-package com.sessac.myaitrip.data.repository.user.datastore
+package com.sessac.myaitrip.data.repository.user.local
 
 import android.util.Log
 import androidx.datastore.core.DataStore
@@ -6,20 +6,19 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.sessac.myaitrip.data.UserPreferences
-import com.sessac.myaitrip.data.repository.user.datastore.UserDataStoreRepository.PreferenceKeys.KEY_USER_ID
-import com.sessac.myaitrip.data.repository.user.datastore.UserDataStoreRepository.PreferenceKeys.KEY_USER_AUTO_LOGIN
+import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource.UserPreferenceKeys.KEY_USER_AUTO_LOGIN
+import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource.UserPreferenceKeys.KEY_USER_ID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
-class UserDataStoreRepository(
+class UserLocalDataSource(
     private val userDataStore: DataStore<Preferences>
-): IUserDataStoreRepository {
-    private object PreferenceKeys {
+): IUserLocalDataSource {
+    private object UserPreferenceKeys {
         // 자동 로그인 여부
         val KEY_USER_AUTO_LOGIN = booleanPreferencesKey("USER_AUTO_LOGIN")
 
@@ -49,7 +48,7 @@ class UserDataStoreRepository(
         val autoLogin = preferences[KEY_USER_AUTO_LOGIN] ?: DEFAULT_AUTO_LOGIN // 자동 로그인 여부
         val userId = preferences[KEY_USER_ID] ?: DEFAULT_USER_ID // 회원 ID
         return UserPreferences(userId, autoLogin)
-    }
+}
 
     // 자동 로그인 여부
     /**
@@ -97,5 +96,4 @@ class UserDataStoreRepository(
             preferences[KEY_USER_ID] = DEFAULT_USER_ID
         }
     }
-
 }

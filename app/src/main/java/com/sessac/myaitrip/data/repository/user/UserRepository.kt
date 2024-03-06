@@ -1,0 +1,46 @@
+package com.sessac.myaitrip.data.repository.user
+
+import com.sessac.myaitrip.presentation.common.UiState
+import com.sessac.myaitrip.data.UserPreferences
+import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
+import com.sessac.myaitrip.data.repository.user.remote.UserRemoteDataSource
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+
+class UserRepository(
+    private val userLocalDataSource: UserLocalDataSource,
+    private val userRemoteDataSource: UserRemoteDataSource
+) {
+    suspend fun getUserPreferences(): Flow<UserPreferences> = userLocalDataSource.getUserPreferences()
+
+    suspend fun updatePreferenceAutoLogin(autoLogin: Boolean) {
+        userLocalDataSource.updatePreferenceAutoLogin(autoLogin)
+    }
+
+    suspend fun resetPreferenceAutoLogin() {
+        userLocalDataSource.resetPreferenceAutoLogin()
+    }
+
+    suspend fun updatePreferenceUserId(userId: String) {
+        userLocalDataSource.updatePreferenceUserId(userId)
+    }
+
+    suspend fun resetPreferenceUserId() {
+        userLocalDataSource.resetPreferenceUserId()
+    }
+
+    // Firebase Auth
+
+    fun login(email: String, password: String) = flow {
+        emit(UiState.Loading)
+        delay(1000)
+        emit(userRemoteDataSource.login(email, password))
+    }
+
+    fun register(email: String, nickname: String, password: String) = flow {
+        emit(UiState.Loading)
+        delay(1000)
+        emit(userRemoteDataSource.register(email, nickname, password))
+    }
+}

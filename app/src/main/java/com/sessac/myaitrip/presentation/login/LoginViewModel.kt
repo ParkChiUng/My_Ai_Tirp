@@ -3,36 +3,23 @@ package com.sessac.myaitrip.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.AuthResult
-import com.sessac.myaitrip.data.UiState
+import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.data.UserPreferences
-import com.sessac.myaitrip.data.repository.user.datastore.UserDataStoreRepository
-import com.sessac.myaitrip.data.repository.user.firebase.FirebaseAuthRepository
+import com.sessac.myaitrip.data.repository.user.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val userDataStoreRepository: UserDataStoreRepository,
-    private val firebaseAuthRepository: FirebaseAuthRepository
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
-    private val _userPreferenceStatus: MutableStateFlow<UserPreferences> = MutableStateFlow(
-        UserPreferences("", false)
-    )
-    val userPreferenceStatus: StateFlow<UserPreferences>
-        get() = _userPreferenceStatus.asStateFlow()
+    private val _userPreferenceStatus = MutableStateFlow<UiState<UserPreferences>>(UiState.Empty)
+    val userPreferenceStatus get() = _userPreferenceStatus.asStateFlow()
 
-    private val _registerStatus: MutableStateFlow<UiState<AuthResult>> =
-        MutableStateFlow(UiState.Loading(null))
-    val registerStatus: StateFlow<UiState<AuthResult>>
-        get() = _registerStatus.asStateFlow()
-
-    private val _loginStatus: MutableStateFlow<UiState<AuthResult>> =
-        MutableStateFlow(UiState.Loading(null))
-    val loginStatus: StateFlow<UiState<AuthResult>>
-        get() = _loginStatus.asStateFlow()
+    private val _loginStatus = MutableStateFlow<UiState<AuthResult>>(UiState.Empty)
+    val loginStatus get() = _loginStatus.asStateFlow()
 
     init {
         getUserPreferences()
@@ -40,13 +27,8 @@ class LoginViewModel(
 
     private fun getUserPreferences() {
         viewModelScope.launch {
-            userDataStoreRepository.getUserPreferences().collect { userPreference ->
-                _userPreferenceStatus.update {
-                    it.copy(
-                        userId =  userPreference.userId,
-                        autoLogin = userPreference.autoLogin
-                    )
-                }
+            userRepository.getUserPreferences().collectLatest { userPreference ->
+                _userPreferenceStatus.value = UiState.Success(userPreference)
             }
         }
     }
@@ -54,14 +36,14 @@ class LoginViewModel(
     // userId 값 저장
     fun updateUserPreferenceUserId(userId: String) {
         viewModelScope.launch {
-            userDataStoreRepository.updatePreferenceUserId(userId)
+            userRepository.updatePreferenceUserId(userId)
         }
     }
 
     // 자동 로그인 값 저장
     fun updateUserPreferenceAutoLogin(autoLogin: Boolean) {
         viewModelScope.launch {
-            userDataStoreRepository.updatePreferenceAutoLogin(autoLogin)
+            userRepository.updatePreferenceAutoLogin(autoLogin)
         }
     }
 
@@ -72,14 +54,9 @@ class LoginViewModel(
      * @param password
      */
     fun login(email: String, password: String) {
-        if (email.isBlank() || password.isBlank()) {
-            _loginStatus.update { UiState.Error("값을 입력해주세요.") }
-            return
-        } else {
-            _loginStatus.update { UiState.Loading() }
-            viewModelScope.launch {
-                val result = firebaseAuthRepository.login(email, password)
-                _loginStatus.update { result }
+        viewModelScope.launch {
+            userRepository.login(email, password).collectLatest {
+                _loginStatus.value = it
             }
         }
     }
