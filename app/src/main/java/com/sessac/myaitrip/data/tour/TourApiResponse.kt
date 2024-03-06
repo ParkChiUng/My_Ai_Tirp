@@ -1,4 +1,4 @@
-package com.sessac.myaitrip.data
+package com.sessac.myaitrip.data.tour
 
 import com.google.gson.annotations.SerializedName
 

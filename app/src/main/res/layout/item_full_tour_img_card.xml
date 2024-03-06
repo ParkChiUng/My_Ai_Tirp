@@ -26,10 +26,10 @@
 
         <LinearLayout
             android:id="@+id/layout_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_margin="@dimen/card_margin_text_layout"
+            android:padding="@dimen/card_margin_text_layout"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
@@ -37,8 +37,8 @@
                 android:id="@+id/tv_tour_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:textSize="@dimen/card_text_size_tour"
+                android:textColor="@color/white"
+                android:textSize="@dimen/card_text_size_description"
                 android:textStyle="bold"
                 tools:text="여행사 이름" />
 
