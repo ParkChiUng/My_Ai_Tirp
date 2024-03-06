@@ -1,11 +1,13 @@
 package com.sessac.myaitrip.data.repository.user
 
+import com.google.firebase.auth.FirebaseAuthException
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.data.UserPreferences
 import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
 import com.sessac.myaitrip.data.repository.user.remote.UserRemoteDataSource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
 class UserRepository(
@@ -36,7 +38,7 @@ class UserRepository(
         emit(UiState.Loading)
         delay(1000)
         emit(userRemoteDataSource.login(email, password))
-    }
+    }.catch { exception -> if(exception is FirebaseAuthException) emit(UiState.FirebaseAuthError(exception))}
 
     fun register(email: String, nickname: String, password: String) = flow {
         emit(UiState.Loading)

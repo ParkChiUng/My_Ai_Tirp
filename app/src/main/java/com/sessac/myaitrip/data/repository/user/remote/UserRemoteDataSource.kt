@@ -92,16 +92,19 @@ class UserRemoteDataSource: IUserRemoteDataSource {
      * @return
      */
     override suspend fun login(email: String, password: String): UiState<AuthResult> {
+
+        val result = auth.signInWithEmailAndPassword(email, password).await()
+        return UiState.Success(result)
         // 로그인
-        return try {
-            val result = auth.signInWithEmailAndPassword(email, password).await()
-
-            UiState.Success(result)
-        } catch (exception: FirebaseAuthException) {
-            val errorCode = exception.errorCode
-            Log.e("FirebaseAuthException", "로그인 실패: $exception, $errorCode")
-
-            UiState.FirebaseAuthError(exception)
-        }
+//        return try {
+//            val result = auth.signInWithEmailAndPassword(email, password).await()
+//
+//            UiState.Success(result)
+//        } catch (exception: FirebaseAuthException) {
+//            val errorCode = exception.errorCode
+//            Log.e("FirebaseAuthException", "로그인 실패: $exception, $errorCode")
+//
+//            UiState.FirebaseAuthError(exception)
+//        }
     }
 }

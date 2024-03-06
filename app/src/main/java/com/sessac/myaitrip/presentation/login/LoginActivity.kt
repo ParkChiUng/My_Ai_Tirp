@@ -4,18 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.AuthResult
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.sessac.myaitrip.MainActivity
 import com.sessac.myaitrip.common.KakaoOAuthClient
-import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.databinding.ActivityLoginBinding
+import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseActivity
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.register.RegisterActivity
-import com.sessac.myaitrip.util.repeatOnStarted
+import kotlinx.coroutines.launch
 
 class LoginActivity :
     ViewBindingBaseActivity<ActivityLoginBinding>({ ActivityLoginBinding.inflate(it) }) {
@@ -80,11 +81,6 @@ class LoginActivity :
                                 loginViewModel.login(userEmail, userPassword)
                             }
 
-                            repeatOnStarted {
-                                loginViewModel.loginStatus.collect { state ->
-                                    handleUiState(state)
-                                }
-                            }
                         }
                     }
                 }
@@ -136,8 +132,10 @@ class LoginActivity :
     }
 
     private fun handleUiState(state: UiState<AuthResult>) {
+        Log.e("LoginState", "HandleUiState()")
         when (state) {
             is UiState.Success -> {
+                Log.e("LoginHandleState", "UiState.Success")
                 // 1. DataStore에 값 저장
                 with(loginViewModel) {
                     updateUserPreferenceAutoLogin(true)
@@ -154,6 +152,7 @@ class LoginActivity :
             }
 
             is UiState.FirebaseAuthError -> {
+                Log.e("LoginHandleState", "UiState.FirebaseAuthError")
                 /*
                 Firebase Auth Error Code
                     auth/email-already-exists: 제공된 이메일이 이미 다른 사용자에 의해 사용 중인 경우
@@ -193,10 +192,13 @@ class LoginActivity :
             }
 
             is UiState.Loading -> {
+                Log.e("LoginHandleState", "UiState.Loading")
                 // TODO. 프로그레스 바 (로그인 중..)
             }
 
-            else -> {}
+            else -> {
+                Log.e("LoginHandleState", "$state")
+            }
         }
     }
 
@@ -206,6 +208,86 @@ class LoginActivity :
         with(binding) {
             btnLoginKakao.throttleClick().bind {
                 KakaoOAuthClient.loginWithKakao(this@LoginActivity, kakaoCallback)
+            }
+        }
+
+        setupLoginStatusCollection()
+    }
+
+    private fun setupLoginStatusCollection() {
+        lifecycleScope.launch {
+            loginViewModel.loginStatus.collect { state ->
+                when (state) {
+                    is UiState.Success -> {
+                        Log.e("LoginHandleState", "UiState.Success")
+                        // 1. DataStore에 값 저장
+                        with(loginViewModel) {
+                            updateUserPreferenceAutoLogin(true)
+                            state.data.user?.let { user ->
+                                updateUserPreferenceUserId(user.uid)
+                            }
+                        }
+                        // 2.메인 화면으로 이동
+                        Intent(this@LoginActivity, MainActivity::class.java).also {
+                            it.flags =
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(it)
+                        }
+                    }
+
+                    is UiState.FirebaseAuthError -> {
+                        Log.e("LoginHandleState", "UiState.FirebaseAuthError")
+                        /*
+                        Firebase Auth Error Code
+                            auth/email-already-exists: 제공된 이메일이 이미 다른 사용자에 의해 사용 중인 경우
+                            auth/invalid-email: 제공된 이메일이 유효한 이메일 주소 형식이 아닌 경우1.
+                            auth/operation-not-allowed: 해당 인증 방법이 Firebase 프로젝트에서 활성화되지 않은 경우2.
+                            auth/weak-password: 제공된 비밀번호가 너무 약한 경우2.
+                            auth/wrong-password: 잘못된 비밀번호를 입력한 경우2.
+                            auth/user-disabled: 사용자 계정이 비활성화된 경우2.
+                            auth/too-many-requests: 짧은 시간 동안 너무 많은 요청을 보낸 경우2.
+                            auth/network-request-failed: 네트워크 요청이 실패한 경우2.
+                         */
+
+                        val errorCode = state.firebaseAuthException.errorCode
+                        Log.e("FirebaseAuthException", errorCode)
+
+                        // 로그인 오류와 계정이 없을 때는 회원가입 화면으로 이동
+                        if (errorCode.contains("USER_NOT_FOUND", true) ||
+                            errorCode.contains("INVALID_CREDENTIAL", true)
+                        ) {
+
+                            val registerIntent =
+                                Intent(this@LoginActivity, RegisterActivity::class.java).apply {
+                                    if (this@LoginActivity::userEmail.isInitialized) putExtra(
+                                        "userEmail",
+                                        userEmail
+                                    )
+                                    if (this@LoginActivity::userPassword.isInitialized) putExtra(
+                                        "userPassword",
+                                        userPassword
+                                    )
+                                    userNickname?.let { putExtra("userNickname", it) }
+                                    userProfileImageUrl?.let { putExtra("userProfileImageUrl", it) }
+                                }
+
+                            startActivity(registerIntent)
+                        }
+                    }
+
+                    is UiState.Error -> {
+//
+                    }
+
+                    is UiState.Loading -> {
+                        Log.e("LoginHandleState", "UiState.Loading")
+                        // TODO. 프로그레스 바 (로그인 중..)
+                    }
+
+                    else -> {
+                        Log.e("LoginHandleState", "$state")
+                    }
+                }
             }
         }
     }
