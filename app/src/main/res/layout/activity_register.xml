@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.signup.RegisterActivity">
+    tools:context=".presentation.register.RegisterActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar_register"
@@ -121,6 +121,7 @@
                     android:hint="@string/register_nickname_hint"
                     android:inputType="text"
                     android:maxLength="8"
+                    android:maxLines="1"
                     android:textSize="15sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
