@@ -12,7 +12,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
 
-        moveToLogin()
+        moveToMain()
     }
 
     private fun moveToMain() {

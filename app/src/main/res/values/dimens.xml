@@ -23,5 +23,6 @@
     <dimen name="f_home_rcv_margin_top">10dp</dimen>
     <dimen name="f_home_tv_text_size">25sp</dimen>
     <dimen name="f_home_rcv_layout">0dp</dimen>
+    <dimen name="f_home_nsv_layout">0dp</dimen>
 
 </resources>
