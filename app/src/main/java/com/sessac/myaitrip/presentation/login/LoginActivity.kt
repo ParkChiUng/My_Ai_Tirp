@@ -17,6 +17,7 @@ import com.sessac.myaitrip.databinding.ActivityLoginBinding
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseActivity
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
+import com.sessac.myaitrip.presentation.progress.ProgressActivity
 import com.sessac.myaitrip.presentation.register.RegisterActivity
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.launch
@@ -206,7 +207,7 @@ class LoginActivity :
     }
 
     private fun moveToMain() {
-        Intent(this@LoginActivity, MainActivity::class.java).also {
+        Intent(this@LoginActivity, ProgressActivity::class.java).also {
             it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(it)
         }

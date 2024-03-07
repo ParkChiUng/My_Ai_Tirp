@@ -3,23 +3,21 @@ package com.sessac.myaitrip.presentation.register
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseUser
 import com.kakao.sdk.user.UserApiClient
-import com.sessac.myaitrip.MainActivity
 import com.sessac.myaitrip.R
 import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.databinding.ActivityRegisterBinding
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseActivity
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
+import com.sessac.myaitrip.presentation.progress.ProgressActivity
 import com.sessac.myaitrip.util.GlideUtil
 import com.sessac.myaitrip.util.showToast
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import reactivecircus.flowbinding.android.widget.textChanges
@@ -99,7 +97,7 @@ class RegisterActivity : ViewBindingBaseActivity<ActivityRegisterBinding>(
                         // currentUser가 Null값 이면, 현재 디바이스는 계정 정보가 없는 것, 로그인 실패 or 회원가입 실패
                         currentUser?.let {user ->
                             saveUserPreferenceData(user)
-                            Intent(this@RegisterActivity, MainActivity::class.java).also {
+                            Intent(this@RegisterActivity, ProgressActivity::class.java).also {
                                 it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                                 startActivity(it)
                             }
