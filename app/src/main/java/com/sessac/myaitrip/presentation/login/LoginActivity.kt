@@ -6,16 +6,19 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseUser
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.sessac.myaitrip.MainActivity
 import com.sessac.myaitrip.common.KakaoOAuthClient
+import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.databinding.ActivityLoginBinding
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseActivity
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.register.RegisterActivity
+import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.launch
 
 class LoginActivity :
@@ -136,18 +139,14 @@ class LoginActivity :
         when (state) {
             is UiState.Success -> {
                 Log.e("LoginHandleState", "UiState.Success")
-                // 1. DataStore에 값 저장
-                with(loginViewModel) {
-                    updateUserPreferenceAutoLogin(true)
-                    state.data.user?.let { user ->
-                        updateUserPreferenceUserId(user.uid)
-                    }
-                }
-                // 2.메인 화면으로 이동
-                Intent(this@LoginActivity, MainActivity::class.java).also {
-                    it.flags =
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(it)
+                // currentUser가 있어야, 로그인이 성공한 것이다.
+                val currentUser = MyAiTripApplication.getInstance().getFirebaseAuth().currentUser
+
+                currentUser?.let { user ->
+                    saveUserPreferenceData(user)
+                    moveToMain()
+                } ?: {
+                    showToast("계정 정보가 없습니다.")
                 }
             }
 
@@ -206,6 +205,25 @@ class LoginActivity :
         }
     }
 
+    private fun moveToMain() {
+        Intent(this@LoginActivity, MainActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(it)
+        }
+    }
+
+    /**
+     * Save user preference data
+     * 로그인 성공 시, 유저 데이터 디바이스에 저장하기
+     * @param user
+     */
+    private fun saveUserPreferenceData(user: FirebaseUser) {
+        with(loginViewModel) {
+            updateUserPreferenceAutoLogin(true)
+            updateUserPreferenceUserId(user.uid)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -216,6 +234,11 @@ class LoginActivity :
         }
 
         setupLoginStatusCollection()
+    }
+    override fun onResume() {
+        super.onResume()
+        userNickname = null
+        userProfileImageUrl = null
     }
 
     private fun setupLoginStatusCollection() {
