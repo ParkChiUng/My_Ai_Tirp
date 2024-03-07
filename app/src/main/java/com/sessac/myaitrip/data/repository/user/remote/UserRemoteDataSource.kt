@@ -1,27 +1,21 @@
 package com.sessac.myaitrip.data.repository.user.remote
 
-import android.util.Log
-import com.google.firebase.FirebaseException
+import android.net.Uri
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuthException
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
+import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.data.entities.User
-import kotlinx.coroutines.NonCancellable.isCancelled
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class UserRemoteDataSource: IUserRemoteDataSource {
-
-    private val auth = Firebase.auth
-    private val db = Firebase.firestore
-    private val storageRef = Firebase.storage.reference
-    private val userDB = db.collection("user")
-
+    private val auth = MyAiTripApplication.getInstance().getFirebaseAuth()
+    private val fireStore = MyAiTripApplication.getInstance().getFireStore()
     /**
      * Register
      * 회원가입 결과
@@ -31,59 +25,84 @@ class UserRemoteDataSource: IUserRemoteDataSource {
      * @return
      */
 
-    override suspend fun register(email: String, nickname: String, password: String): UiState<AuthResult> {
-        // 회원가입
-        return try {
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
+    override suspend fun register(
+        email: String,
+        password: String,
+        nickname: String,
+        profileImgUrl: String?,
+        newProfileImgUri: Uri?
+    ): UiState<AuthResult> {
+        val result = auth.createUserWithEmailAndPassword(email, password).await() // 회원가입
+        val user = auth.currentUser
 
-            val user = auth.currentUser
-            // TODO. 프로필 사진 업로드
-            // storageRef.child("profileImage").child("${resultUid}/profileImage.png")
+        return CoroutineScope(Dispatchers.IO).async {
 
+            // 유저 정보 저장 + 프로필 사진 업로드
             user?.let { user ->
-                userDB.document(user.uid).set(
-                    User(id = user.uid,
+                var userProfileImgUrl = ""
+
+                // 소셜로 제공받은 기존 프로필 사진 그대로 사용할 때
+                profileImgUrl?.let {
+                    userProfileImgUrl = it
+
+                    // 유저 정보 생성
+                    val userInfo = User(
+                        id = user.uid,
                         email = email,
                         nickname = nickname,
-                        profileImgUrl = "")
-                ).await()
+                        profileImgUrl = userProfileImgUrl
+                    )
+
+                    user.addUserInfo(userInfo)
+                }
+
+                // 새로운 프로필 사진일 때
+                newProfileImgUri?.let {
+                    val fireStorage = MyAiTripApplication.getInstance().getFireStorage()
+                    val profileImgRef = fireStorage.reference.child("profileImage").child("${user.uid}.png")
+                    val uploadTask = profileImgRef.putFile(newProfileImgUri)
+
+                    uploadTask.addOnSuccessListener {
+                        profileImgRef.downloadUrl.addOnSuccessListener {
+                            // 프로필 이미지 URL 가져오기
+                            userProfileImgUrl = it.toString()
+
+                            // 유저 정보 생성
+                            val userInfo = User(
+                                id = user.uid,
+                                email = email,
+                                nickname = nickname,
+                                profileImgUrl = userProfileImgUrl
+                            )
+
+                            user.addUserInfo(userInfo)
+                        }
+                    }
+                }
             }
 
             UiState.Success(result)
+        }.await()
+    }
 
-        } catch (exception: FirebaseAuthException) {
-            val errorCode = exception.errorCode
-            Log.e("FirebaseAuthException", "회원가입 실패: $errorCode")
-
-            UiState.FirebaseAuthError(exception)
+    private fun FirebaseUser.addUserInfo(
+        userInfo: User
+    ) {
+        fireStore.collection("user").also { userDB ->
+            with(userDB.document(this.uid)) {
+                set(userInfo)
+            }
         }
     }
 
-    override suspend fun checkExistNickname(nickname: String): UiState<Boolean> {
+    /*override suspend fun checkExistNickname(nickname: String): UiState<QuerySnapshot> {
         // 닉네임 중복확인
-        return try {
-            var isExist = false
-            var failException: Exception? = null
-            var isCancelled = false
+        val query = fireStore.collection("user").whereEqualTo("nickname", nickname)
+        val result = query.get().await()
 
-            val query = userDB.whereEqualTo("nickname", nickname)
-            query.get()
-                .addOnSuccessListener { isExist = !it.isEmpty }
-                .addOnFailureListener { failException = it }
-                .addOnCanceledListener { isCancelled = true }
-
-            if(failException == null && !isCancelled && !isExist) UiState.Success(false)
-            else if( failException != null ) UiState.Error(failException!!)
-            else UiState.Empty
-
-        } catch(exception: FirebaseFirestoreException) {
-            val errorCode = exception.code.name
-            Log.e("FirebaseStoreException", errorCode)
-
-            UiState.Error(exception)
-        }
+        return UiState.Success(result)
     }
-
+*/
     /**
      * Login
      * 로그인 결과
@@ -95,16 +114,5 @@ class UserRemoteDataSource: IUserRemoteDataSource {
 
         val result = auth.signInWithEmailAndPassword(email, password).await()
         return UiState.Success(result)
-        // 로그인
-//        return try {
-//            val result = auth.signInWithEmailAndPassword(email, password).await()
-//
-//            UiState.Success(result)
-//        } catch (exception: FirebaseAuthException) {
-//            val errorCode = exception.errorCode
-//            Log.e("FirebaseAuthException", "로그인 실패: $exception, $errorCode")
-//
-//            UiState.FirebaseAuthError(exception)
-//        }
     }
 }

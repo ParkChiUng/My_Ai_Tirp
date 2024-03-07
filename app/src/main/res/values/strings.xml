@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">마이AI트립</string>
 
+    <string name = "default_img_url">https://t1.kakaocdn.net/account_images/default_profile.jpeg.twg.thumb.R640x640</string>
+
     <!-- Bottom Navigation Label -->
     <string name="navi_ai">AI 추천</string>
     <string name="navi_map">지도로 보기</string>

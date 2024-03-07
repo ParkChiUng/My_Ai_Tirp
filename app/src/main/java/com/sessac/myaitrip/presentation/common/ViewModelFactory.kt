@@ -8,6 +8,7 @@ import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
 import com.sessac.myaitrip.data.repository.user.UserRepository
 import com.sessac.myaitrip.data.repository.user.remote.UserRemoteDataSource
 import com.sessac.myaitrip.presentation.login.LoginViewModel
+import com.sessac.myaitrip.presentation.register.RegisterViewModel
 import com.sessac.myaitrip.presentation.splash.SplashViewModel
 
 class ViewModelFactory(private val context: Context): ViewModelProvider.Factory {
@@ -29,6 +30,14 @@ class ViewModelFactory(private val context: Context): ViewModelProvider.Factory 
                 val userRepository = UserRepository(userLocalDataSource, userRemoteDataSource)
 
                 SplashViewModel(userRepository) as T
+            }
+
+            modelClass.isAssignableFrom(RegisterViewModel::class.java) -> {
+                val userLocalDataSource = UserLocalDataSource(dataStore.userDataStore)
+                val userRemoteDataSource = UserRemoteDataSource()
+                val userRepository = UserRepository(userLocalDataSource, userRemoteDataSource)
+
+                RegisterViewModel(userRepository) as T
             }
 
             else -> {

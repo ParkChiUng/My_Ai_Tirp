@@ -1,5 +1,6 @@
 package com.sessac.myaitrip.data.repository.user
 
+import android.net.Uri
 import com.google.firebase.auth.FirebaseAuthException
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.data.UserPreferences
@@ -36,13 +37,24 @@ class UserRepository(
 
     fun login(email: String, password: String) = flow {
         emit(UiState.Loading)
-        delay(1000)
+        delay(300)
         emit(userRemoteDataSource.login(email, password))
     }.catch { exception -> if(exception is FirebaseAuthException) emit(UiState.FirebaseAuthError(exception))}
 
-    fun register(email: String, nickname: String, password: String) = flow {
+    fun register(
+        email: String,
+        password: String,
+        nickname: String,
+        profileImgUrl: String?,
+        newProfileImgUri: Uri?
+    ) = flow {
         emit(UiState.Loading)
-        delay(1000)
-        emit(userRemoteDataSource.register(email, nickname, password))
-    }
+        delay(300)
+        emit(userRemoteDataSource.register(email, password, nickname, profileImgUrl, newProfileImgUri))
+    }.catch { exception -> emit(UiState.Error(exception, errorMessage = exception.localizedMessage)) }
+
+    /*fun checkExistNickname(nickname: String) = flow {
+        emit(UiState.Loading)
+        emit(userRemoteDataSource.checkExistNickname(nickname))
+    }.catch { exception -> emit(UiState.Error(exception, errorMessage = exception.localizedMessage)) }*/
 }
