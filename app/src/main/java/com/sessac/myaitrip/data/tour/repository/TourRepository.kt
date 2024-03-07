@@ -15,6 +15,16 @@ class TourRepository private constructor() {
         tourDao.insertTour(newTourItem)
     }
 
+//    suspend fun getTourListByTitle(titles: List<String>): Flow<List<TourItem>> {
+//        val result = mutableListOf<String>()
+//        for (title in titles) {
+//            val tourList = tourDao.getContentIdByTitle(title).first()
+//            if(tourList.isNotEmpty())
+//                result.add(tourList.first())
+//        }
+//        return tourDao.getTourListById(result)
+//    }
+
     suspend fun getTourListByTitle(titles: List<String>): Flow<List<TourItem>> {
         val result = mutableListOf<String>()
         for (title in titles) {
@@ -23,6 +33,10 @@ class TourRepository private constructor() {
                 result.add(tourList.first())
         }
         return tourDao.getTourListById(result)
+    }
+
+    fun getTourListById(contentId: List<String>): Flow<List<TourItem>>{
+        return tourDao.getTourListById(contentId)
     }
 
     companion object {

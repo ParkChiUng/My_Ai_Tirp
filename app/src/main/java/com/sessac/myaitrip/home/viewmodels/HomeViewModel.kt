@@ -41,4 +41,12 @@ class HomeViewModel : ViewModel(){
             }
         }
     }
+
+    fun getTourListById(contentId: List<String>){
+        viewModelScope.launch {
+            tourRepository.getTourListById(contentId).collect { tourList ->
+                _tourList.value = tourList
+            }
+        }
+    }
 }

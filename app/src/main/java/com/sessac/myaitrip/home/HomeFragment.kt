@@ -8,6 +8,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.firestore
 import com.sessac.myaitrip.R
 import com.sessac.myaitrip.databinding.FragmentHomeBinding
 import com.sessac.myaitrip.home.adapter.FullCardAdapter
@@ -40,7 +43,7 @@ class HomeFragment :
         clickEventHandler()
     }
 
-    private fun init(){
+    private fun init() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 homeViewModel.geminiApi(getString(R.string.recommend_popular, cityName))
@@ -48,10 +51,10 @@ class HomeFragment :
         }
     }
 
-    private fun clickEventHandler(){
-        with(binding){
+    private fun clickEventHandler() {
+        with(binding) {
             chipGroup.setOnCheckedStateChangeListener { group, _ ->
-                cityName = when(group.checkedChipId){
+                cityName = when (group.checkedChipId) {
                     chipSeoul.id -> "서울"
                     chipIncheon.id -> "인천"
                     chipGyeonggi.id -> "경기도"
@@ -59,6 +62,7 @@ class HomeFragment :
                     chipChungcheong.id -> "충청도"
                     chipJeolla.id -> "전라도"
                     chipGyeongsang.id -> "경상도"
+                    chipJeju.id -> "제주"
                     else -> "서울"
 //                    chipSeoul.id -> chipSeoul.text.toString()
 //                    chipIncheon.id -> chipIncheon.text.toString()
@@ -93,17 +97,61 @@ class HomeFragment :
     }
 
     private fun setupCollect() {
+        Firebase.firestore.collection("tour").document("data").collection("recommend")
+            .document(cityName)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        repeatOnLifecycle(Lifecycle.State.CREATED) {
+//                            for (i in document.data){
+//
+//                            }
+//                            val contentId = listOf<String>(document.data)
+
+                            Log.d("TAG", "document : $document")
+                            Log.d("TAG", "document.id : ${document.id}")
+                            Log.d("TAG", "document.data : ${document.data}")
+
+//                            val contentIdList = document.data?.get("contentId") as List<String>
+
+//                            Log.d("TAG", "document.data : $contentIdList")
+
+//                            homeViewModel.getTourListById(contentIdList)
+
+//                            val contentIdList =
+                            insertFireBase()
+                        }
+                    }
+
+                } else {
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d("TAG", "get failed with ", exception)
+            }
+    }
+
+    private fun insertFireBase() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 homeViewModel.tourList.collect { tourList ->
 
-                    fullCardAdapter.setTourList(tourList)
-                    smallCardAdapter.setTourList(tourList)
-
-                    recommendRecyclerView.scrollToPosition(0)
-
-                    for (i in tourList) {
-                        Log.d("test", "tour list = $i")
+//                    fullCardAdapter.setTourList(tourList)
+//                    smallCardAdapter.setTourList(tourList)
+//                    recommendRecyclerView.scrollToPosition(0)
+                    for (item in tourList) {
+                        Firebase.firestore.collection("tour").document("data")
+                            .collection("recommend").document(cityName)
+                            //                        .set(data, SetOptions.merge())
+                            .update("contentId", FieldValue.arrayUnion(item.contentId))
+//                        .update("contentId", tourList.map { it.contentId })
+                            .addOnSuccessListener {
+                                Log.d("TAG", "DocumentSnapshot successfully updated!")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w("TAG", "Error updating document", e)
+                            }
                     }
                 }
             }

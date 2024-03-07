@@ -75,7 +75,7 @@
 
     <!-- Gemini -->
     <string name="recommend_rainy">인천 현재 날씨와 현재 시간을 기준으로 인기순 관광지 10개 추천</string>
-    <string name="recommend_popular">"%1$s 가장 인기있는 여행지 포인트 5곳 나열. 결과는 지역명 제외하고 여행지 이름만 제공."</string>
+    <string name="recommend_popular">"%1$s 가장 인기있는 여행지 포인트 20곳 나열. 결과는 지역명 제외하고 여행지 이름만 제공."</string>
 <!--    <string name="recommend_popular">"%1$s 가장 인기있는 관광지 포인트 50곳 나열. 결과는 관광지 이름만 제공."</string>-->
 
 </resources>
