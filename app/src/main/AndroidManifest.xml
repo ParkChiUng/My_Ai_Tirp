@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".common.MyAiTripApplication"
         android:allowBackup="true"
@@ -20,11 +22,6 @@
 
         <activity
             android:name=".presentation.progress.ProgressActivity"
-            android:exported="false" />
-
-        <service
-            android:name=".service.TourDataUpdateService"
-            android:enabled="true"
             android:exported="false" />
 
         <activity
