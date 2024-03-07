@@ -6,11 +6,15 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.lifecycle.lifecycleScope
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.login.LoginActivity
 import com.sessac.myaitrip.presentation.progress.ProgressActivity
 import com.sessac.myaitrip.util.repeatOnStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class SplashActivity : AppCompatActivity() {
     private val splashViewModel: SplashViewModel by viewModels() { ViewModelFactory(this) }
@@ -21,19 +25,24 @@ class SplashActivity : AppCompatActivity() {
         // Data Store 값 확인해서 Login or Main으로 이동
         splashViewModel.getUserPreferences()
 
-        repeatOnStarted {
-            splashViewModel.userPreferenceStatus.collect { state ->
-                when(state) {
+        autoLoginSetup()
+    }
+
+    private fun autoLoginSetup() {
+        lifecycleScope.launch {
+            splashViewModel.userPreferenceStatus.collectLatest { state ->
+                when (state) {
                     is UiState.Success -> {
                         val autoLogin = state.data.autoLogin
                         val userId = state.data.userId
 
                         Log.d("Splash", "autoLogin =$autoLogin")
-                        Log.d("Splash","userId = $userId")
+                        Log.d("Splash", "userId = $userId")
 
-                        if( autoLogin && userId.isNotBlank() ) moveToMain()
+                        if (autoLogin && userId.isNotBlank()) moveToMain()
                         else moveToLogin()
                     }
+
                     else -> {}
                 }
             }
@@ -49,6 +58,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun moveToLogin() {
+        Log.e("Splash", "moveToLogin()")
         Intent(this, LoginActivity::class.java).also {
             it.flags =
                 Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
