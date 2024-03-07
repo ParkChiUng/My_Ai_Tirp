@@ -10,7 +10,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
 import com.kakao.sdk.user.UserApiClient
-import com.sessac.myaitrip.MainActivity
 import com.sessac.myaitrip.common.KakaoOAuthClient
 import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.databinding.ActivityLoginBinding
