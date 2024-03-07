@@ -1,5 +1,7 @@
 package com.sessac.myaitrip.presentation.splash
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -7,7 +9,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.sessac.myaitrip.presentation.login.LoginActivity
 import com.sessac.myaitrip.presentation.progress.ProgressActivity
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()

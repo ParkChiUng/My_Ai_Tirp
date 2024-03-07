@@ -22,6 +22,14 @@
     <string name="fall">#가을</string>
     <string name="winter">#겨울</string>
     <string name="latest">최신순</string>
+    <string name="seoul">#서울</string>
+    <string name="incheon">#인천</string>
+    <string name="gyeonggi">#경기도</string>
+    <string name="gangwon">#강원도</string>
+    <string name="chungcheong">#충청도</string>
+    <string name="jeolla">#전라도</string>
+    <string name="gyeongsang">#경상도</string>
+    <string name="jeju">#제주</string>
     <string-array name="areas">
         <item>서울</item>
         <item>경기</item>
@@ -67,5 +75,7 @@
 
     <!-- Gemini -->
     <string name="recommend_rainy">인천 현재 날씨와 현재 시간을 기준으로 인기순 관광지 10개 추천</string>
+    <string name="recommend_popular">"%1$s 가장 인기있는 여행지 포인트 5곳 나열. 결과는 지역명 제외하고 여행지 이름만 제공."</string>
+<!--    <string name="recommend_popular">"%1$s 가장 인기있는 관광지 포인트 50곳 나열. 결과는 관광지 이름만 제공."</string>-->
 
 </resources>

@@ -1,7 +1,9 @@
 package com.sessac.myaitrip.home.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.data.tour.TourItem
 import com.sessac.myaitrip.data.tour.repository.TourRepository
 import kotlinx.coroutines.CoroutineScope
@@ -19,9 +21,22 @@ class HomeViewModel : ViewModel(){
 
     private val dispatchers = CoroutineScope(Dispatchers.IO)
 
-    fun getTourListByTitle(title: List<String>){
+    suspend fun geminiApi(prompt: String){
+
+        val response = MyAiTripApplication.getGeminiModel().generateContent(prompt)
+
+        Log.d("test", "gemini response : ${response.text}")
+
+        // 숫자와 점 제거
+        val cleanedInput = response.text!!.replace(Regex("\\d+\\."), "").trim()
+
+        // 줄바꿈으로 분리
+        val tourList = cleanedInput.split("\n").map { it.trim() }
+
+        Log.d("test", "gemini response : $tourList")
+
         viewModelScope.launch {
-            tourRepository.getTourListByTitle(title).collect {tourList ->
+            tourRepository.getTourListByTitle(tourList).collect { tourList ->
                 _tourList.value = tourList
             }
         }
