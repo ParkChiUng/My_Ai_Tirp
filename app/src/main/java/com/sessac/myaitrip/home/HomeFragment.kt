@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
@@ -199,15 +200,28 @@ class HomeFragment :
 
         popularAdapter = FullCardAdapter({ tourItem ->
             Log.d("test", "tour click item = $tourItem")
+            val bundle = Bundle().apply {
+                putParcelable("tourItem", tourItem)
+            }
+            findNavController().navigate(R.id.action_HomeFragment_to_TourDetailFragment, bundle)
         }, viewLifecycleOwner.lifecycleScope)
 
         recommendAdapter = SmallCardAdapter({ tourItem ->
             Log.d("test", "tour click item = $tourItem")
+            val bundle = Bundle().apply {
+                putParcelable("tourItem", tourItem)
+            }
+            findNavController().navigate(R.id.action_HomeFragment_to_TourDetailFragment, bundle)
         }, viewLifecycleOwner.lifecycleScope)
 
         nearbyAdapter = SmallCardAdapter({ tourItem ->
             Log.d("test", "tour click item = $tourItem")
+            val bundle = Bundle().apply {
+                putParcelable("tourItem", tourItem)
+            }
+            findNavController().navigate(R.id.action_HomeFragment_to_TourDetailFragment, bundle)
         }, viewLifecycleOwner.lifecycleScope)
+
 
         popularRecyclerView.adapter = popularAdapter
         recommendRecyclerView.adapter = recommendAdapter
