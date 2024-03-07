@@ -10,9 +10,16 @@ import com.sessac.myaitrip.api.TourApiService
 import com.sessac.myaitrip.data.tour.repository.TourRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TourDataUpdateService : Service() {
+
+    companion object {
+        val progressFlow =
+            MutableSharedFlow<Pair<Int, Int>>(extraBufferCapacity = 1)  // Pair(progress, max)
+    }
 
     private val apiClient: TourApiService = RetrofitServiceInstance.getTourApiService()
     private lateinit var tourRepository: TourRepository
@@ -69,9 +76,9 @@ class TourDataUpdateService : Service() {
                     getTourItemFromApi()
                 }
             } else {
-                broadCastIntent.putExtra("progress", prefPageNumber)
-                broadCastIntent.putExtra("max", lastPageNumber)
-                sendBroadcast(broadCastIntent)
+                withContext(Dispatchers.Main) {
+                    progressFlow.tryEmit(Pair(prefPageNumber, lastPageNumber))
+                }
             }
         }
     }
@@ -102,10 +109,9 @@ class TourDataUpdateService : Service() {
                     putInt("lastSavePageNumber", prefPageNumber)
                     apply()
                 }
-
-                broadCastIntent.putExtra("progress", prefPageNumber)
-                broadCastIntent.putExtra("max", lastPageNumber)
-                sendBroadcast(broadCastIntent)
+                withContext(Dispatchers.Main) {
+                    progressFlow.tryEmit(Pair(prefPageNumber, lastPageNumber))
+                }
 
                 if (++prefPageNumber > lastPageNumber) break
 
