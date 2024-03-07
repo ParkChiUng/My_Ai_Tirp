@@ -106,8 +106,9 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lyt_register_nickName"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/EditTextStyle"
                 android:layout_width="0dp"
+                app:helperText="@string/helper_register_nickname"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
