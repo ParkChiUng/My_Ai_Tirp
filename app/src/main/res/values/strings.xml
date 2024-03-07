@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">마이AI트립</string>
 
+    <string name = "default_img_url">https://t1.kakaocdn.net/account_images/default_profile.jpeg.twg.thumb.R640x640</string>
+
     <!-- Bottom Navigation Label -->
     <string name="navi_ai">AI 추천</string>
     <string name="navi_map">지도로 보기</string>
@@ -61,7 +63,10 @@
     <string name="login_kakao">카카오로 시작하기</string>
 
     <!-- Sign Up -->
-    <string name="signup_title">회원가입</string>
-    <string name="signup_nickname">닉네임 (최대 8글자)</string>
-    <string name="signup_submit">완료</string>
+    <string name="register_title">회원가입</string>
+    <string name="register_nickname_hint">닉네임</string>
+    <string name="register_submit">완료</string>
+    <string name="register_profile_description">프로필 사진</string>
+    <string name="register_profile_subdescription">(선택)</string>
+    <string name="helper_register_nickname">특수문자를 제외하고 닉네임을 입력해주세요. 최대 8글자입니다.</string>
 </resources>

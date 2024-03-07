@@ -12,4 +12,14 @@
         <item name="cornerSize">8dp</item>
     </style>
 
+    <!-- EditText 테마 -->
+    <style name="EditTextStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <item name="colorControlNormal">@color/main_blue</item>
+        <item name="boxStrokeColor">@color/main_blue</item>
+        <item name="android:textCursorDrawable">@color/main_blue</item>
+
+        <item name="helperTextTextColor">@color/main_blue</item>
+
+    </style>
 </resources>
