@@ -36,5 +36,6 @@
     <dimen name="image_size_width">100dp</dimen>
     <dimen name="image_size_height">100dp</dimen>
     <dimen name="margin_top_photo">10dp</dimen>
+    <dimen name="f_home_nsv_layout">0dp</dimen>
 
 </resources>

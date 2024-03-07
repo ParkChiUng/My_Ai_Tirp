@@ -90,6 +90,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore:24.10.2")    // FireStore Database
     implementation("com.google.firebase:firebase-storage:20.3.0")       // Storage
+    implementation("com.google.firebase:firebase-auth-ktx")             // Firebase Auth
 
     // Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
@@ -99,6 +100,9 @@ dependencies {
 
     // Kakao Login
     implementation ("com.kakao.sdk:v2-user:2.19.0")
+
+    // Data Store
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // room
     val room_version = "2.6.1"
