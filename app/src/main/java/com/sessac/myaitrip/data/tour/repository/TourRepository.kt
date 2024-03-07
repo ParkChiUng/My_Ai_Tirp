@@ -15,14 +15,10 @@ class TourRepository private constructor() {
         tourDao.insertTour(newTourItem)
     }
 
-//    fun getTourListByTitle(title: List<String>): Flow<List<TourItem>> {
-//        return tourDao.getTourListByTitle(title)
-//    }
-
     suspend fun getTourListByTitle(titles: List<String>): Flow<List<TourItem>> {
         val result = mutableListOf<String>()
         for (title in titles) {
-            val tourList = tourDao.getTourListByTitle2(title).first()
+            val tourList = tourDao.getContentIdByTitle(title).first()
             if(tourList.isNotEmpty())
                 result.add(tourList.first())
         }
