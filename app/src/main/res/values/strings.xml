@@ -14,6 +14,7 @@
     <string name="popular_tour">인기 관광지</string>
     <string name="location_tour_recommend">지역 별 추천 관광지</string>
     <string name="nearby_tour_recommend">내 주변 관광지</string>
+    <string name="view_all">모두 보기</string>
 
     <!-- Fragment AI -->
     <string name="ai_recommend_tour">AI 추천 여행지</string>
