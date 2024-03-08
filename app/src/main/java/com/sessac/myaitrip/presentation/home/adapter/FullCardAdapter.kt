@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.databinding.ItemFullTourImgCardBinding
+import com.sessac.myaitrip.util.GlideUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -38,9 +39,12 @@ class FullCardAdapter(
         fun widgetBinding(tourItem: TourItem) {
             tourItem.let { tour ->
                 with(binding) {
-                    Glide.with(ivTour.context)
-                        .load(tour.firstImage)
-                        .into(ivTour)
+//                    Glide.with(ivTour.context)
+//                        .load(tour.firstImage)
+//                        .into(ivTour)
+                    tour.firstImage?.let {
+                        GlideUtil.loadImage(ivTour.context, tour.firstImage, ivTour)
+                    }
 
                     tvTourName.text = tour.title
 
