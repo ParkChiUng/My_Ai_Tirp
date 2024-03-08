@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.sessac.myaitrip.data.UserPreferences
+import com.sessac.myaitrip.data.entities.local.UserPreferencesData
 import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource.UserPreferenceKeys.KEY_USER_AUTO_LOGIN
 import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource.UserPreferenceKeys.KEY_USER_ID
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +31,7 @@ class UserLocalDataSource(
         const val DEFAULT_USER_ID = ""
     }
 
-    override suspend fun getUserPreferences(): Flow<UserPreferences> = userDataStore.data
+    override suspend fun getUserPreferences(): Flow<UserPreferencesData> = userDataStore.data
         .catch { exception ->
             // dataStore.data throws an IOException when an error is encountered when reading data
             if (exception is IOException) {
@@ -44,10 +44,10 @@ class UserLocalDataSource(
             mapUserPreferences(preferences)
         }
 
-    private fun mapUserPreferences(preferences: Preferences): UserPreferences {
+    private fun mapUserPreferences(preferences: Preferences): UserPreferencesData {
         val autoLogin = preferences[KEY_USER_AUTO_LOGIN] ?: DEFAULT_AUTO_LOGIN // 자동 로그인 여부
         val userId = preferences[KEY_USER_ID] ?: DEFAULT_USER_ID // 회원 ID
-        return UserPreferences(userId, autoLogin)
+        return UserPreferencesData(userId, autoLogin)
 }
 
     // 자동 로그인 여부

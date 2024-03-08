@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.AuthResult
 import com.sessac.myaitrip.presentation.common.UiState
-import com.sessac.myaitrip.data.UserPreferences
+import com.sessac.myaitrip.data.entities.local.UserPreferencesData
 import com.sessac.myaitrip.data.repository.user.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,7 @@ class LoginViewModel(
     private val userRepository: UserRepository,
 ) : ViewModel() {
 
-    private val _userPreferenceStatus = MutableStateFlow<UiState<UserPreferences>>(UiState.Empty)
+    private val _userPreferenceStatus = MutableStateFlow<UiState<UserPreferencesData>>(UiState.Empty)
     val userPreferenceStatus get() = _userPreferenceStatus.asStateFlow()
 
     private val _loginStatus = MutableStateFlow<UiState<AuthResult>>(UiState.Empty)

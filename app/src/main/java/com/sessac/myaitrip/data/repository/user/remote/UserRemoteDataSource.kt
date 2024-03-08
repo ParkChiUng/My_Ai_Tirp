@@ -3,14 +3,12 @@ package com.sessac.myaitrip.data.repository.user.remote
 import android.net.Uri
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.QuerySnapshot
 import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.presentation.common.UiState
-import com.sessac.myaitrip.data.entities.User
+import com.sessac.myaitrip.data.entities.remote.UserData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class UserRemoteDataSource: IUserRemoteDataSource {
@@ -46,7 +44,7 @@ class UserRemoteDataSource: IUserRemoteDataSource {
                     userProfileImgUrl = it
 
                     // 유저 정보 생성
-                    val userInfo = User(
+                    val userInfo = UserData(
                         id = user.uid,
                         email = email,
                         nickname = nickname,
@@ -68,7 +66,7 @@ class UserRemoteDataSource: IUserRemoteDataSource {
                             userProfileImgUrl = it.toString()
 
                             // 유저 정보 생성
-                            val userInfo = User(
+                            val userInfo = UserData(
                                 id = user.uid,
                                 email = email,
                                 nickname = nickname,
@@ -86,7 +84,7 @@ class UserRemoteDataSource: IUserRemoteDataSource {
     }
 
     private fun FirebaseUser.addUserInfo(
-        userInfo: User
+        userInfo: UserData
     ) {
         fireStore.collection("user").also { userDB ->
             with(userDB.document(this.uid)) {
