@@ -27,13 +27,20 @@ android {
         buildConfigField("String","KAKAO_NATIVE_KEY",
             "\"${getApiKey("KAKAO_NATIVE_KEY")}\"")
 
-        manifestPlaceholders["KAKAO_NATIVE_KEY"] = getApiKey("KAKAO_NATIVE_KEY")
-
         buildConfigField("String","TOUR_API_SERVICE_KEY",
             "\"${getApiKey("TOUR_API_SERVICE_KEY")}\"")
 
         buildConfigField("String","GEMINI_API_KEY",
             "\"${getApiKey("GEMINI_API_KEY")}\"")
+
+        buildConfigField("String","NAVER_CLIENT_ID",
+            "\"${getApiKey("NAVER_CLIENT_ID")}\"")
+
+        buildConfigField("String","NAVER_CLIENT_SECRET",
+            "\"${getApiKey("NAVER_CLIENT_SECRET")}\"")
+
+        manifestPlaceholders["KAKAO_NATIVE_KEY"] = getApiKey("KAKAO_NATIVE_KEY")
+        manifestPlaceholders["NAVER_CLIENT_ID"] = getApiKey("NAVER_CLIENT_ID")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -116,4 +123,7 @@ dependencies {
 
     // Gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.2.1")
+
+    // 네이버 지도 SDK
+    implementation("com.naver.maps:map-sdk:3.17.0")
 }

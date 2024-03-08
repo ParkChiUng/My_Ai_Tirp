@@ -12,6 +12,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.kakao.sdk.common.KakaoSdk
+import com.naver.maps.map.NaverMapSdk
 import com.sessac.myaitrip.BuildConfig
 import com.sessac.myaitrip.data.AppDatabase
 
@@ -43,6 +44,7 @@ class MyAiTripApplication: Application() {
         fireStorage = Firebase.storage
 //        Log.e("keyHash", "keyHash = ${Utility.getKeyHash(this)}")
         KakaoSdk.init(this, BuildConfig.KAKAO_NATIVE_KEY)
+        NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient(BuildConfig.NAVER_CLIENT_ID)
         appName = applicationInfo.loadLabel(packageManager).toString()
         database = AppDatabase.getDatabase(this)
 
