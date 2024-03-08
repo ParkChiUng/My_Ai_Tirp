@@ -73,42 +73,42 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/sunny"
-                        style="@style/Widget.MaterialComponents.Chip.Choice" />
+                        style="@style/MyCustomChip" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_rainy"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/rainy"
-                        style="@style/Widget.MaterialComponents.Chip.Choice" />
+                        style="@style/MyCustomChip" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_spring"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/spring"
-                        style="@style/Widget.MaterialComponents.Chip.Choice" />
+                        style="@style/MyCustomChip" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_summer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/summer"
-                        style="@style/Widget.MaterialComponents.Chip.Choice" />
+                        style="@style/MyCustomChip" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_fall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/fall"
-                        style="@style/Widget.MaterialComponents.Chip.Choice" />
+                        style="@style/MyCustomChip" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_winter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/winter"
-                        style="@style/Widget.MaterialComponents.Chip.Choice" />
+                        style="@style/MyCustomChip" />
                 </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>
 

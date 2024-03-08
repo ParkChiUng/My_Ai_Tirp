@@ -22,4 +22,28 @@
         <item name="helperTextTextColor">@color/main_blue</item>
 
     </style>
+
+    <style name="MyCustomChip" parent="Base.Widget.MaterialComponents.Chip">
+        <item name="android:checkable">true</item>
+        <item name="android:focusable">false</item>
+
+        <item name="chipIconVisible">false</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="closeIconVisible">false</item>
+
+        <item name="chipStrokeWidth">0.5dp</item>
+        <item name="chipStrokeColor">@color/stroke_color_custom_chip</item>
+
+        <item name="android:textColor">@color/text_color_custom_chip</item>
+        <item name="android:textAppearance">@style/CustomChipTextAppearance</item>
+
+        <item name="chipIconTint">@color/text_color_custom_chip</item>
+        <item name="rippleColor">@null</item>
+        <item name="chipBackgroundColor">@color/white</item>
+    </style>
+
+    <style name="CustomChipTextAppearance" parent="TextAppearance.MaterialComponents.Chip">
+        <item name="android:textSize">15sp</item>
+    </style>
+
 </resources>
