@@ -1,4 +1,4 @@
-package com.sessac.myaitrip.fragment
+package com.sessac.myaitrip.tourDetail
 
 import android.os.Bundle
 import android.view.LayoutInflater

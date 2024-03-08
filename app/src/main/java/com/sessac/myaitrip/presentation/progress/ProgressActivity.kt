@@ -26,26 +26,36 @@ class ProgressActivity :
 
         lifecycleScope.launch {
             TourDataUpdateService.progressFlow.collect { (progress, max) ->
-                // 진행 상태 업데이트
-                val percentage = (progress.toFloat() / max.toFloat() * 100).toInt()
-                with(progressBar) {
-                    this.max = max
-                    this.progress = progress
-                }
-
-                with(binding) {
-                    progressPercent.text = "$percentage%"
-                    progressCounting.text = "$progress / $max"
-                }
-
-                if (progress == max) {
-                    Intent(this@ProgressActivity, MainActivity::class.java).also {
-                        it.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(it)
+                when(max) {
+                    -1 -> startMainActivity()
+                    else -> {
+                        updateProgress(progress, max)
+                        if (progress == max) {
+                            startMainActivity()
+                        }
                     }
                 }
             }
+        }
+    }
+
+    private fun startMainActivity() {
+        Intent(this@ProgressActivity, MainActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(it)
+        }
+    }
+
+    private fun updateProgress(progress: Int, max: Int) {
+        val percentage = (progress.toFloat() / max.toFloat() * 100).toInt()
+        with(progressBar) {
+            this.max = max
+            this.progress = progress
+        }
+
+        with(binding) {
+            progressPercent.text = "$percentage%"
+            progressCounting.text = "$progress / $max"
         }
     }
 }

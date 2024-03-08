@@ -65,7 +65,7 @@
 
     <fragment
         android:id="@+id/TourDetailFragment"
-        android:name="com.sessac.myaitrip.fragment.TourDetailFragment"
+        android:name="com.sessac.myaitrip.tourDetail.TourDetailFragment"
         android:label="fragment_tourDetail"
         tools:layout="@layout/fragment_tour_detail">
     </fragment>

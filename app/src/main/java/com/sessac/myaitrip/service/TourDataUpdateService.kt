@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.IBinder
+import android.util.Log
 import com.sessac.myaitrip.api.RetrofitServiceInstance
 import com.sessac.myaitrip.api.TourApiService
 import com.sessac.myaitrip.data.tour.repository.TourRepository
@@ -63,22 +64,29 @@ class TourDataUpdateService : Service() {
      *
      */
     private suspend fun checkTourItemFromApi() {
-        val response = apiClient.getAllData(1, 1)
-        val apiResultCode = response.response?.header?.resultCode
+        try {
+            val response = apiClient.getAllData(1, 1)
+            val apiResultCode = response.response?.header?.resultCode
 
-        if (apiResultCode == "0000") {
-            val totalCount: Int = response.response?.body?.totalCount ?: 0
-            val lastPageNumber = (totalCount + (numOfRows - 1)) / numOfRows
+            if (apiResultCode == "0000") {
+                val totalCount: Int = response.response?.body?.totalCount ?: 0
+                val lastPageNumber = (totalCount + (numOfRows - 1)) / numOfRows
 
-            //
-            if (prefTotalCount == -1 || totalCount > prefTotalCount || lastPageNumber != prefPageNumber) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    getTourItemFromApi()
+                if (prefTotalCount == -1 || totalCount > prefTotalCount || lastPageNumber != prefPageNumber) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        getTourItemFromApi()
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        progressFlow.tryEmit(Pair(prefPageNumber, lastPageNumber))
+                    }
                 }
-            } else {
-                withContext(Dispatchers.Main) {
-                    progressFlow.tryEmit(Pair(prefPageNumber, lastPageNumber))
-                }
+            }
+        }catch (e: Exception){
+            Log.d("test", "api error : $e")
+
+            withContext(Dispatchers.Main) {
+                progressFlow.tryEmit(Pair(-1, -1))
             }
         }
     }
@@ -102,16 +110,17 @@ class TourDataUpdateService : Service() {
 
                 if (tourItems.isNullOrEmpty()) break
 
-                tourRepository.insertTour(tourItems)
-
                 with(sharedPref.edit()) {
                     putInt("lastSaveTotalCount", totalCount)
                     putInt("lastSavePageNumber", prefPageNumber)
                     apply()
                 }
+
                 withContext(Dispatchers.Main) {
                     progressFlow.tryEmit(Pair(prefPageNumber, lastPageNumber))
                 }
+
+                tourRepository.insertTour(tourItems)
 
                 if (++prefPageNumber > lastPageNumber) break
 
