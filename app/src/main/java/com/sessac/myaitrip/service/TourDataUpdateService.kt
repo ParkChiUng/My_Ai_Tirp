@@ -6,9 +6,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.IBinder
 import android.util.Log
-import com.sessac.myaitrip.api.RetrofitServiceInstance
-import com.sessac.myaitrip.api.TourApiService
-import com.sessac.myaitrip.data.tour.repository.TourRepository
+import com.sessac.myaitrip.network.RetrofitServiceInstance
+import com.sessac.myaitrip.data.api.TourApiService
+import com.sessac.myaitrip.data.repository.tour.TourRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

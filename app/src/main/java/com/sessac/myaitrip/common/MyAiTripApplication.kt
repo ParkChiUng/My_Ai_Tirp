@@ -3,7 +3,6 @@ package com.sessac.myaitrip.common
 import android.app.Application
 import android.content.Context
 import com.google.ai.client.generativeai.GenerativeModel
-import androidx.datastore.dataStore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -13,7 +12,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.kakao.sdk.common.KakaoSdk
 import com.sessac.myaitrip.BuildConfig
-import com.sessac.myaitrip.data.AppDatabase
+import com.sessac.myaitrip.data.database.AppDatabase
 
 class MyAiTripApplication: Application() {
     private lateinit var dataStore: MyAiTripDataStore

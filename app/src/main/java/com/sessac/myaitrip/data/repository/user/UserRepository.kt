@@ -3,7 +3,7 @@ package com.sessac.myaitrip.data.repository.user
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuthException
 import com.sessac.myaitrip.presentation.common.UiState
-import com.sessac.myaitrip.data.UserPreferences
+import com.sessac.myaitrip.data.entities.local.UserPreferencesData
 import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
 import com.sessac.myaitrip.data.repository.user.remote.UserRemoteDataSource
 import kotlinx.coroutines.delay
@@ -15,7 +15,7 @@ class UserRepository(
     private val userLocalDataSource: UserLocalDataSource,
     private val userRemoteDataSource: UserRemoteDataSource
 ) {
-    suspend fun getUserPreferences(): Flow<UserPreferences> = userLocalDataSource.getUserPreferences()
+    suspend fun getUserPreferences(): Flow<UserPreferencesData> = userLocalDataSource.getUserPreferences()
 
     suspend fun updatePreferenceAutoLogin(autoLogin: Boolean) {
         userLocalDataSource.updatePreferenceAutoLogin(autoLogin)
