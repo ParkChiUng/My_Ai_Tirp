@@ -12,7 +12,10 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.kakao.sdk.common.KakaoSdk
 import com.sessac.myaitrip.BuildConfig
+import com.sessac.myaitrip.data.api.TourApiService
 import com.sessac.myaitrip.data.database.AppDatabase
+import com.sessac.myaitrip.network.RetrofitServiceInstance
+import retrofit2.Retrofit
 
 class MyAiTripApplication: Application() {
     private lateinit var dataStore: MyAiTripDataStore
@@ -23,15 +26,18 @@ class MyAiTripApplication: Application() {
         private lateinit var generativeModel: GenerativeModel
         lateinit var appName: String
 
-
         private lateinit var firebaseAuth: FirebaseAuth
         private lateinit var fireStore: FirebaseFirestore
         private lateinit var fireStorage: FirebaseStorage
+
+        private lateinit var tourService: TourApiService
 
         fun getInstance(): MyAiTripApplication = myAiTripApplication
         fun getContext(): Context = getInstance().applicationContext
         fun getRoomDatabase() = database
         fun getGeminiModel() = generativeModel
+
+        fun getTourApiService() = tourService
     }
 
     override fun onCreate() {
@@ -44,6 +50,7 @@ class MyAiTripApplication: Application() {
         KakaoSdk.init(this, BuildConfig.KAKAO_NATIVE_KEY)
         appName = applicationInfo.loadLabel(packageManager).toString()
         database = AppDatabase.getDatabase(this)
+        tourService = RetrofitServiceInstance.getTourApiService()
 
         generativeModel = GenerativeModel(
             // For text-only input, use the gemini-pro model

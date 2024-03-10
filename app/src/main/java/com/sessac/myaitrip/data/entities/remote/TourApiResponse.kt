@@ -5,23 +5,23 @@ import com.sessac.myaitrip.data.entities.TourItem
 
 data class ApiResponse<T>(
     @SerializedName("response")
-    var response: Response<T>? = null
+    var response: Response<T>
 )
 
 data class Response<T>(
     @SerializedName("header")
-    var header: Header? = null,
+    var header: Header,
 
     @SerializedName("body")
-    var body: Body<T>? = null
+    var body: Body<T>
 )
 
 data class Header(
     @SerializedName("resultCode")
-    var resultCode: String? = null,
+    var resultCode: String,
 
     @SerializedName("resultMsg")
-    var resultMsg: String? = null
+    var resultMsg: String
 )
 
 data class Body<T>(
