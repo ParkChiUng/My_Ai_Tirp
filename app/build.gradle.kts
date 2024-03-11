@@ -126,4 +126,7 @@ dependencies {
 
     // 네이버 지도 SDK
     implementation("com.naver.maps:map-sdk:3.17.0")
+
+    // 현재 위치
+    implementation("com.google.android.gms:play-services-location:20.0.0")
 }
