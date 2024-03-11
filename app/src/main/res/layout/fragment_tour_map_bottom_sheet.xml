@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rectangle_fill_white_border_r20"
+    android:maxHeight="300dp"
+    android:paddingBottom="16dp"
+    app:behavior_draggable="true"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="124dp"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/indicator_bottom_sheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_bottom_sheet_indicator"
+        app:layout_constraintBottom_toTopOf="@id/tv_tour_map_bottom_sheet_loc_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_tour_map_bottom_sheet_loc_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/black"
+        android:maxLines="1"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/indicator_bottom_sheet"
+        tools:text="서울시 동대문구" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_tour_map_bottom_sheet_weather"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="6dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@id/tv_tour_map_bottom_sheet_loc_name"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@id/tv_tour_map_bottom_sheet_loc_temperature"
+        app:layout_constraintTop_toTopOf="@id/tv_tour_map_bottom_sheet_loc_name"
+        tools:src="@drawable/ic_weather_snowing" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_tour_map_bottom_sheet_loc_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:maxLines="1"
+        app:layout_constraintBottom_toBottomOf="@id/tv_tour_map_bottom_sheet_loc_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="온도 4°C" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_tour_map_bottom_sheet_loc_dust"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:maxLines="1"
+        app:layout_constraintEnd_toEndOf="@id/tv_tour_map_bottom_sheet_loc_temperature"
+        app:layout_constraintTop_toBottomOf="@id/tv_tour_map_bottom_sheet_loc_temperature"
+        tools:text="미세먼지 좋음" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_tour_map_bottom_sheet_tag"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        tools:listitem="@layout/item_tour_map_bottom_sheet_tag"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="@id/tv_tour_map_bottom_sheet_loc_temperature"
+        app:layout_constraintStart_toStartOf="@id/tv_tour_map_bottom_sheet_loc_name"
+        app:layout_constraintTop_toBottomOf="@id/tv_tour_map_bottom_sheet_loc_dust" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_tour_map_bottom_sheet_tour"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        tools:listitem="@layout/item_tour_map_bottom_sheet_tour"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="@+id/rv_tour_map_bottom_sheet_tag"
+        app:layout_constraintStart_toStartOf="@id/rv_tour_map_bottom_sheet_tag"
+        app:layout_constraintTop_toBottomOf="@+id/rv_tour_map_bottom_sheet_tag" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

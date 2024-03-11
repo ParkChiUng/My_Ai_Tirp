@@ -94,7 +94,7 @@
                     android:backgroundTint="@color/white"
                     android:checked="true"
                     android:text="@string/seoul"
-                    style="@style/Widget.MaterialComponents.Chip.Choice" />
+                    style="@style/MyCustomChip" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_incheon"
@@ -102,7 +102,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
                     android:text="@string/incheon"
-                    style="@style/Widget.MaterialComponents.Chip.Choice" />
+                    style="@style/MyCustomChip" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_gyeonggi"
@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
                     android:text="@string/gyeonggi"
-                    style="@style/Widget.MaterialComponents.Chip.Choice" />
+                    style="@style/MyCustomChip" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_gangwon"
@@ -118,7 +118,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
                     android:text="@string/gangwon"
-                    style="@style/Widget.MaterialComponents.Chip.Choice" />
+                    style="@style/MyCustomChip" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_chungcheong"
@@ -126,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
                     android:text="@string/chungcheong"
-                    style="@style/Widget.MaterialComponents.Chip.Choice" />
+                    style="@style/MyCustomChip" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_jeolla"
@@ -134,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
                     android:text="@string/jeolla"
-                    style="@style/Widget.MaterialComponents.Chip.Choice" />
+                    style="@style/MyCustomChip" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_gyeongsang"
@@ -142,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
                     android:text="@string/gyeongsang"
-                    style="@style/Widget.MaterialComponents.Chip.Choice" />
+                    style="@style/MyCustomChip" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_jeju"
@@ -150,7 +150,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
                     android:text="@string/jeju"
-                    style="@style/Widget.MaterialComponents.Chip.Choice" />
+                    style="@style/MyCustomChip" />
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
 
