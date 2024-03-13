@@ -14,13 +14,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:src="@drawable/ic_location"
+        android:src="@drawable/selector_btn_location"
         android:backgroundTint="@color/white"
-        style="@style/tourImgRound"
+        android:background="@drawable/oval_white"
+        android:padding="4dp"
         app:layout_constraintBottom_toTopOf="@id/bottom_sheet_map"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <include
+        android:visibility="gone"
         android:id="@+id/bottom_sheet_map"
         layout="@layout/fragment_tour_map_bottom_sheet"
         android:layout_width="match_parent"
