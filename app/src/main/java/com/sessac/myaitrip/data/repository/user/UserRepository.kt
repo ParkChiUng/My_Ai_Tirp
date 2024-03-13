@@ -2,10 +2,10 @@ package com.sessac.myaitrip.data.repository.user
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuthException
-import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.data.entities.local.UserPreferencesData
 import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
 import com.sessac.myaitrip.data.repository.user.remote.UserRemoteDataSource
+import com.sessac.myaitrip.presentation.common.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -57,9 +57,4 @@ class UserRepository(
         emit(UiState.Loading)
         emit(userRemoteDataSource.checkExistNickname(nickname))
     }.catch { exception -> emit(UiState.Error(exception, errorMessage = exception.localizedMessage)) }*/
-
-    suspend fun checkPermission() = flow {
-        emit(UiState.Loading)
-        emit(userLocalDataSource.checkPermission())
-    }.catch { exception -> emit(UiState.Error(exception, errorMessage = exception.localizedMessage)) }
 }

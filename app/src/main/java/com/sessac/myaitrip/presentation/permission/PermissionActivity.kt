@@ -2,19 +2,15 @@ package com.sessac.myaitrip.presentation.permission
 
 import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.sessac.myaitrip.presentation.common.UiState
-import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.login.LoginActivity
-import kotlinx.coroutines.flow.collectLatest
+import com.sessac.myaitrip.util.PermissionUtil
 import kotlinx.coroutines.launch
 
 class PermissionActivity : AppCompatActivity() {
-
-    private val permissionViewModel: PermissionViewModel by viewModels{ ViewModelFactory(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -34,51 +30,44 @@ class PermissionActivity : AppCompatActivity() {
 
     private fun setupCheckPermissionStatusCollection() {
         lifecycleScope.launch {
-            permissionViewModel.checkPermissionStatus.collectLatest {
-                when (it) {
-                    is UiState.Loading -> {
+            val permissionResult = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                PermissionUtil.requestPermissionResult(
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            } else {
+                PermissionUtil.requestPermissionResult(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            }
 
-                    }
+            moveToLogin()
 
-                    is UiState.Success -> {
-                        it.data.deniedPermissions?.let { deniedPermissionList ->
-                            deniedPermissionList.forEach { deniedPermission ->
-                                when (deniedPermission) {
-                                    Manifest.permission.READ_EXTERNAL_STORAGE -> {
-
-                                    }
-
-                                    Manifest.permission.READ_MEDIA_IMAGES -> {
-
-                                    }
-
-                                    Manifest.permission.ACCESS_FINE_LOCATION -> {
-
-                                    }
-
-                                    Manifest.permission.ACCESS_COARSE_LOCATION -> {
-
-                                    }
-
-                                    else -> {}
-                                }
-                            }
+            // TODO. 허용되지 않은 퍼미션에 대해 처리할 것이 있으면?
+            /*permissionResult.deniedPermissions?.let { deniedList ->
+                deniedList.forEach { deniedPermission ->
+                    when(deniedPermission) {
+                        Manifest.permission.READ_MEDIA_IMAGES -> {
 
                         }
 
-                        moveToLogin()
-                    }
+                        Manifest.permission.READ_EXTERNAL_STORAGE -> {
 
-                    is UiState.Error -> {
-                        // TODO. Error Handling
-                        moveToLogin()
-                    }
+                        }
 
-                    else -> {}
+                        Manifest.permission.ACCESS_FINE_LOCATION -> {
+
+                        }
+
+                        Manifest.permission.ACCESS_COARSE_LOCATION -> {
+
+                        }
+                    }
                 }
-            }
+            }*/
         }
     }
-
-
 }

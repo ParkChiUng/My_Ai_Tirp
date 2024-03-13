@@ -1,7 +1,9 @@
 package com.sessac.myaitrip.presentation.register
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,6 +19,7 @@ import com.sessac.myaitrip.presentation.common.ViewBindingBaseActivity
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.progress.ProgressActivity
 import com.sessac.myaitrip.util.GlideUtil
+import com.sessac.myaitrip.util.PermissionUtil
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -183,7 +186,7 @@ class RegisterActivity : ViewBindingBaseActivity<ActivityRegisterBinding>(
         }
     }
 
-    private val imageResult = registerForActivityResult(
+    private val imageResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -200,10 +203,23 @@ class RegisterActivity : ViewBindingBaseActivity<ActivityRegisterBinding>(
             }
         }
     }
+
     private fun navigateGallery() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
-        imageResult.launch(intent)
+        lifecycleScope.launch {
+            val permissionResult = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                PermissionUtil.requestPermissionResult(Manifest.permission.READ_MEDIA_IMAGES)
+            } else {
+                PermissionUtil.requestPermissionResult(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+
+            if(permissionResult.isGranted) {
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "image/*"
+                imageResultLauncher.launch(intent)
+            } else {
+                showToast("사진 권한을 허용해주세요.")
+            }
+        }
     }
 
     private fun initImageOnClick() {
