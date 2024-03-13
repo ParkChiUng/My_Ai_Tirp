@@ -49,7 +49,7 @@ class ProgressViewModel(
     fun insertTour(tourItem: List<TourItem>) {
         viewModelScope.launch {
             withContext(dispatchers.coroutineContext) {
-                tourRepository.insertTour(tourItem)
+                tourRepository.insertTourListToRoom(tourItem)
             }
         }
     }
