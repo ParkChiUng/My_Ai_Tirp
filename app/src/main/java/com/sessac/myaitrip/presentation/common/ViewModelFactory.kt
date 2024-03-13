@@ -4,12 +4,12 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.sessac.myaitrip.common.MyAiTripApplication
-import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
 import com.sessac.myaitrip.data.repository.user.UserRepository
+import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
 import com.sessac.myaitrip.data.repository.user.remote.UserRemoteDataSource
 import com.sessac.myaitrip.presentation.login.LoginViewModel
+import com.sessac.myaitrip.presentation.permission.PermissionViewModel
 import com.sessac.myaitrip.presentation.register.RegisterViewModel
-import com.sessac.myaitrip.presentation.splash.SplashViewModel
 
 class ViewModelFactory(private val context: Context): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -24,12 +24,12 @@ class ViewModelFactory(private val context: Context): ViewModelProvider.Factory 
                 LoginViewModel(userRepository) as T
             }
 
-            modelClass.isAssignableFrom(SplashViewModel::class.java) -> {
+            modelClass.isAssignableFrom(PermissionViewModel::class.java) -> {
                 val userLocalDataSource = UserLocalDataSource(dataStore.userDataStore)
                 val userRemoteDataSource = UserRemoteDataSource()
                 val userRepository = UserRepository(userLocalDataSource, userRemoteDataSource)
 
-                SplashViewModel(userRepository) as T
+                PermissionViewModel(userRepository) as T
             }
 
             modelClass.isAssignableFrom(RegisterViewModel::class.java) -> {

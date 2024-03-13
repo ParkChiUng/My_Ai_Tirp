@@ -57,4 +57,9 @@ class UserRepository(
         emit(UiState.Loading)
         emit(userRemoteDataSource.checkExistNickname(nickname))
     }.catch { exception -> emit(UiState.Error(exception, errorMessage = exception.localizedMessage)) }*/
+
+    suspend fun checkPermission() = flow {
+        emit(UiState.Loading)
+        emit(userLocalDataSource.checkPermission())
+    }.catch { exception -> emit(UiState.Error(exception, errorMessage = exception.localizedMessage)) }
 }

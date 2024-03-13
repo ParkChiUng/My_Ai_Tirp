@@ -19,6 +19,7 @@ import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.progress.ProgressActivity
 import com.sessac.myaitrip.presentation.register.RegisterActivity
 import com.sessac.myaitrip.util.showToast
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class LoginActivity :
@@ -32,6 +33,7 @@ class LoginActivity :
     private var userNickname: String? = null
     private var userProfileImageUrl: String? = null
 
+    private val TAG = LoginActivity::class.java.name
     private val KAKAO_TAG = "카카오 로그인"
     private val KAKAO_ERROR_TAG = "카카오 로그인 에러"
     private val kakaoCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
@@ -134,7 +136,7 @@ class LoginActivity :
 
     }
 
-    private fun handleUiState(state: UiState<AuthResult>) {
+    private fun handleLoginState(state: UiState<AuthResult>) {
         Log.e("LoginState", "HandleUiState()")
         when (state) {
             is UiState.Success -> {
@@ -227,14 +229,41 @@ class LoginActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setupKakaoLoginClicks()
+        setupAutoLoginStatusCollection()
+        setupLoginStatusCollection()
+    }
+
+    private fun setupAutoLoginStatusCollection() {
+        lifecycleScope.launch {
+            loginViewModel.userPreferenceStatus.collectLatest { state ->
+                when (state) {
+                    is UiState.Success -> {
+                        val autoLogin = state.data.autoLogin
+                        val userId = state.data.userId
+
+                        Log.d(TAG, "autoLogin =$autoLogin")
+                        Log.d(TAG, "userId = $userId")
+
+                        if (autoLogin && userId.isNotBlank()) moveToMain()
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
+
+
+    private fun setupKakaoLoginClicks() {
         with(binding) {
             btnLoginKakao.throttleClick().bind {
                 KakaoOAuthClient.loginWithKakao(this@LoginActivity, kakaoCallback)
             }
         }
-
-        setupLoginStatusCollection()
     }
+
     override fun onResume() {
         super.onResume()
         userNickname = null
@@ -244,7 +273,7 @@ class LoginActivity :
     private fun setupLoginStatusCollection() {
         lifecycleScope.launch {
             loginViewModel.loginStatus.collect { state ->
-                handleUiState(state)
+                handleLoginState(state)
             }
         }
     }

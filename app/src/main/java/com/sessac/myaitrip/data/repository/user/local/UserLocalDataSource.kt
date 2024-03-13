@@ -1,5 +1,7 @@
 package com.sessac.myaitrip.data.repository.user.local
 
+import android.Manifest
+import android.os.Build
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -7,9 +9,12 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.gun0912.tedpermission.TedPermissionResult
+import com.gun0912.tedpermission.coroutine.TedPermission
 import com.sessac.myaitrip.data.entities.local.UserPreferencesData
 import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource.UserPreferenceKeys.KEY_USER_AUTO_LOGIN
 import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource.UserPreferenceKeys.KEY_USER_ID
+import com.sessac.myaitrip.presentation.common.UiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -95,5 +100,29 @@ class UserLocalDataSource(
         userDataStore.edit { preferences ->
             preferences[KEY_USER_ID] = DEFAULT_USER_ID
         }
+    }
+
+    /**
+     * Check permission
+     * 이미지, 위치 권한을 요청 후 거절한 권한에 대한 처리
+     */
+    override suspend fun checkPermission(): UiState<TedPermissionResult> {
+        val permissionResult = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            TedPermission.create()
+                .setPermissions(
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ).check()
+        } else {
+            TedPermission.create()
+                .setPermissions(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ).check()
+        }
+
+        return UiState.Success(permissionResult)
     }
 }
