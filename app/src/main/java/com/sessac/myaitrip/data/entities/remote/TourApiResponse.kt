@@ -1,6 +1,8 @@
 package com.sessac.myaitrip.data.entities.remote
 
 import com.google.gson.annotations.SerializedName
+import com.sessac.myaitrip.data.entities.TourDetailItem
+import com.sessac.myaitrip.data.entities.TourImageItem
 import com.sessac.myaitrip.data.entities.TourItem
 
 data class ApiResponse<T>(
@@ -41,4 +43,14 @@ data class Body<T>(
 data class TourItems(
     @SerializedName("item")
     var item: List<TourItem>? = null
+)
+
+data class TourDetailItems(
+    @SerializedName("item")
+    var item: List<TourDetailItem>? = null
+)
+
+data class TourImageItems(
+    @SerializedName("item")
+    var item: List<TourImageItem>? = null
 )

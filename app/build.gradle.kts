@@ -127,4 +127,7 @@ dependencies {
 
     // 네이버 지도 SDK
     implementation("com.naver.maps:map-sdk:3.17.0")
+
+    // circle indicator
+    implementation("me.relex:circleindicator:2.1.6")
 }

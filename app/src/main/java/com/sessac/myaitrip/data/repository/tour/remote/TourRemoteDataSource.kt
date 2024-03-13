@@ -3,6 +3,8 @@ package com.sessac.myaitrip.data.repository.tour.remote
 import android.util.Log
 import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.data.entities.remote.Body
+import com.sessac.myaitrip.data.entities.remote.TourDetailItems
+import com.sessac.myaitrip.data.entities.remote.TourImageItems
 import com.sessac.myaitrip.data.entities.remote.TourItems
 import com.sessac.myaitrip.presentation.common.UiState
 import kotlinx.coroutines.CoroutineScope
@@ -14,6 +16,14 @@ class TourRemoteDataSource : ITourRemoteDataSource {
     private val fireStore = MyAiTripApplication.getInstance().getFireStore()
 
     override suspend fun getTourFromAPI(tourItems: Body<TourItems>): UiState<Body<TourItems>> {
+        return UiState.Success(tourItems)
+    }
+
+    override suspend fun getTourDetailFromAPI(tourItems: Body<TourDetailItems>): UiState<Body<TourDetailItems>> {
+        return UiState.Success(tourItems)
+    }
+
+    override suspend fun getTourImageFromAPI(tourItems: Body<TourImageItems>): UiState<Body<TourImageItems>> {
         return UiState.Success(tourItems)
     }
 
@@ -36,7 +46,7 @@ class TourRemoteDataSource : ITourRemoteDataSource {
 
                 UiState.Success(resultList)
             } catch (exception: Exception) {
-                Log.d("TAG", "get failed with ", exception)
+                Log.d("TAG", "get failed ", exception)
                 UiState.Error(exception)
             }
         }.await()
@@ -65,7 +75,7 @@ class TourRemoteDataSource : ITourRemoteDataSource {
 
                 UiState.Success(resultList)
             } catch (exception: Exception) {
-                Log.d("TAG", "get failed with ", exception)
+                Log.d("TAG", "get failed ", exception)
                 UiState.Error(exception)
             }
         }.await()
