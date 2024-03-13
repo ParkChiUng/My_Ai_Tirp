@@ -31,27 +31,6 @@ class HomeViewModel(
     private val _nearbyTourList = MutableStateFlow<List<TourItem>>(emptyList())
     val nearbyTourList: StateFlow<List<TourItem>> = _nearbyTourList
 
-//    suspend fun geminiApi(prompt: String){
-//
-//        try {
-//            val response = MyAiTripApplication.getGeminiModel().generateContent(prompt)
-//
-//            // 숫자와 점 제거
-//            val cleanedInput = response.text!!.replace(Regex("\\d+\\."), "").trim()
-//
-//            // 줄 바꿈으로 분리
-//            val tourList = cleanedInput.split("\n").map { it.trim() }
-//
-//            viewModelScope.launch {
-//                tourRepository.getTourListByTitle(tourList).collect { tourList ->
-//                    _tourList.value = tourList
-//                }
-//            }
-//        }catch (e: Exception){
-//            Log.e("Gemini API Error", "An error occurred: ${e.message}")
-//        }
-//    }
-
     /**
      * Room에서 contentId로 관광지 조회
      * listType로 리스트 구분
@@ -106,4 +85,25 @@ class HomeViewModel(
         AREA_RECOMMEND,
         NEARBY
     }
+
+    //    suspend fun geminiApi(prompt: String){
+//
+//        try {
+//            val response = MyAiTripApplication.getGeminiModel().generateContent(prompt)
+//
+//            // 숫자와 점 제거
+//            val cleanedInput = response.text!!.replace(Regex("\\d+\\."), "").trim()
+//
+//            // 줄 바꿈으로 분리
+//            val tourList = cleanedInput.split("\n").map { it.trim() }
+//
+//            viewModelScope.launch {
+//                tourRepository.getTourListByTitle(tourList).collect { tourList ->
+//                    _tourList.value = tourList
+//                }
+//            }
+//        }catch (e: Exception){
+//            Log.e("Gemini API Error", "An error occurred: ${e.message}")
+//        }
+//    }
 }
