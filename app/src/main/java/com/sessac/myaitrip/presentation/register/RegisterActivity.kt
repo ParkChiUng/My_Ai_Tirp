@@ -46,7 +46,7 @@ class RegisterActivity : ViewBindingBaseActivity<ActivityRegisterBinding>(
         initSubmitButtonOnClick()
 
 //        checkNickObserverSetup()
-        registerObserverSetup()
+        registerStatusCollectionSetup()
     }
 
     /*private fun checkNickObserverSetup() {
@@ -85,7 +85,7 @@ class RegisterActivity : ViewBindingBaseActivity<ActivityRegisterBinding>(
         }
     }*/
 
-    private fun registerObserverSetup() {
+    private fun registerStatusCollectionSetup() {
         lifecycleScope.launch {
             registerViewModel.registerStatus.collectLatest { uiState ->
                 when(uiState) {
