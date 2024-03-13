@@ -129,4 +129,8 @@ dependencies {
 
     // 현재 위치
     implementation("com.google.android.gms:play-services-location:20.0.0")
+
+    // Ted Permission Coroutine Version
+    val tedpermission_version = "3.3.0"
+    implementation("io.github.ParkSangGwon:tedpermission-coroutine:$tedpermission_version")
 }
