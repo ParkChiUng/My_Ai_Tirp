@@ -25,7 +25,6 @@ class ProgressActivity :
     ViewBindingBaseActivity<ActivityProgressBinding>({ ActivityProgressBinding.inflate(it) }) {
 
     private val progressViewModel: ProgressViewModel by viewModels() { ViewModelFactory(this) }
-    private val apiClient: TourApiService = RetrofitServiceInstance.getTourApiService()
     private lateinit var progressBar: ProgressBar
 
     private var prefTotalCount = DEFAULT_TOTAL_COUNT
@@ -115,6 +114,7 @@ class ProgressActivity :
 
             is UiState.Error -> {
                 Log.e("TourAPI HandleState", "${state.errorMessage}")
+                setUpCollect()
             }
 
             else -> {
