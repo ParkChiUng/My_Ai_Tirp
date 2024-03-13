@@ -236,16 +236,27 @@ class LoginActivity :
 
     private fun setupAutoLoginStatusCollection() {
         lifecycleScope.launch {
+
             loginViewModel.userPreferenceStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Success -> {
                         val autoLogin = state.data.autoLogin
                         val userId = state.data.userId
 
-                        Log.d(TAG, "autoLogin =$autoLogin")
+                        Log.d(TAG, "autoLogin = $autoLogin")
                         Log.d(TAG, "userId = $userId")
+                        val currentUser = MyAiTripApplication.getInstance().getFirebaseAuth().currentUser
 
-                        if (autoLogin && userId.isNotBlank()) moveToMain()
+                        currentUser?.let {
+                            if (autoLogin && userId.isNotBlank())
+                                moveToMain()
+                        } ?: run {
+                            with(loginViewModel) {
+                                resetUserPreferenceAutoLogin()
+                                resetUserPreferenceId()
+                            }
+                        }
+
                     }
 
                     else -> {}

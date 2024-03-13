@@ -3,9 +3,9 @@ package com.sessac.myaitrip.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.AuthResult
-import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.data.entities.local.UserPreferencesData
 import com.sessac.myaitrip.data.repository.user.UserRepository
+import com.sessac.myaitrip.presentation.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -44,6 +44,18 @@ class LoginViewModel(
     fun updateUserPreferenceAutoLogin(autoLogin: Boolean) {
         viewModelScope.launch {
             userRepository.updatePreferenceAutoLogin(autoLogin)
+        }
+    }
+
+    fun resetUserPreferenceId() {
+        viewModelScope.launch {
+            userRepository.resetPreferenceUserId()
+        }
+    }
+
+    fun resetUserPreferenceAutoLogin() {
+        viewModelScope.launch {
+            userRepository.resetPreferenceAutoLogin()
         }
     }
 
