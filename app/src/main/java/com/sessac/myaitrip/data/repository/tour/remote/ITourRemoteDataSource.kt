@@ -16,4 +16,6 @@ interface ITourRemoteDataSource {
     suspend fun getPopularTourListFromFireBase(listType: String): UiState<Map<String, Any>>
 
     suspend fun getAreaRecommendTourListFromFireBase(listType: String, cityName: String): UiState<Map<String, Any>>
+
+    suspend fun addCountingFromFireBase(contentId: String)
 }

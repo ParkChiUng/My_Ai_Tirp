@@ -81,4 +81,22 @@ class TourRemoteDataSource : ITourRemoteDataSource {
         }.await()
     }
 
+    override suspend fun addCountingFromFireBase(
+        contentId: String
+    ){
+        val document = fireStore.collection("tour")
+            .document("data")
+            .collection("popular")
+            .document(contentId)
+
+        fireStore.runTransaction { transaction ->
+            val snapshot = transaction.get(document)
+            val currentCount = snapshot.getLong("counting") ?: 0
+            transaction.set(document, mapOf("counting" to currentCount + 1))
+        }.addOnSuccessListener {
+            Log.d("TAG", "Transaction success!")
+        }.addOnFailureListener { e ->
+            Log.w("TAG", "Transaction failure.", e)
+        }
+    }
 }

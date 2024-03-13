@@ -41,4 +41,10 @@ class TourDetailViewModel(
             }
         }
     }
+
+    fun addCountingFromFireBase(contentId: String) {
+        viewModelScope.launch {
+            tourRepository.addCountingFromFireBase(contentId)
+        }
+    }
 }

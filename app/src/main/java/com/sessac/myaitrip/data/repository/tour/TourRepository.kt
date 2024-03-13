@@ -91,7 +91,7 @@ class TourRepository(
         }
     }.catch { exception ->
         Log.d("test", "test : ${exception.message}")
-        if (exception is Exception)
+//        if (exception is Exception)
             emit(UiState.Error(exception))
     }
 
@@ -115,6 +115,10 @@ class TourRepository(
         emit(tourRemoteDataSource.getAreaRecommendTourListFromFireBase(listType, cityName))
     }.catch { exception ->
         if (exception is FirebaseException) emit(UiState.FirebaseApiError(exception))
+    }
+
+    suspend fun addCountingFromFireBase(contentId: String) {
+        tourRemoteDataSource.addCountingFromFireBase(contentId)
     }
 
 

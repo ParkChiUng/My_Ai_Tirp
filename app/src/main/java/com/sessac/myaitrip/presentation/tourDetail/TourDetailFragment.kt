@@ -56,6 +56,7 @@ class TourDetailFragment :
         removeBottomNav()
         setUpCollect()
         getTourApi()
+        addCountingFromFireBase()
     }
 
     private fun removeBottomNav() {
@@ -81,7 +82,7 @@ class TourDetailFragment :
 
                     is UiState.Error -> {
                         Log.d("TourAPI HandleState", "${state.errorMessage}")
-                        if (state.errorMessage == null)
+                        if (state.errorMessage == "null")
                             binding.tvDescription.setText(R.string.tour_no_detail)
                         else
                             getTourApi()
@@ -140,6 +141,16 @@ class TourDetailFragment :
                     launch {
                         tourDetailViewModel.getTourImageFromAPI(it.contentId)
                     }
+                }
+            }
+        }
+    }
+
+    private fun addCountingFromFireBase(){
+        parcelableTourItem?.let {
+            viewLifecycleOwner.lifecycleScope.launch {
+                launch {
+                    tourDetailViewModel.addCountingFromFireBase(it.contentId)
                 }
             }
         }
