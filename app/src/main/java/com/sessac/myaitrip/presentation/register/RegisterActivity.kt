@@ -231,7 +231,7 @@ class RegisterActivity : ViewBindingBaseActivity<ActivityRegisterBinding>(
                 )
             } else {
                 val permissionResult =
-                    PermissionUtil.requestPermissionResult(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    PermissionUtil.requestPermissionResultByCoroutine(Manifest.permission.READ_EXTERNAL_STORAGE)
                 if (permissionResult.isGranted) {
                     val intent = Intent(Intent.ACTION_GET_CONTENT)
                     intent.type = "image/*"

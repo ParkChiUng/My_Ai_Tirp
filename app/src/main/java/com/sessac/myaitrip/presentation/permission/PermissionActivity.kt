@@ -33,12 +33,12 @@ class PermissionActivity : AppCompatActivity() {
             /*val permissionResult = */
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 // Android 13부터는 이미지 권한 없이도 PhotoPicker를 사용가능
-                PermissionUtil.requestPermissionResult(
+                PermissionUtil.requestPermissionResultByCoroutine(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
             } else {
-                PermissionUtil.requestPermissionResult(
+                PermissionUtil.requestPermissionResultByCoroutine(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
