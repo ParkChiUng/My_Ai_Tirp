@@ -128,7 +128,7 @@ dependencies {
     implementation("com.naver.maps:map-sdk:3.17.0")
 
     // 현재 위치
-    implementation("com.google.android.gms:play-services-location:20.0.0")
+    implementation("com.google.android.gms:play-services-location:21.2.0")
 
     // Ted Permission Coroutine Version
     val tedpermission_version = "3.3.0"
