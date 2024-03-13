@@ -1,4 +1,4 @@
-package com.sessac.myaitrip.presentation
+package com.sessac.myaitrip.presentation.tourmap
 
 import android.os.Bundle
 import android.view.LayoutInflater

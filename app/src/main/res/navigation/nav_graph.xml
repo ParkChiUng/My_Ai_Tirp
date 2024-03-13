@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/TourMapFragment"
-        android:name="com.sessac.myaitrip.presentation.TourMapFragment"
+        android:name="com.sessac.myaitrip.presentation.tourmap.TourMapFragment"
         android:label="fragment_tourMap"
         tools:layout="@layout/fragment_ai_recommend">
     </fragment>
