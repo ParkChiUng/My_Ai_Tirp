@@ -6,23 +6,26 @@
 
     <com.naver.maps.map.MapView
         android:id="@+id/mapView_tour_map"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_sheet_map"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btn_tour_map_my_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
+        android:layout_margin="16dp"
         android:src="@drawable/selector_btn_location"
         android:backgroundTint="@color/white"
         android:background="@drawable/oval_white"
         android:padding="4dp"
-        app:layout_constraintBottom_toTopOf="@id/bottom_sheet_map"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@id/mapView_tour_map"
+        app:layout_constraintEnd_toEndOf="@id/mapView_tour_map" />
 
     <include
-        android:visibility="gone"
         android:id="@+id/bottom_sheet_map"
         layout="@layout/fragment_tour_map_bottom_sheet"
         android:layout_width="match_parent"
@@ -30,7 +33,6 @@
         android:layout_alignParentBottom="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
