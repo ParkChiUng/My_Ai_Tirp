@@ -39,6 +39,9 @@ android {
         buildConfigField("String","NAVER_CLIENT_SECRET",
             "\"${getApiKey("NAVER_CLIENT_SECRET")}\"")
 
+        buildConfigField("String","WEATHER_API_KEY",
+            "\"${getApiKey("WEATHER_API_KEY")}\"")
+
         manifestPlaceholders["KAKAO_NATIVE_KEY"] = getApiKey("KAKAO_NATIVE_KEY")
         manifestPlaceholders["NAVER_CLIENT_ID"] = getApiKey("NAVER_CLIENT_ID")
 
