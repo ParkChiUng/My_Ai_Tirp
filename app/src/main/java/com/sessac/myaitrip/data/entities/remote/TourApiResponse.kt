@@ -3,7 +3,6 @@ package com.sessac.myaitrip.data.entities.remote
 import com.google.gson.annotations.SerializedName
 import com.sessac.myaitrip.data.entities.TourItem
 
-/// BaseResponse
 data class ApiResponse<T>(
     @SerializedName("response")
     var response: Response<T>? = null
@@ -24,7 +23,6 @@ data class Header(
     @SerializedName("resultMsg")
     var resultMsg: String? = null
 )
-/// BaseResponse ( ApiResponse ~ Header )
 
 data class Body<T>(
     @SerializedName("items")

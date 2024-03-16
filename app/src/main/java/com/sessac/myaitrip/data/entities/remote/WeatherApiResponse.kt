@@ -1,18 +1,34 @@
 package com.sessac.myaitrip.data.entities.remote
 
+import Items
 import com.google.gson.annotations.SerializedName
 
-data class WeatherApiResponseBody(
-    @SerializedName("dataType") val dataType: String,
-    @SerializedName("items") val items: WeatherItems
+data class WeatherApiResponse<T>(
+    @SerializedName("response")
+    var response: WeatherResponse<T>? = null
+)
 
+data class WeatherResponse<T>(
+    @SerializedName("header")
+    var header: Header? = null,
+
+    @SerializedName("body")
+    var body: WeatherResponseBody<T>? = null
+)
+
+data class WeatherResponseBody<T>(
+    @SerializedName("dataType") val dataType: String,
+    @SerializedName("pageNo") val pageNo: Int,
+    @SerializedName("numOfRows") val numOfRows: Int,
+    @SerializedName("totalCount") val totalCount: Int,
+    @SerializedName("items") val items: T
 )
 
 data class WeatherItems(
-    @SerializedName("item") val weatherItems: List<Weather>
+    @SerializedName("item") val weatherInfoItems: List<WeatherInfo>
 )
 
-data class Weather(
+data class WeatherInfo(
     @SerializedName("baseDate") val baseDate: String,
     @SerializedName("baseTime") val baseTime: String,
     @SerializedName("category") val dataCategory: String,
