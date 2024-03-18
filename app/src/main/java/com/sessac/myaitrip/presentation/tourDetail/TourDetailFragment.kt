@@ -69,8 +69,9 @@ class TourDetailFragment :
             tourDetailViewModel.tourDetailStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Success -> {
+                        val response = state.data.response?.body
                         val description =
-                            state.data.items?.item?.mapNotNull { it.overview }.toString()
+                            response?.items?.item?.mapNotNull { it.overview }.toString()
 
                         val sendText = if (description.contains("<br>")) {
                             Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY)
@@ -100,8 +101,8 @@ class TourDetailFragment :
             tourDetailViewModel.tourImgStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Success -> {
-                        state.data.totalCount
-                        val images = state.data.items?.item?.mapNotNull { it.originImgUrl }
+                        val response = state.data.response?.body
+                        val images = response?.items?.item?.mapNotNull { it.originImgUrl }
                         val adapter = ImageSliderAdapter(images)
                         binding.vpTour.adapter = adapter
                         binding.layoutIndicators.setViewPager(binding.vpTour)
@@ -146,7 +147,7 @@ class TourDetailFragment :
         }
     }
 
-    private fun addCountingFromFireBase(){
+    private fun addCountingFromFireBase() {
         parcelableTourItem?.let {
             viewLifecycleOwner.lifecycleScope.launch {
                 launch {

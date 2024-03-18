@@ -1,13 +1,15 @@
 package com.sessac.myaitrip.presentation.home
 
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.data.repository.tour.TourRepository
 import com.sessac.myaitrip.presentation.common.UiState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -19,17 +21,22 @@ class HomeViewModel(
 //    private val _tourList = MutableStateFlow<List<TourItem>>(emptyList())
 //    val tourList: StateFlow<List<TourItem>> = _tourList
 
-    private val _popularTourList = MutableStateFlow<List<TourItem>>(emptyList())
-    val popularTourList: StateFlow<List<TourItem>> = _popularTourList
+    private val _popularTourList =
+        MutableStateFlow<UiState<List<TourItem>>>(UiState.Empty)
+    val popularTourList get() = _popularTourList.asStateFlow()
+
+    private val _areaRecommendTourList =
+        MutableStateFlow<UiState<List<TourItem>>>(UiState.Empty)
+    val areaRecommendTourList get() = _areaRecommendTourList.asStateFlow()
+
+    private val _nearbyTourList =
+        MutableStateFlow<UiState<List<TourItem>>>(UiState.Empty)
+    val nearbyTourList get() = _nearbyTourList.asStateFlow()
 
     private val _fireBaseResult = MutableStateFlow<UiState<Map<String, Any>>>(UiState.Empty)
     val fireBaseResult get() = _fireBaseResult.asStateFlow()
 
-    private val _areaRecommendTourList = MutableStateFlow<List<TourItem>>(emptyList())
-    val areaRecommendTourList: StateFlow<List<TourItem>> = _areaRecommendTourList
-
-    private val _nearbyTourList = MutableStateFlow<List<TourItem>>(emptyList())
-    val nearbyTourList: StateFlow<List<TourItem>> = _nearbyTourList
+    private val dispatchers = CoroutineScope(Dispatchers.IO)
 
     /**
      * Room에서 contentId로 관광지 조회
@@ -39,14 +46,20 @@ class HomeViewModel(
      * @param listType
      */
     fun getTourListByContentId(contentIdList: List<String>, listType: ListType) {
+        val test = listType
+        Log.d("test", "test : $test")
+
         viewModelScope.launch {
-            tourRepository.getTourListById(contentIdList).collect { tourList ->
-                when (listType) {
-                    ListType.POPULAR -> _popularTourList.value = tourList
-                    ListType.AREA_RECOMMEND -> _areaRecommendTourList.value = tourList
-                    ListType.NEARBY -> _nearbyTourList.value = tourList
+            async(dispatchers.coroutineContext) {
+                tourRepository.getTourList(contentIdList).collectLatest { tourList ->
+                    Log.d("test", "tourList : $tourList")
+                    when (listType) {
+                        ListType.POPULAR -> _popularTourList.value = tourList
+                        ListType.AREA_RECOMMEND -> _areaRecommendTourList.value = tourList
+                        ListType.NEARBY -> _nearbyTourList.value = tourList
+                    }
                 }
-            }
+            }.await()
         }
     }
 

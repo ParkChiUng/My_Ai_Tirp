@@ -99,28 +99,100 @@ class HomeFragment :
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 launch {
-                    homeViewModel.popularTourList.collect { tourList ->
-                        popularAdapter.setTourList(tourList)
-                        popularRecyclerView.scrollToPosition(0)
+                    homeViewModel.popularTourList.collectLatest { state ->
+                        when (state) {
+                            is UiState.Success -> {
+                                popularAdapter.setTourList(state.data)
+                                popularRecyclerView.scrollToPosition(0)
+                            }
+
+                            is UiState.Error -> {
+                                Log.e("TourAPI HandleState", "${state.errorMessage}")
+                            }
+
+                            is UiState.Loading -> {
+                                Log.e("TourAPI HandleState", " loading : $$state")
+                            }
+
+                            else -> {
+                                Log.e("TourAPI HandleState", " else : $state")
+                            }
+                        }
                     }
                 }
 
                 launch {
-                    homeViewModel.areaRecommendTourList.collect { tourList ->
-                        recommendAdapter.setTourList(tourList)
-                        recommendRecyclerView.scrollToPosition(0)
+                    homeViewModel.areaRecommendTourList.collectLatest { state ->
+                        when (state) {
+                            is UiState.Success -> {
+                                recommendAdapter.setTourList(state.data)
+                                recommendRecyclerView.scrollToPosition(0)
+                            }
+
+                            is UiState.Error -> {
+
+                            }
+
+                            is UiState.Loading -> {
+
+                            }
+
+                            else -> {}
+                        }
                     }
                 }
+
                 launch {
-                    homeViewModel.nearbyTourList.collect { tourList ->
-                        nearbyAdapter.setTourList(tourList)
-                        nearbyRecyclerView.scrollToPosition(0)
+                    homeViewModel.nearbyTourList.collectLatest { state ->
+                        when (state) {
+                            is UiState.Success -> {
+                                nearbyAdapter.setTourList(state.data)
+                                nearbyRecyclerView.scrollToPosition(0)
+                            }
+
+                            is UiState.Error -> {
+
+                            }
+
+                            is UiState.Loading -> {
+
+                            }
+
+                            else -> {}
+                        }
                     }
                 }
 
                 launch {
                     homeViewModel.fireBaseResult.collectLatest { state ->
-                        handleUiState(state)
+                        when (state) {
+                            is UiState.Success -> {
+                                contentIdList = state.data["contentIdList"] as List<String>
+                                listType =
+                                    HomeViewModel.ListType.valueOf(state.data["listType"] as String)
+
+                                viewLifecycleOwner.lifecycleScope.launch {
+                                    repeatOnLifecycle(Lifecycle.State.CREATED) {
+                                        homeViewModel.getTourListByContentId(
+                                            contentIdList,
+                                            listType
+                                        )
+                                    }
+                                }
+                            }
+
+                            is UiState.Loading -> {
+
+                            }
+
+                            is UiState.Error -> {
+                                Log.e("TourAPI HandleState", "${state.errorMessage}")
+                            }
+
+                            else -> {
+                                Log.e("TourAPI HandleState", "$state")
+                            }
+                        }
                     }
                 }
             }
@@ -147,47 +219,6 @@ class HomeFragment :
 //            }
 //        }
     }
-
-    private fun handleUiState(state: UiState<Map<String, Any>>) {
-        when (state) {
-            is UiState.Success -> {
-                contentIdList = state.data["contentIdList"] as List<String>
-                listType = HomeViewModel.ListType.valueOf(state.data["listType"] as String)
-
-                viewLifecycleOwner.lifecycleScope.launch {
-                    repeatOnLifecycle(Lifecycle.State.CREATED) {
-                        homeViewModel.getTourListByContentId(
-                            contentIdList,
-                            listType
-                        )
-                    }
-                }
-            }
-
-            is UiState.Loading -> {
-
-            }
-
-            is UiState.Error -> {
-                Log.e("TourAPI HandleState", "${state.errorMessage}")
-            }
-
-            else -> {
-                Log.e("TourAPI HandleState", "$state")
-            }
-        }
-    }
-
-    /**
-     * gemini api를 통해 가져온 관광지 정보로 fireBase의 지역 별 추천 관광지에 insert한다.
-     */
-//    private fun insertFireBase() {
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            repeatOnLifecycle(Lifecycle.State.CREATED) {
-//                homeViewModel.geminiApi(getString(R.string.recommend_popular, cityName))
-//            }
-//        }
-//    }
 
     /**
      * 각 리사이클러 뷰 설정
@@ -223,4 +254,15 @@ class HomeFragment :
         recommendRecyclerView.adapter = recommendAdapter
         nearbyRecyclerView.adapter = nearbyAdapter
     }
+
+    /**
+     * gemini api를 통해 가져온 관광지 정보로 fireBase의 지역 별 추천 관광지에 insert한다.
+     */
+//    private fun insertFireBase() {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            repeatOnLifecycle(Lifecycle.State.CREATED) {
+//                homeViewModel.geminiApi(getString(R.string.recommend_popular, cityName))
+//            }
+//        }
+//    }
 }

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.data.entities.local.TourPreferencesData
-import com.sessac.myaitrip.data.entities.remote.Body
+import com.sessac.myaitrip.data.entities.remote.ApiResponse
 import com.sessac.myaitrip.data.entities.remote.TourItems
 import com.sessac.myaitrip.data.repository.tour.TourRepository
 import com.sessac.myaitrip.presentation.common.UiState
@@ -23,7 +23,8 @@ class ProgressViewModel(
         MutableStateFlow<UiState<TourPreferencesData>>(UiState.Empty)
     val tourPreferenceStatus get() = _tourPreferenceStatus.asStateFlow()
 
-    private val _tourApiStatus = MutableStateFlow<UiState<Body<TourItems>>>(UiState.Empty)
+    private val _tourApiStatus =
+        MutableStateFlow<UiState<ApiResponse<TourItems>>>(UiState.Empty)
     val tourApiStatus get() = _tourApiStatus.asStateFlow()
 
     private val dispatchers = CoroutineScope(Dispatchers.IO)

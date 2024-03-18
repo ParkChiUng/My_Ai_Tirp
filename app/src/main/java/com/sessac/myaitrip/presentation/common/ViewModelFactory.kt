@@ -20,6 +20,8 @@ import com.sessac.myaitrip.presentation.tourDetail.TourDetailViewModel
 class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val dataStore = MyAiTripApplication.getInstance().getDataStore()
+        val tourDao = MyAiTripApplication.getRoomDatabase().tourDao()
+        val tourApiService = MyAiTripApplication.getTourApiService()
 
         return when {
             modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
@@ -42,22 +44,31 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
                 val userLocalDataSource = UserLocalDataSource(dataStore.userDataStore)
                 val userRemoteDataSource = UserRemoteDataSource()
                 val userRepository = UserRepository(userLocalDataSource, userRemoteDataSource)
-
                 RegisterViewModel(userRepository) as T
             }
 
             modelClass.isAssignableFrom(ProgressViewModel::class.java) -> {
+
                 val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore)
                 val tourRemoteDataSource = TourRemoteDataSource()
-                val tourRepository = TourRepository(tourLocalDataSource, tourRemoteDataSource)
-
+                val tourRepository = TourRepository(
+                    tourDao,
+                    tourApiService,
+                    tourLocalDataSource,
+                    tourRemoteDataSource
+                )
                 ProgressViewModel(tourRepository) as T
             }
 
             modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
                 val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore)
                 val tourRemoteDataSource = TourRemoteDataSource()
-                val tourRepository = TourRepository(tourLocalDataSource, tourRemoteDataSource)
+                val tourRepository = TourRepository(
+                    tourDao,
+                    tourApiService,
+                    tourLocalDataSource,
+                    tourRemoteDataSource
+                )
 
                 HomeViewModel(tourRepository) as T
             }
@@ -65,8 +76,12 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
             modelClass.isAssignableFrom(TourDetailViewModel::class.java) -> {
                 val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore)
                 val tourRemoteDataSource = TourRemoteDataSource()
-                val tourRepository = TourRepository(tourLocalDataSource, tourRemoteDataSource)
-
+                val tourRepository = TourRepository(
+                    tourDao,
+                    tourApiService,
+                    tourLocalDataSource,
+                    tourRemoteDataSource
+                )
                 TourDetailViewModel(tourRepository) as T
             }
 
