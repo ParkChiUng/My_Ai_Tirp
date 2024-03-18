@@ -200,8 +200,6 @@ class TourMapFragment
         return Pair(x, y)
     }
 
-
-    @SuppressLint("SetTextI18n")
     private fun setupWeatherStatusCollection() {
         lifecycleScope.launch {
             tourMapViewModel.weatherStatus.collectLatest { state ->
@@ -246,15 +244,11 @@ class TourMapFragment
                             }
 
                             with(binding.locationBottomSheetLayout) {
+                                lowTemperature = lowTemperature ?: todayTemperatureList.minOf { weatherItems -> weatherItems.forecastValue.toDouble() }.roundToInt()
+                                highTemperature = highTemperature ?: todayTemperatureList.maxOf{ weatherItems -> weatherItems.forecastValue.toDouble() }.roundToInt()
 
-                                val lowTemperatureText = lowTemperature?.toString()
-                                    ?: todayTemperatureList.minOf { weatherItems -> weatherItems.forecastValue.toDouble() }.roundToInt().toString()
-
-                                val highTemperatureText = highTemperature?.toString()
-                                    ?: todayTemperatureList.maxOf{ weatherItems -> weatherItems.forecastValue.toDouble() }.roundToInt().toString()
-
-                                tvLocationBottomSheetLowTemperature.text = "최저 $lowTemperatureText°"    // 최저 기온
-                                tvLocationBottomSheetHighTemperature.text = "최고 $highTemperatureText°"  // 최고 기온
+                                tvLocationBottomSheetLowTemperature.text = getString(R.string.temperature_low_format, lowTemperature)
+                                tvLocationBottomSheetHighTemperature.text = getString(R.string.temperature_high_format, highTemperature)
                             }
 
                             var isRainOrSnow = true // 눈이나 비가 오는가?
@@ -270,17 +264,17 @@ class TourMapFragment
                                     when(weatherInfo.dataCategory) {
                                         WEATHER_INFO_CATEGORY_TEMPERATURE -> {
                                             // 현재 시각 기온
-                                            tvLocationBottomSheetCurrentTemperature.text = weatherInfo.forecastValue.toDouble().roundToInt().toString() + "°"
+                                            tvLocationBottomSheetCurrentTemperature.text = getString(R.string.temperature_normal_format, weatherInfo.forecastValue.toDouble().roundToInt())
                                         }
 
                                         WEATHER_INFO_CATEGORY_HUMIDITY -> {
                                             // 현재 시각 습도
-                                            tvLocationBottomSheetHumidity.text = "습도 ${weatherInfo.forecastValue}%"
+                                            tvLocationBottomSheetHumidity.text = getString(R.string.humidity_format, weatherInfo.forecastValue.toInt())
                                         }
 
                                         WEATHER_INFO_CATEGORY_RAINFALL_PROBABILITY -> {
                                             // 현재 시각 강수확률
-                                            tvLocationBottomSheetRainProbability.text = "강수확률 ${weatherInfo.forecastValue}%"
+                                            tvLocationBottomSheetRainProbability.text = getString(R.string.rain_probability_format, weatherInfo.forecastValue.toInt())
                                         }
 
                                         WEATHER_INFO_CATEGORY_RAINFALL_CODE -> {
