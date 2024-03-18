@@ -28,6 +28,7 @@ import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
+import com.sessac.myaitrip.R
 import com.sessac.myaitrip.databinding.FragmentTourMapBinding
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
@@ -48,7 +49,6 @@ class TourMapFragment
     OnMapReadyCallback {
 
     private val tourMapViewModel: TourMapViewModel by viewModels { ViewModelFactory(requireContext()) }
-    lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
 
     private lateinit var mapView: MapView
     private lateinit var map: NaverMap
@@ -56,8 +56,6 @@ class TourMapFragment
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private lateinit var fusedLocationSource: FusedLocationSource
-
-//    private var
 
     companion object {
         private const val TAG = "NaverMap"
@@ -67,6 +65,27 @@ class TourMapFragment
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
+
+//        private const val WEATHER_INFO_CATEGORY_WIND_SPEED_EW = "UUU" // 풍속(동서)
+//        private const val WEATHER_INFO_CATEGORY_WIND_SPEED_NS = "VVV" // 풍속(남북)
+//        private const val WEATHER_INFO_CATEGORY_WIND_DIRECTION = "VEC" // 풍향
+//        private const val WEATHER_INFO_CATEGORY_WIND_SPEED = "WSD" // 풍속
+//        private const val WEATHER_INFO_CATEGORY_WAV = "WAV" // 파고
+//        private const val WEATHER_INFO_CATEGORY_RAINFALL_VOLUME = "PCP" // 1시간 강수량
+//        private const val WEATHER_INFO_CATEGORY_SNOWFALL_VOLUME = "SNO" // 적설량(눈 내리는 양)
+
+        private const val WEATHER_INFO_CATEGORY_TEMPERATURE = "TMP" // 기온
+        private const val WEATHER_INFO_CATEGORY_HIGH_TEMPERATURE = "TMX" // 최고 기온
+        private const val WEATHER_INFO_CATEGORY_LOW_TEMPERATURE = "TMN" // 최저 기온
+        private val WEATHER_INFO_TEMPERATURE_CATEGORY = arrayOf(
+            WEATHER_INFO_CATEGORY_TEMPERATURE,
+            WEATHER_INFO_CATEGORY_HIGH_TEMPERATURE,
+            WEATHER_INFO_CATEGORY_LOW_TEMPERATURE
+        )
+        private const val WEATHER_INFO_CATEGORY_SKY_CODE = "SKY" // 하늘상태(SKY) 코드 : 맑음(1), 구름많음(3), 흐림(4)
+        private const val WEATHER_INFO_CATEGORY_RAINFALL_CODE = "PTY" // 강수형태(PTY) 코드 : 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)
+        private const val WEATHER_INFO_CATEGORY_RAINFALL_PROBABILITY = "POP" // 강수확률
+        private const val WEATHER_INFO_CATEGORY_HUMIDITY = "REH" // 습도
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -80,6 +99,64 @@ class TourMapFragment
         setupWeatherStatusCollection()
     }
 
+    private fun initMyLocationBottomSheet() {
+        binding.locationBottomSheet.visibility = View.VISIBLE
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.locationBottomSheet)
+
+        bottomSheetBehavior.apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+            isFitToContents = true
+            saveFlags = BottomSheetBehavior.SAVE_ALL
+        }
+    }
+
+    /**
+     * Lat lon to grid
+     * 기상청 API가 원하는 위도, 경도를 X, Y 좌표로 변환하는 함수
+     * @param lat
+     * @param lon
+     * @return
+     */
+    fun latLonToGrid(lat: Double, lon: Double): Pair<Int, Int> {
+        val RE = 6371.00877 // 지구 반경(km)
+        val GRID = 5.0 // 격자 간격(km)
+        val SLAT1 = 30.0 // 투영 위도1(degree)
+        val SLAT2 = 60.0 // 투영 위도2(degree)
+        val OLON = 126.0 // 기준점 경도(degree)
+        val OLAT = 38.0 // 기준점 위도(degree)
+        val XO = 43 // 기준점 X좌표(GRID)
+        val YO = 136 // 기1준점 Y좌표(GRID)
+
+        val DEGRAD = Math.PI / 180.0
+        val RADDEG = 180.0 / Math.PI
+
+        val re = RE / GRID
+        val slat1 = SLAT1 * DEGRAD
+        val slat2 = SLAT2 * DEGRAD
+        val olon = OLON * DEGRAD
+        val olat = OLAT * DEGRAD
+
+        var sn = Math.tan(Math.PI * 0.25 + slat2 * 0.5) / Math.tan(Math.PI * 0.25 + slat1 * 0.5)
+        sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(sn)
+        var sf = Math.tan(Math.PI * 0.25 + slat1 * 0.5)
+        sf = Math.pow(sf, sn) * Math.cos(slat1) / sn
+        var ro = Math.tan(Math.PI * 0.25 + olat * 0.5)
+        ro = re * sf / Math.pow(ro, sn)
+        var ra = Math.tan(Math.PI * 0.25 + (lat) * DEGRAD * 0.5)
+        ra = re * sf / Math.pow(ra, sn)
+        var theta = lon * DEGRAD - olon
+        if (theta > Math.PI) theta -= 2.0 * Math.PI
+        if (theta < -Math.PI) theta += 2.0 * Math.PI
+        theta *= sn
+
+        val x = (ra * Math.sin(theta) + XO + 0.5).toInt()
+        val y = (ro - ra * Math.cos(theta) + YO + 0.5).toInt()
+
+        return Pair(x, y)
+    }
+
+
+    @SuppressLint("SetTextI18n")
     private fun setupWeatherStatusCollection() {
         lifecycleScope.launch {
             tourMapViewModel.weatherStatus.collectLatest { state ->
@@ -92,19 +169,132 @@ class TourMapFragment
                         val response = state.data.response
                         val weatherItems = response?.body?.item?.weatherInfoItems
 
-                        weatherItems?.let {
-                            val weatherInfoList = it.filter { weatherInfo ->
-    //                                Log.d(TAG, "forecastTime = ${weatherInfo.forecastTime}")
-    //                                Log.d(TAG, "현재 시간 = ${DateUtil.getCurrentHourWithFormatted()}")
-                                weatherInfo.forecastTime == DateUtil.getCurrentHourWithFormatted()
-                            }.forEach {
-                                Log.d(TAG, "날씨 정보 = $it")
-                                when(it.dataCategory) {
+                        weatherItems?.let { weatherInfoList ->
+                            // 오늘 날씨 정보
+                            val todayWeatherList = weatherInfoList.filter {weatherInfo ->
+                                weatherInfo.forecastDate == DateUtil.getCurrentDate()
+                            }
 
+                            // 최저, 최고 기온 구하기
+                            // TMX - 최고 기온, TMN - 최저 기온
+                            var lowTemperature: Int? = null
+                            var highTemperature: Int? = null
+
+                            // 오늘 기온 정보
+                            val todayTemperatureList = todayWeatherList.filter { weatherInfo ->
+                                weatherInfo.dataCategory in WEATHER_INFO_TEMPERATURE_CATEGORY
+                            }
+
+                            todayTemperatureList.forEach { weatherInfo ->
+                                Log.d(TAG, "온도 정보 ${weatherInfo.dataCategory} = ${weatherInfo.forecastValue}")
+
+                                when(weatherInfo.dataCategory) {
+                                    WEATHER_INFO_CATEGORY_LOW_TEMPERATURE -> {
+                                        // 오늘 일자에 TMN 값이 있다면
+                                        lowTemperature = weatherInfo.forecastValue.toDouble().roundToInt()
+                                    }
+                                    WEATHER_INFO_CATEGORY_HIGH_TEMPERATURE -> {
+                                        // 오늘 일자에 TMX 값이 있다면
+                                        highTemperature = weatherInfo.forecastValue.toDouble().roundToInt()
+                                    }
+                                }
+                            }
+
+                            with(binding.locationBottomSheetLayout) {
+
+                                val lowTemperatureText = lowTemperature?.toString()
+                                    ?: todayTemperatureList.minOf { weatherItems -> weatherItems.forecastValue.toDouble() }.roundToInt().toString()
+
+                                val highTemperatureText = highTemperature?.toString()
+                                    ?: todayTemperatureList.maxOf{ weatherItems -> weatherItems.forecastValue.toDouble() }.roundToInt().toString()
+
+                                tvLocationBottomSheetLowTemperature.text = "최저 $lowTemperatureText°"    // 최저 기온
+                                tvLocationBottomSheetHighTemperature.text = "최고 $highTemperatureText°"  // 최고 기온
+                            }
+
+                            var isRainOrSnow = true // 눈이나 비가 오는가?
+
+                            // 현재 시간 날씨 정보
+                            val currentTimeWeatherInfoList = todayWeatherList.filter { weatherInfo ->
+                                weatherInfo.forecastTime == DateUtil.getCurrentHourWithFormatted() // 현재 시간에 맞는 관측 값 가져오기
+                            }
+
+                            currentTimeWeatherInfoList.forEach { weatherInfo ->
+//                                Log.d(TAG, "날씨 정보 = $weatherInfo")
+                                with(binding.locationBottomSheetLayout) {
+                                    when(weatherInfo.dataCategory) {
+                                        WEATHER_INFO_CATEGORY_TEMPERATURE -> {
+                                            // 현재 시각 기온
+                                            tvLocationBottomSheetCurrentTemperature.text = weatherInfo.forecastValue.toDouble().roundToInt().toString() + "°"
+                                        }
+
+                                        WEATHER_INFO_CATEGORY_HUMIDITY -> {
+                                            // 현재 시각 습도
+                                            tvLocationBottomSheetHumidity.text = "습도 ${weatherInfo.forecastValue}%"
+                                        }
+
+                                        WEATHER_INFO_CATEGORY_RAINFALL_PROBABILITY -> {
+                                            // 현재 시각 강수확률
+                                            tvLocationBottomSheetRainProbability.text = "강수확률 ${weatherInfo.forecastValue}%"
+                                        }
+
+                                        WEATHER_INFO_CATEGORY_RAINFALL_CODE -> {
+                                            // 현재 시각 강수상태
+                                            // 강수형태(PTY) 코드 : 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)
+                                            Log.e(TAG, "RAIN_FALL_CODE = ${weatherInfo.forecastValue}")
+                                            when(weatherInfo.forecastValue) {
+                                                "0" -> {
+                                                    isRainOrSnow = false // 눈이나 비가 오지 않으면 하늘 상태로
+                                                }
+
+                                                "1", "4" -> {
+                                                    // 비 이미지로
+                                                    ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_rainy)
+                                                }
+
+                                                "2", "3" -> {
+                                                    // 눈 이미지로
+                                                    ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_snowing)
+                                                }
+
+                                                else -> {}
+                                            }
+                                        }
+
+                                        else -> {
+                                            // 나머지 정보는 사용하지 않음
+                                        }
+                                    }
+                                }
+                            }
+
+                            Log.e(TAG, "isRainOrSnow = $isRainOrSnow")
+
+                            // 눈이나 비가 오지 않으면 하늘 상태로 이미지 적용
+                            if( !isRainOrSnow ) {
+                                // 현재 시각 하늘상태
+                                currentTimeWeatherInfoList.filter {
+                                    it.dataCategory == WEATHER_INFO_CATEGORY_SKY_CODE
+                                }.forEach { weatherInfo ->
+                                    Log.e(TAG, "SKY_CODE = ${weatherInfo.forecastValue}")
+                                    with(binding.locationBottomSheetLayout) {
+                                        when(weatherInfo.forecastValue) {
+                                            // 하늘상태(SKY) 코드 : 맑음(1), 구름많음(3), 흐림(4)
+                                            "1" -> {
+                                                ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_sunny)
+                                            }
+                                            "3" -> {
+                                                ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_partly_cloudy)
+                                            }
+                                            "4" -> {
+                                                ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_cloudy)
+                                            }
+                                            else -> {}
+                                        }
+                                    }
                                 }
                             }
                         }
-
                     }
 
                     is UiState.Error -> {
@@ -148,9 +338,7 @@ class TourMapFragment
                 }
 
                 // 카메라가 멈췄을 때, 리스너
-                addOnCameraIdleListener {
-                    getAddress(cameraPosition.target.latitude, cameraPosition.target.longitude)
-                }
+                addOnCameraIdleListener {}
             }
 
             binding.btnTourMapMyLocation.setOnClickListener {
@@ -187,6 +375,8 @@ class TourMapFragment
                     override fun onLocationResult(locationResult: LocationResult) {
                         super.onLocationResult(locationResult)
 
+                        initMyLocationBottomSheet()
+
                         locationResult.locations.forEachIndexed { index, location ->
                             val cameraUpdate = CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
                                 .animate(CameraAnimation.Easing, 2000)
@@ -199,8 +389,10 @@ class TourMapFragment
 //                            Log.e(TAG, "현재 날짜(yyyyMMdd) = ${DateUtil.getCurrentDate()}")
 //                            Log.e(TAG, "현재 시간 = ${DateUtil.getCurrentHour()}")
 
-                            val latitude = location.latitude
-                            val longitude = location.longitude
+                            val (nx, ny) = latLonToGrid(location.latitude, location.longitude)
+                            Log.e(TAG,"X 좌표 = $nx, Y 좌표 = $ny")
+
+                            getAddress(location.latitude, location.longitude)
 
                             with(tourMapViewModel) {
                                 // 날씨 정보 가져오기
@@ -211,8 +403,8 @@ class TourMapFragment
                                         // if 현재시간 in 06 ~ 23 (오늘 날씨 정보 가져오기)
                                         getWeatherData(
                                             DateUtil.getCurrentDate(),
-                                            latitude.roundToInt().toString(),
-                                            longitude.roundToInt().toString()
+                                            pointX = nx.toString(),
+                                            pointY = ny.toString()
                                         )
                                     }
 
@@ -220,8 +412,8 @@ class TourMapFragment
                                         // 현재 시간 in 00 ~ 05 (어제 날씨 정보 가져오기)
                                         getWeatherData(
                                             DateUtil.getYesterdayDate(),
-                                            latitude.roundToInt().toString(),
-                                            longitude.roundToInt().toString()
+                                            pointX = nx.toString(),
+                                            pointY = ny.toString()
                                         )
                                     }
                                 }
@@ -271,8 +463,16 @@ class TourMapFragment
                             Log.e(TAG, "subLocality = $subLocality") // 관악구
                             // Log.e(TAG, "thoroughfare = $thoroughfare") 신림동
 
+                            // 바텀 시트 지역명 나타내주기
+                            val locationNameBuilder = StringBuilder()
+                            locationNameBuilder.append(adminArea)
+                                .append(" ")
 
-                            // TODO. 바텀 시트 지역명 나타내주기
+                            locality?.let {
+                                locationNameBuilder.append(it)
+                            } ?: locationNameBuilder.append(subLocality)
+
+                            binding.locationBottomSheetLayout.tvLocationBottomSheetLocationName.text = locationNameBuilder.toString()
                         }
                     }
                 }

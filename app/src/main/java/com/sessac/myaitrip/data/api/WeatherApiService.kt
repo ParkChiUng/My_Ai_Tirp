@@ -8,11 +8,13 @@ import retrofit2.http.Query
 
 interface WeatherApiService {
 
-    @GET("getVilageFcst")
+    // 시간 당, 평균적으로 12개의 WeatherInfo를 가져온다.
+    // 24시간 분량만 가져오기
+    @GET("getVilageFcst") // 단기예보
     suspend fun getWeatherData(
         @Query("serviceKey") serviceKey: String = BuildConfig.WEATHER_API_KEY,
         @Query("pageNo") pageNo: String = "1",
-        @Query("numOfRows") numOfRows: String = "300",
+        @Query("numOfRows") numOfRows: String = "${(12 * 24) + 1}",
         @Query("dataType") dataType: String = "JSON",
         @Query("base_date") baseDate: String,
         @Query("base_time") baseTime: String = "0500",

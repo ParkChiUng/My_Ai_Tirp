@@ -2,7 +2,6 @@ package com.sessac.myaitrip.presentation.tourmap
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sessac.myaitrip.data.entities.remote.ApiResponse
 import com.sessac.myaitrip.data.entities.remote.WeatherApiResponse
 import com.sessac.myaitrip.data.entities.remote.WeatherItems
 import com.sessac.myaitrip.data.repository.weather.WeatherRepository
@@ -18,9 +17,9 @@ class TourMapViewModel(
     private val _weatherStatus = MutableStateFlow<UiState<WeatherApiResponse<WeatherItems>>>(UiState.Empty)
     val weatherStatus get() = _weatherStatus
 
-    fun getWeatherData(todayDate: String, latitude: String, longitude: String) {
+    fun getWeatherData(date: String, pointX: String, pointY: String) {
         viewModelScope.launch {
-            weatherRepository.getWeatherData(todayDate, latitude, longitude).collectLatest {
+            weatherRepository.getWeatherData(date = date, pointX = pointX, pointY = pointY).collectLatest {
                 _weatherStatus.value = it
             }
         }
