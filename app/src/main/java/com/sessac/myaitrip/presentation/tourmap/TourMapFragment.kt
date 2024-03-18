@@ -11,6 +11,8 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -20,6 +22,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.chip.Chip
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraUpdate
@@ -35,6 +38,7 @@ import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.util.DateUtil
 import com.sessac.myaitrip.util.PermissionUtil
+import com.sessac.myaitrip.util.repeatOnStarted
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -49,6 +53,8 @@ class TourMapFragment
     OnMapReadyCallback {
 
     private val tourMapViewModel: TourMapViewModel by viewModels { ViewModelFactory(requireContext()) }
+
+    private lateinit var locationBottomSheetTourAdapter: LocationBottomSheetTourAdapter
 
     private lateinit var mapView: MapView
     private lateinit var map: NaverMap
@@ -98,10 +104,18 @@ class TourMapFragment
 
         setupWeatherStatusCollection()
         setUpLocationPlaceStatusCollection()
+
+        // 위치 바텀시트 관광지 어댑터
+        locationBottomSheetTourAdapter = LocationBottomSheetTourAdapter(
+            itemOnClick = { locationBasedTourItem ->
+                Log.d("TAG", "tour click item = $locationBasedTourItem")
+            },
+            scope = viewLifecycleOwner.lifecycleScope
+        )
     }
 
     private fun setUpLocationPlaceStatusCollection() {
-        lifecycleScope.launch {
+        repeatOnStarted {
             tourMapViewModel.locationTourStatus.collectLatest { state ->
                 when(state) {
                     is UiState.Loading -> {}
@@ -121,12 +135,50 @@ class TourMapFragment
                                                 if(tourList.isNotEmpty()) {
                                                     val sortedTourList = tourList.sortedBy { tourItem ->
                                                         tourItem.distance.toDouble() // 가까운 순으로 정렬
+                                                    }.filter {
+                                                        it.firstImageUrl.isNotEmpty() or it.firstImage2.isNotEmpty() // 이미지 있는 것만
                                                     }.also {
-                                                        // adapter submitList(it)
-                                                    }.forEach {
-//                                                        Log.d(TAG, "TourItem = $it") // 잘 가져와짐
+                                                        locationBottomSheetTourAdapter.setTourList(it)
                                                     }
 
+                                                    // 바텀시트 칩 그룹
+                                                    with(binding.locationBottomSheetLayout.chipgroupLocationBottomSheetTag) {
+                                                        isSingleSelection = true
+                                                        removeAllViews() // 기존 칩들 제거 후 다시 추가
+
+                                                        sortedTourList.distinctBy { locationBasedTourItem -> locationBasedTourItem.contentTypeId } // content Type을 기준으로 중복 제거
+                                                            .forEach { item ->
+                                                                val chip = Chip(context, null, R.attr.customChipStyle)
+                                                                when(item.contentTypeId.toInt()) {
+                                                                    12 -> { chip.text = "#관광지" }
+                                                                    14 -> { chip.text = "#문화시설" }
+                                                                    15 -> { chip.text = "#축제•공연•행사" }
+                                                                    25 -> { chip.text = "#여행코스" }
+                                                                    28 -> { chip.text = "#레포츠" }
+                                                                    32 -> { chip.text = "#숙박" }
+                                                                    38 -> { chip.text = "#쇼핑" }
+                                                                    else -> { chip.text = "#음식점" }
+                                                                }
+
+                                                                chip.id = item.contentTypeId.toInt()
+                                                                addView(chip)
+                                                            }
+
+                                                        setOnCheckedStateChangeListener{ _, checkedId ->
+                                                            if(checkedId.isEmpty()) {
+                                                                locationBottomSheetTourAdapter.setTourList(sortedTourList)
+                                                            } else {
+//                                                                val selectedChipText = findViewById<Chip>(checkedChipId).text.toString().substring(1)
+//                                                                Log.e(TAG,"SelectedChip = $selectedChipText")
+                                                                Log.e(TAG,"SelectedChipId = ${checkedId.first()}")
+                                                                sortedTourList.filter {
+                                                                    it.contentTypeId == checkedId.first().toString()
+                                                                }.also {
+                                                                    locationBottomSheetTourAdapter.setTourList(it)
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
 
@@ -149,10 +201,12 @@ class TourMapFragment
         val bottomSheetBehavior = BottomSheetBehavior.from(binding.locationBottomSheet)
 
         bottomSheetBehavior.apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
+            maxHeight = (0.9 * resources.displayMetrics.heightPixels).toInt()
             isFitToContents = true
-            saveFlags = BottomSheetBehavior.SAVE_ALL
+//            saveFlags = BottomSheetBehavior.SAVE_ALL
         }
+
+        binding.locationBottomSheetLayout.rvLocationBottomSheetTour.adapter = locationBottomSheetTourAdapter
     }
 
     /**
@@ -201,7 +255,7 @@ class TourMapFragment
     }
 
     private fun setupWeatherStatusCollection() {
-        lifecycleScope.launch {
+        repeatOnStarted {
             tourMapViewModel.weatherStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Loading -> {
@@ -353,6 +407,13 @@ class TourMapFragment
             initMapUi()
             updateMyLocation()
 
+            fusedLocationSource = FusedLocationSource(requireActivity(), LOCATION_PERMISSION_REQUEST_CODE)
+
+            with(map) {
+                locationSource = fusedLocationSource        // 현재 위치
+                locationTrackingMode = LocationTrackingMode.Follow // 위치를 추적하면서 카메라도 따라 움직인다.
+            }
+
             /* 카메라 이동시키기
                val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.5666102, 126.9783881))
                 .animate(CameraAnimation.Easing, 2000)
@@ -468,13 +529,6 @@ class TourMapFragment
                     locationCallback,
                     Looper.myLooper()
                 )
-
-                fusedLocationSource = FusedLocationSource(requireActivity(), LOCATION_PERMISSION_REQUEST_CODE)
-
-                with(map) {
-                    locationSource = fusedLocationSource        // 현재 위치
-                    locationTrackingMode = LocationTrackingMode.Follow // 위치를 추적하면서 카메라도 따라 움직인다.
-                }
 
                 with(binding) {
                     btnTourMapMyLocation.isSelected = true
