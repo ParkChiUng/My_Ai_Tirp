@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.sessac.myaitrip.common.MyAiTripApplication
+import com.sessac.myaitrip.data.repository.tour.TourRepository
 import com.sessac.myaitrip.data.repository.user.UserRepository
 import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
 import com.sessac.myaitrip.data.repository.user.remote.UserRemoteDataSource
@@ -37,8 +38,9 @@ class ViewModelFactory(private val context: Context): ViewModelProvider.Factory 
             modelClass.isAssignableFrom(TourMapViewModel::class.java) -> {
                 val weatherApiService = RetrofitServiceInstance.getWeatherApiService()
                 val weatherRepository = WeatherRepository(weatherApiService)
+                val tourRepository = TourRepository.getInstance()
 
-                TourMapViewModel(weatherRepository) as T
+                TourMapViewModel(weatherRepository, tourRepository) as T
             }
 
             else -> {

@@ -97,6 +97,51 @@ class TourMapFragment
         }
 
         setupWeatherStatusCollection()
+        setUpLocationPlaceStatusCollection()
+    }
+
+    private fun setUpLocationPlaceStatusCollection() {
+        lifecycleScope.launch {
+            tourMapViewModel.locationTourStatus.collectLatest { state ->
+                when(state) {
+                    is UiState.Loading -> {}
+                    is UiState.Success -> {
+                        val response = state.data.response
+                        response?.let { response ->
+                            val header = response.header
+                            val body = response.body
+
+                            header?.let { header ->
+                                if( header.resultCode == "0000" && header.resultMsg == "OK" ) {
+
+                                    body?.let { body ->
+                                        body.items?.let { tourItems ->
+                                            val tourList = tourItems.item
+                                            tourList?.let { tourList ->
+                                                if(tourList.isNotEmpty()) {
+                                                    val sortedTourList = tourList.sortedBy { tourItem ->
+                                                        tourItem.distance.toDouble() // 가까운 순으로 정렬
+                                                    }.also {
+                                                        // adapter submitList(it)
+                                                    }.forEach {
+//                                                        Log.d(TAG, "TourItem = $it") // 잘 가져와짐
+                                                    }
+
+                                                }
+                                            }
+
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    is UiState.Error -> {}
+                    else -> {}
+                }
+            }
+        }
     }
 
     private fun initMyLocationBottomSheet() {
@@ -417,8 +462,8 @@ class TourMapFragment
                                         )
                                     }
                                 }
-                                // TODO. 현재 위도, 경도로 근처 관광지 정보 가져오기
-
+                                // 현재 위도, 경도로 근처 관광지 정보 가져오기
+                                getPlaceListByLocation(location.latitude.toString(), location.longitude.toString())
                             }
                         }
                     }
