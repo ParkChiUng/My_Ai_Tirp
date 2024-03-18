@@ -8,8 +8,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -17,6 +19,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraUpdate
@@ -26,11 +29,16 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.sessac.myaitrip.databinding.FragmentTourMapBinding
+import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
+import com.sessac.myaitrip.presentation.common.ViewModelFactory
+import com.sessac.myaitrip.util.DateUtil
 import com.sessac.myaitrip.util.PermissionUtil
 import com.sessac.myaitrip.util.showToast
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Locale
+import kotlin.math.roundToInt
 
 /**
  * 맵 페이지
@@ -39,6 +47,9 @@ class TourMapFragment
     : ViewBindingBaseFragment<FragmentTourMapBinding>(FragmentTourMapBinding::inflate),
     OnMapReadyCallback {
 
+    private val tourMapViewModel: TourMapViewModel by viewModels { ViewModelFactory(requireContext()) }
+    lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
+
     private lateinit var mapView: MapView
     private lateinit var map: NaverMap
 
@@ -46,9 +57,11 @@ class TourMapFragment
     private lateinit var locationCallback: LocationCallback
     private lateinit var fusedLocationSource: FusedLocationSource
 
+//    private var
+
     companion object {
         private const val TAG = "NaverMap"
-        private const val LOCATION_REQUEST_INTERVAL = 60 * 1000 // 60초
+        private const val LOCATION_REQUEST_INTERVAL = 60 * 60 * 1000 // 1시간
         private const val LOCATION_PERMISSION_REQUEST_CODE = 100
         private val LOCATION_PERMISSIONS = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -62,6 +75,45 @@ class TourMapFragment
         mapView = binding.mapViewTourMap.also {
             it.onCreate(savedInstanceState)
             it.getMapAsync(this)
+        }
+
+        setupWeatherStatusCollection()
+    }
+
+    private fun setupWeatherStatusCollection() {
+        lifecycleScope.launch {
+            tourMapViewModel.weatherStatus.collectLatest { state ->
+                when (state) {
+                    is UiState.Loading -> {
+
+                    }
+
+                    is UiState.Success -> {
+                        val response = state.data.response
+                        val weatherItems = response?.body?.item?.weatherInfoItems
+
+                        weatherItems?.let {
+                            val weatherInfoList = it.filter { weatherInfo ->
+    //                                Log.d(TAG, "forecastTime = ${weatherInfo.forecastTime}")
+    //                                Log.d(TAG, "현재 시간 = ${DateUtil.getCurrentHourWithFormatted()}")
+                                weatherInfo.forecastTime == DateUtil.getCurrentHourWithFormatted()
+                            }.forEach {
+                                Log.d(TAG, "날씨 정보 = $it")
+                                when(it.dataCategory) {
+
+                                }
+                            }
+                        }
+
+                    }
+
+                    is UiState.Error -> {
+                        Log.e(TAG, "WeatherData Error ${state.errorMessage}")
+                    }
+
+                    else -> {}
+                }
+            }
         }
     }
 
@@ -82,7 +134,7 @@ class TourMapFragment
             with(map) {
                 // 카메라가 움직일 때 이벤트 처리 리스너
                 addOnCameraChangeListener { reason, animated ->
-                    Log.i("NaverMap", "카메라 변경 - reson: $reason, animated: $animated")
+//                    Log.i("NaverMap", "카메라 변경 - reson: $reason, animated: $animated")
                     /*
                         public static final int REASON_DEVELOPER = 0;   (개발자 API 호출)
                         public static final int REASON_GESTURE = -1;    (사용자 제스처)
@@ -111,7 +163,8 @@ class TourMapFragment
         with(map.uiSettings) {
             isCompassEnabled = false    // 나침반
             isZoomControlEnabled = false    // +, - 줌 버튼
-            setLogoMargin(24, 0, 0, 24) // 로고 마진
+            logoGravity = Gravity.TOP or Gravity.END
+            setLogoMargin(0, 24, 24, 0) // 로고 마진
         }
     }
 
@@ -139,7 +192,42 @@ class TourMapFragment
                                 .animate(CameraAnimation.Easing, 2000)
                                 .reason(1000)
 
-                            map.moveCamera(cameraUpdate)
+                            map.moveCamera(cameraUpdate) // 현재 위치로 카메라 이동
+
+                            Log.e(TAG, "현재 위도 = ${location.latitude}, 경도 = ${location.longitude}")
+                            // 현재 날짜 (yyyyMMdd) 형식 필요
+//                            Log.e(TAG, "현재 날짜(yyyyMMdd) = ${DateUtil.getCurrentDate()}")
+//                            Log.e(TAG, "현재 시간 = ${DateUtil.getCurrentHour()}")
+
+                            val latitude = location.latitude
+                            val longitude = location.longitude
+
+                            with(tourMapViewModel) {
+                                // 날씨 정보 가져오기
+                                // 위도, 경도 정수 값 필요
+                                // 05시 기상청 발표 값 가져오기
+                                when(DateUtil.getCurrentHour()) {
+                                    in 6..23 -> {
+                                        // if 현재시간 in 06 ~ 23 (오늘 날씨 정보 가져오기)
+                                        getWeatherData(
+                                            DateUtil.getCurrentDate(),
+                                            latitude.roundToInt().toString(),
+                                            longitude.roundToInt().toString()
+                                        )
+                                    }
+
+                                    else -> {
+                                        // 현재 시간 in 00 ~ 05 (어제 날씨 정보 가져오기)
+                                        getWeatherData(
+                                            DateUtil.getYesterdayDate(),
+                                            latitude.roundToInt().toString(),
+                                            longitude.roundToInt().toString()
+                                        )
+                                    }
+                                }
+                                // TODO. 현재 위도, 경도로 근처 관광지 정보 가져오기
+
+                            }
                         }
                     }
                 }
@@ -157,8 +245,9 @@ class TourMapFragment
                     locationTrackingMode = LocationTrackingMode.Follow // 위치를 추적하면서 카메라도 따라 움직인다.
                 }
 
-                binding.btnTourMapMyLocation.isSelected = true
-
+                with(binding) {
+                    btnTourMapMyLocation.isSelected = true
+                }
             },
             onPermissionDenied = {
                 requireContext().showToast("현재 위치 기능을 사용하려면, 위치 권한을 허용해주세요.")
@@ -181,6 +270,9 @@ class TourMapFragment
                             Log.e(TAG, "locality = $locality") // null
                             Log.e(TAG, "subLocality = $subLocality") // 관악구
                             // Log.e(TAG, "thoroughfare = $thoroughfare") 신림동
+
+
+                            // TODO. 바텀 시트 지역명 나타내주기
                         }
                     }
                 }

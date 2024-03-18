@@ -7,8 +7,11 @@ import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.data.repository.user.UserRepository
 import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
 import com.sessac.myaitrip.data.repository.user.remote.UserRemoteDataSource
+import com.sessac.myaitrip.data.repository.weather.WeatherRepository
+import com.sessac.myaitrip.network.RetrofitServiceInstance
 import com.sessac.myaitrip.presentation.login.LoginViewModel
 import com.sessac.myaitrip.presentation.register.RegisterViewModel
+import com.sessac.myaitrip.presentation.tourmap.TourMapViewModel
 
 class ViewModelFactory(private val context: Context): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -29,6 +32,13 @@ class ViewModelFactory(private val context: Context): ViewModelProvider.Factory 
                 val userRepository = UserRepository(userLocalDataSource, userRemoteDataSource)
 
                 RegisterViewModel(userRepository) as T
+            }
+
+            modelClass.isAssignableFrom(TourMapViewModel::class.java) -> {
+                val weatherApiService = RetrofitServiceInstance.getWeatherApiService()
+                val weatherRepository = WeatherRepository(weatherApiService)
+
+                TourMapViewModel(weatherRepository) as T
             }
 
             else -> {
