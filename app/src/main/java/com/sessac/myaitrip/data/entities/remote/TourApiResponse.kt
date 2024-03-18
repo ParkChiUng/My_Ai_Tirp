@@ -42,3 +42,8 @@ data class TourItems(
     @SerializedName("item")
     var item: List<TourItem>? = null
 )
+
+data class LocationBasedTourItems(
+    @SerializedName("item")
+    var item: List<LocationBasedTourItem>? = null
+)

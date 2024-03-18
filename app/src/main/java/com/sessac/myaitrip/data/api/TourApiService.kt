@@ -3,6 +3,7 @@ package com.sessac.myaitrip.data.api
 import com.sessac.myaitrip.BuildConfig
 import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.data.entities.remote.ApiResponse
+import com.sessac.myaitrip.data.entities.remote.LocationBasedTourItems
 import com.sessac.myaitrip.data.entities.remote.TourItems
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -17,4 +18,17 @@ interface TourApiService {
         @Query("MobileOS") mobileOS: String = "AND",
         @Query("serviceKey") serviceKey: String = BuildConfig.TOUR_API_SERVICE_KEY,
     ): ApiResponse<TourItems>
+
+    @GET("locationBasedList1")
+    suspend fun getLocationBasedData(
+        @Query("pageNo") pageNo: Int = 1,
+        @Query("numOfRows") numOfRows: Int = 1000,
+        @Query("MobileOS") mobileOS: String = "AND",
+        @Query("MobileApp") MobileApp: String = MyAiTripApplication.appName,
+        @Query("_type") type: String = "json",
+        @Query("mapX") longitude: String,
+        @Query("mapY") latitude: String,
+        @Query("radius") radius: String = "3000",
+        @Query("serviceKey") serviceKey: String = BuildConfig.TOUR_API_SERVICE_KEY,
+    ): ApiResponse<LocationBasedTourItems>
 }
