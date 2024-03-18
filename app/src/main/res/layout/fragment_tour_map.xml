@@ -19,6 +19,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_tour_map_my_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/oval_gray100_border"
+            android:backgroundTint="@color/white"
+            android:padding="4dp"
+            android:src="@drawable/selector_btn_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,20 +39,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        app:behavior_hideable="false"
         app:behavior_peekHeight="100dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/btn_tour_map_my_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:background="@drawable/oval_white"
-            android:backgroundTint="@color/white"
-            android:padding="4dp"
-            android:src="@drawable/selector_btn_location"
-            app:layout_constraintBottom_toTopOf="@id/location_bottom_sheet_layout"
-            app:layout_constraintEnd_toEndOf="@id/location_bottom_sheet_layout" />
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:visibility="visible">
 
         <include
             android:id="@+id/location_bottom_sheet_layout"

@@ -81,18 +81,6 @@
     <string name="register_profile_subdescription">(선택)</string>
     <string name="helper_register_nickname">특수문자를 제외하고 닉네임을 입력해주세요. 최대 8글자입니다.</string>
 
-    <!-- contentTypeId = 12:관광지, 14:문화시설, 15:축제공연행사, 25:여행코스, 28:레포츠, 32:숙박, 38:쇼핑, 39:음식점 -->
-    <string-array name="content_types">
-        <item>관광지</item>
-        <item>문화시설</item>
-        <item>축제•공연•행사</item>
-        <item>여행코스</item>
-        <item>레포츠</item>
-        <item>숙박</item>
-        <item>쇼핑</item>
-        <item>음식점</item>
-    </string-array>
-
     <string name="temperature_normal_format">%1$d°</string>
     <string name="temperature_high_format">최고 %1$d°</string>
     <string name="temperature_low_format">최저 %1$d°</string>
