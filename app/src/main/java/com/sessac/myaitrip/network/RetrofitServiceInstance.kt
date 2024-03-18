@@ -15,7 +15,7 @@ class RetrofitServiceInstance {
         private lateinit var weatherService: WeatherApiService
 
         private const val tourApiUrl = "http://apis.data.go.kr/B551011/KorService1/"
-        private const val weatherApiBaseUrl = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
+        private const val weatherApiBaseUrl = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/"
 
         private fun getRetrofitInstance(url: String): Retrofit {
             return Retrofit.Builder()
