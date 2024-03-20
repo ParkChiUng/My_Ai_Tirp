@@ -138,6 +138,7 @@ dependencies {
 
     // 네이버 지도 SDK
     implementation("com.naver.maps:map-sdk:3.17.0")
+    implementation("io.github.ParkSangGwon:tedclustering-naver:1.0.2") // 네이버 지도 Ted 클러스터링
 
     // 현재 위치
     implementation("com.google.android.gms:play-services-location:21.2.0")
