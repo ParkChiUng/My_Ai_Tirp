@@ -38,9 +38,8 @@ class ToursPagingAdapter(
         fun widgetBinding(tourItem: TourItem) {
             tourItem.let { tour ->
                 with(binding) {
-                    tour.firstImage?.let {
-                        GlideUtil.loadImage(ivTour.context, tour.firstImage, ivTour)
-                    }
+
+                    GlideUtil.loadImage(ivTour.context, tour.firstImage!!, ivTour)
 
                     tvTourName.text = tour.title
 

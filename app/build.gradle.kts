@@ -10,9 +10,6 @@ plugins {
     id("kotlin-parcelize")
 }
 
-val properties = Properties().apply {
-    load(FileInputStream(rootProject.file("local.properties")))
-}
 android {
     namespace = "com.sessac.myaitrip"
     compileSdk = 34
@@ -69,9 +66,12 @@ android {
     }
 }
 
-// 2. local.properties 내부에서 key값을 가져오는 함수 구현방식
+val properties = Properties().apply {
+    load(FileInputStream(rootProject.file("local.properties")))
+}
+
 fun getApiKey(propertyKey: String): String {
-    return gradleLocalProperties(rootDir).getProperty(propertyKey).toString()
+    return properties.getProperty(propertyKey)
 }
 
 dependencies {

@@ -21,8 +21,7 @@ class ToursViewModel(
 
     fun getTourList(area: String, category: String, inputText: String) {
         viewModelScope.launch {
-            tourRepository.getTourList(area, category, inputText).cachedIn(viewModelScope)
-                .collectLatest { pagingData ->
+            tourRepository.getTourList(area, category, inputText).cachedIn(viewModelScope).collectLatest { pagingData ->
                     _tourStatus.value = pagingData
                 }
         }

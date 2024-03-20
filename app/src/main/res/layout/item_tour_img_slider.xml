@@ -4,18 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="@dimen/card_radius"
-    app:cardElevation="@dimen/card_elevation">
+    app:cardCornerRadius="@dimen/card_radius">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_slider"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
-
 </androidx.cardview.widget.CardView>

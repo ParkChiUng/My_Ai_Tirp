@@ -17,6 +17,12 @@ interface TourDao {
 //    fun getContentIdByTitle(title: String): List<String>
 
     /**
+     * [Room DB] contentId 1개의 관광지 리스트 조회
+     */
+    @Query("SELECT * FROM tbl_tour WHERE contentId IN (:contentId) AND firstImage != ''")
+    fun getTourList(contentId: String): TourItem
+
+    /**
      * [Room DB] contentId List로 관광지 리스트 조회
      */
     @Query("SELECT * FROM tbl_tour WHERE contentId IN (:contentId) AND firstImage != ''")

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl_top"
@@ -38,211 +39,142 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/white"
         android:elevation="@dimen/card_elevation"
-        app:navigationIcon="@drawable/ic_back"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back">
 
         <TextView
             android:id="@+id/tv_diary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textColor="@color/black"
-            android:textStyle="bold"
             android:text="다이어리 등록"
-            android:textSize="@dimen/f_home_tv_text_size" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/f_home_tv_text_size"
+            android:textStyle="bold" />
     </com.google.android.material.appbar.MaterialToolbar>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_tour"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vp_tour"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toRightOf="@id/gl_left"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <View
+        android:id="@+id/view_FadingEdge"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_fading_edge"
+        app:layout_constraintBottom_toBottomOf="@+id/vp_tour"
+        app:layout_constraintStart_toStartOf="@+id/vp_tour" />
+
+    <me.relex.circleindicator.CircleIndicator3
+        android:id="@+id/layout_Indicators"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/f_home_rcv_margin_top"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintLeft_toLeftOf="@id/gl_left"
-        app:layout_constraintRight_toRightOf="@id/gl_right"
-        app:layout_constraintBottom_toTopOf="@id/layout_tools"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintVertical_weight="1">
+        android:paddingBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/view_FadingEdge"
+        app:layout_constraintEnd_toEndOf="@+id/vp_tour"
+        app:layout_constraintStart_toStartOf="@+id/vp_tour" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_image"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/f_home_rcv_margin_top"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/layout_text"
-            app:layout_constraintHorizontal_weight="1">
-
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/vp_tour"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_weight="1"/>
-
-            <View
-                android:id="@+id/view_FadingEdge"
-                android:layout_width="0dp"
-                android:layout_height="55dp"
-                android:background="@drawable/bg_fading_edge"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="@+id/vp_tour"
-                app:layout_constraintHorizontal_weight="1"/>
-
-            <me.relex.circleindicator.CircleIndicator3
-                android:id="@+id/layout_Indicators"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:paddingBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="@id/view_FadingEdge"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintHorizontal_weight="1"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_text"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/f_home_rcv_margin_top"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/layout_image"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintHorizontal_weight="2">
-
-            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/tv_tour_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="고나광지 이름"
-                app:layout_constraintBottom_toTopOf="@+id/tv_tour_area"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/tv_tour_area"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="지역지역"
-                app:layout_constraintTop_toBottomOf="@+id/tv_tour_name"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_tools"
+    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+        android:id="@+id/tv_tour_name"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/layout_tour"
-        app:layout_constraintLeft_toLeftOf="@id/gl_left"
-        app:layout_constraintRight_toRightOf="@id/gl_right"
-        app:layout_constraintBottom_toTopOf="@id/layout_description"
-        app:layout_constraintVertical_weight="3">
+        android:layout_height="wrap_content"
+        android:text="고나광지 이름"
+        android:layout_marginLeft="20dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_tour_address"
+        app:layout_constraintStart_toEndOf="@+id/vp_tour"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
-        <View
-            android:id="@+id/line"
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:layout_marginTop="20dp"
-            android:background="@android:color/darker_gray"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/layout_diary"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"/>
-
-        <LinearLayout
-            android:id="@+id/layout_diary"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/line"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/et_diary_title"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@drawable/search_layout_background"
-                android:hint="제목제목"
-                android:layout_weight="1"
-                android:imeOptions="actionSearch"
-                android:inputType="text" />
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/et_diary_review"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@drawable/search_layout_background"
-                android:hint="제목제목"
-                android:layout_weight="1"
-                android:imeOptions="actionSearch"
-                android:inputType="text" />
-
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_share"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/tour_detail_share"
-                android:textColor="@color/black"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                app:strokeColor="@android:color/black"
-                app:strokeWidth="0.5dp"
-                android:drawableEnd="@drawable/ic_share"
-                style="?attr/materialButtonOutlinedStyle" />
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_description"
+    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+        android:id="@+id/tv_tour_address"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/layout_tools"
+        android:layout_height="wrap_content"
+        android:text="주소주소"
+        android:background="@color/white"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tour_name"
+        app:layout_constraintStart_toEndOf="@+id/vp_tour"
+        app:layout_constraintStart_toStartOf="@+id/tv_tour_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:layout_marginTop="20dp"
+        android:background="@android:color/darker_gray"
         app:layout_constraintLeft_toLeftOf="@id/gl_left"
-        app:layout_constraintRight_toRightOf="@id/gl_right"
-        app:layout_constraintBottom_toTopOf="@id/gl_bottom"
-        app:layout_constraintVertical_weight="1">
+        app:layout_constraintRight_toRightOf="@+id/gl_right"
+        app:layout_constraintTop_toBottomOf="@+id/vp_tour" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent">
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_diary_title"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:background="@drawable/search_layout_background"
+        android:hint="다이어리 제목"
+        android:padding="10dp"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@+id/gl_left"
+        app:layout_constraintEnd_toEndOf="@+id/gl_right"
+        app:layout_constraintTop_toBottomOf="@id/line" />
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tv_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:background="@drawable/button_border"
-                    android:enabled="false"/>
-            </ScrollView>
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_diary_review"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:background="@drawable/search_layout_background"
+        android:hint="다이어리 내용"
+        android:padding="10dp"
+        android:imeOptions="actionSearch"
+        android:inputType="textMultiLine"
+        android:gravity="top|start"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@+id/gl_left"
+        app:layout_constraintEnd_toEndOf="@+id/gl_right"
+        app:layout_constraintTop_toBottomOf="@id/et_diary_title"/>
 
-        </com.google.android.material.textfield.TextInputLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_add_img"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/search_layout_background"
+        android:src="@drawable/ic_add"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@+id/gl_left"
+        app:layout_constraintTop_toBottomOf="@id/et_diary_review"/>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcv_img"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_diary_img_card"
+        android:layout_margin="20dp"
+        app:layout_constraintStart_toEndOf="@+id/btn_add_img"
+        app:layout_constraintTop_toBottomOf="@id/et_diary_review" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:text="등록하기"
+        app:layout_constraintStart_toStartOf="@+id/gl_left"
+        app:layout_constraintEnd_toEndOf="@+id/gl_right"
+        app:layout_constraintTop_toBottomOf="@id/btn_add_img" />
 </androidx.constraintlayout.widget.ConstraintLayout>

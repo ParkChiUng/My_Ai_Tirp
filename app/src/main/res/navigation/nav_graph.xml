@@ -74,6 +74,9 @@
         android:name="com.sessac.myaitrip.presentation.tourDetail.TourDetailFragment"
         android:label="fragment_tourDetail"
         tools:layout="@layout/fragment_tour_detail">
+        <action
+            android:id="@+id/action_TourDetailFragment_to_DiaryFragment"
+            app:destination="@id/DiaryFragment" />
     </fragment>
 
     <fragment

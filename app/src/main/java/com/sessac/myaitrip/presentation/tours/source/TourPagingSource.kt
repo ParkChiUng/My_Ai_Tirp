@@ -6,6 +6,7 @@ import androidx.paging.PagingState
 import com.sessac.myaitrip.data.database.TourDao
 import com.sessac.myaitrip.data.entities.TourItem
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class TourPagingSource(
