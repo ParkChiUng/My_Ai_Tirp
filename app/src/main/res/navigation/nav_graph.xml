@@ -33,13 +33,19 @@
         android:name="com.sessac.myaitrip.presentation.AIRecommendFragment"
         android:label="fragment_AIRecommend"
         tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_AIRecommendFragment_to_TourDetailFragment"
+            app:destination="@id/TourDetailFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/ToursFragment"
-        android:name="com.sessac.myaitrip.presentation.ToursFragment"
+        android:name="com.sessac.myaitrip.presentation.tours.ToursFragment"
         android:label="fragment_tours"
         tools:layout="@layout/fragment_tours">
+        <action
+            android:id="@+id/action_ToursFragment_to_TourDetailFragment"
+            app:destination="@id/TourDetailFragment" />
     </fragment>
 
     <fragment

@@ -7,6 +7,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("kotlin-kapt")
+    id("kotlin-parcelize")
 }
 
 val properties = Properties().apply {
@@ -137,4 +138,10 @@ dependencies {
     val tedpermission_version = "3.3.0"
     implementation ("io.github.ParkSangGwon:tedpermission-normal:$tedpermission_version")   // Normal ver
     implementation("io.github.ParkSangGwon:tedpermission-coroutine:$tedpermission_version") // Coroutine ver
+
+    // circle indicator
+    implementation("me.relex:circleindicator:2.1.6")
+
+    // paging
+    implementation("androidx.paging:paging-runtime-ktx:3.2.1")
 }

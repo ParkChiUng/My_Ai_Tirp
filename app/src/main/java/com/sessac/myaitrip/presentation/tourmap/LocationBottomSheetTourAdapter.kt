@@ -49,8 +49,12 @@ class LocationBottomSheetTourAdapter(
                     else -> "음식점"
                 }
 
-                tour.firstImageUrl.isEmpty()
-                GlideUtil.loadImage(ivItemTourMapBottomSheetImg.context, tour.firstImageUrl, ivItemTourMapBottomSheetImg)   // 이미지
+
+                // 이미지
+                if(tour.imageUrl.isNotEmpty())
+                    GlideUtil.loadImage(ivItemTourMapBottomSheetImg.context, tour.imageUrl, ivItemTourMapBottomSheetImg)
+                else if(tour.subImageUrl.isNotEmpty())
+                    GlideUtil.loadImage(ivItemTourMapBottomSheetImg.context, tour.subImageUrl, ivItemTourMapBottomSheetImg)
 
                 // 아이템 클릭
                 root.clicks()
