@@ -28,18 +28,25 @@ import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.sessac.myaitrip.R
+import com.sessac.myaitrip.data.entities.TourClusterItem
+import com.sessac.myaitrip.data.entities.remote.LocationBasedTourItem
 import com.sessac.myaitrip.databinding.FragmentTourMapBinding
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.util.DateUtil
 import com.sessac.myaitrip.util.PermissionUtil
+import com.sessac.myaitrip.util.repeatOnResumed
 import com.sessac.myaitrip.util.repeatOnStarted
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ted.gun0912.clustering.naver.TedNaverClustering
+import ted.gun0912.clustering.naver.TedNaverMarker
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -55,11 +62,17 @@ class TourMapFragment
     private lateinit var locationBottomSheetTourAdapter: LocationBottomSheetTourAdapter
 
     private lateinit var mapView: MapView
-    private lateinit var map: NaverMap
+    private lateinit var naverMap: NaverMap
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private lateinit var fusedLocationSource: FusedLocationSource
+
+//    private val markers = mutableListOf<Marker>()
+//    private val markers = mutableListOf<TedNaverMarker>()
+
+    private val locationItemList = mutableListOf<LocationBasedTourItem>()
+    private val clusterItemList = mutableListOf<TourClusterItem>()
 
     companion object {
         private const val TAG = "NaverMap"
@@ -102,6 +115,96 @@ class TourMapFragment
 
         setupWeatherStatusCollection()
         setUpLocationPlaceStatusCollection()
+        setupAroundPlaceStatusCollection()
+    }
+
+    private fun setupAroundPlaceStatusCollection() {
+        repeatOnResumed {
+            tourMapViewModel.aroundPlaceStatus.collectLatest { state ->
+                when(state) {
+                    is UiState.Loading -> {}
+                    is UiState.Success -> {
+                        val response = state.data.response
+                        val header = response.header
+                        val body = response.body
+
+                        if(header.resultCode == "0000" && header.resultMsg == "OK") {
+                           body.items?.let{ tourItems ->
+                               val tourList = tourItems.item
+                               tourList?.let { tourList ->
+
+                                   locationItemList.clear()
+                                   clusterItemList.clear()
+
+                                   val aroundTours = tourList.filter {
+                                       it.imageUrl.isNotEmpty() or it.subImageUrl.isNotEmpty() // 이미지 있는 것만
+                                   }.forEach {
+                                       locationItemList.add(it)
+                                       putClusterItem(it)
+                                   }
+
+                                   updateMarker(clusterItemList)    // 클러스터링하면서 마커 찍어주기
+
+                                   /*.forEach { tour ->
+                                        Marker().apply {
+                                            position = LatLng(tour.latitude.toDouble(), tour.longitude.toDouble())
+                                            map = naverMap
+                                            icon = OverlayImage.fromResource(R.drawable.ic_marker)
+                                            width = Marker.SIZE_AUTO
+                                            height = Marker.SIZE_AUTO
+
+                                            onClickListener = Overlay.OnClickListener {
+                                                TODO("Not yet implemented")
+
+                                            }
+
+                                            markers.add(this)
+                                        }
+                                   }*/
+                               }
+
+                           }
+                        }
+                    }
+                    is UiState.Error -> {}
+                    else -> {}
+                }
+
+            }
+        }
+    }
+
+    private fun putClusterItem(locationBasedTourItem: LocationBasedTourItem) {
+        var clusterItem = TourClusterItem(
+            locationBasedTourItem.latitude.toDouble(),
+            locationBasedTourItem.longitude.toDouble(),
+            locationBasedTourItem.contentId,
+            locationBasedTourItem.title,
+            locationBasedTourItem.address,
+            locationBasedTourItem.address2,
+            locationBasedTourItem.contentTypeId,
+            locationBasedTourItem.distance,
+            locationBasedTourItem.imageUrl,
+            locationBasedTourItem.subImageUrl
+        )
+        clusterItemList.add(clusterItem)
+    }
+
+    private fun updateMarker(rows: List<TourClusterItem>) {
+        TedNaverClustering.with<TourClusterItem>(requireActivity(), naverMap)
+            .customMarker {
+                Marker().apply {
+                    icon = OverlayImage.fromResource(R.drawable.ic_marker)
+                    width = 60
+                    height = 86
+                }
+            }
+            .markerClickListener {
+
+            }
+            .minClusterSize(4)
+            .items(rows)
+            .make()
     }
 
     private fun setUpLocationPlaceStatusCollection() {
@@ -111,75 +214,67 @@ class TourMapFragment
                     is UiState.Loading -> {}
                     is UiState.Success -> {
                         val response = state.data.response
-                        response?.let { response ->
-                            val header = response.header
-                            val body = response.body
+                        val header = response.header
+                        val body = response.body
+                        if( header.resultCode == "0000" && header.resultMsg == "OK" ) {
+                            body.items?.let { tourItems ->
+                                val tourList = tourItems.item
+                                tourList?.let { tourList ->
+                                    if(tourList.isNotEmpty()) {
 
-                            header?.let { header ->
-                                if( header.resultCode == "0000" && header.resultMsg == "OK" ) {
+                                        // 위치 바텀시트 관광지 어댑터
+                                        initMyLocationTourAdapter()
 
-                                    body?.let { body ->
-                                        body.items?.let { tourItems ->
-                                            val tourList = tourItems.item
-                                            tourList?.let { tourList ->
-                                                if(tourList.isNotEmpty()) {
+                                        val sortedTourList = tourList.sortedBy { tourItem ->
+                                            tourItem.distance.toDouble() // 가까운 순으로 정렬
+                                        }.filter {
+                                            it.imageUrl.isNotEmpty() or it.subImageUrl.isNotEmpty() // 이미지 있는 것만
+                                        }.also {
+                                            locationBottomSheetTourAdapter.setTourList(it)
+                                        }
 
-                                                    // 위치 바텀시트 관광지 어댑터
-                                                    initMyLocationTourAdapter()
+                                        // 바텀시트 칩 그룹
+                                        with(binding.locationBottomSheetLayout.chipgroupLocationBottomSheetTag) {
+                                            isSingleSelection = true
+                                            removeAllViews() // 기존 칩들 제거 후 다시 추가
 
-                                                    val sortedTourList = tourList.sortedBy { tourItem ->
-                                                        tourItem.distance.toDouble() // 가까운 순으로 정렬
-                                                    }.filter {
-                                                        it.imageUrl.isNotEmpty() or it.subImageUrl.isNotEmpty() // 이미지 있는 것만
+                                            sortedTourList.distinctBy { locationBasedTourItem -> locationBasedTourItem.contentTypeId } // content Type을 기준으로 중복 제거
+                                                .forEach { item ->
+                                                    val chip = Chip(context, null, R.attr.customChipStyle)
+                                                    when(item.contentTypeId.toInt()) {
+                                                        12 -> { chip.text = "#관광지" }
+                                                        14 -> { chip.text = "#문화시설" }
+                                                        15 -> { chip.text = "#축제•공연•행사" }
+                                                        25 -> { chip.text = "#여행코스" }
+                                                        28 -> { chip.text = "#레포츠" }
+                                                        32 -> { chip.text = "#숙박" }
+                                                        38 -> { chip.text = "#쇼핑" }
+                                                        else -> { chip.text = "#음식점" }
+                                                    }
+
+                                                    chip.id = item.contentTypeId.toInt()
+                                                    addView(chip)
+                                                }
+
+                                            setOnCheckedStateChangeListener{ _, checkedId ->
+                                                if(checkedId.isEmpty()) {
+                                                    locationBottomSheetTourAdapter.setTourList(sortedTourList)
+                                                } else {
+                                                    //                                                                val selectedChipText = findViewById<Chip>(checkedChipId).text.toString().substring(1)
+                                                    //                                                                Log.e(TAG,"SelectedChip = $selectedChipText")
+                                                    Log.e(TAG,"SelectedChipId = ${checkedId.first()}")
+                                                    sortedTourList.filter {
+                                                        it.contentTypeId == checkedId.first().toString()
                                                     }.also {
                                                         locationBottomSheetTourAdapter.setTourList(it)
                                                     }
-
-                                                    // 바텀시트 칩 그룹
-                                                    with(binding.locationBottomSheetLayout.chipgroupLocationBottomSheetTag) {
-                                                        isSingleSelection = true
-                                                        removeAllViews() // 기존 칩들 제거 후 다시 추가
-
-                                                        sortedTourList.distinctBy { locationBasedTourItem -> locationBasedTourItem.contentTypeId } // content Type을 기준으로 중복 제거
-                                                            .forEach { item ->
-                                                                val chip = Chip(context, null, R.attr.customChipStyle)
-                                                                when(item.contentTypeId.toInt()) {
-                                                                    12 -> { chip.text = "#관광지" }
-                                                                    14 -> { chip.text = "#문화시설" }
-                                                                    15 -> { chip.text = "#축제•공연•행사" }
-                                                                    25 -> { chip.text = "#여행코스" }
-                                                                    28 -> { chip.text = "#레포츠" }
-                                                                    32 -> { chip.text = "#숙박" }
-                                                                    38 -> { chip.text = "#쇼핑" }
-                                                                    else -> { chip.text = "#음식점" }
-                                                                }
-
-                                                                chip.id = item.contentTypeId.toInt()
-                                                                addView(chip)
-                                                            }
-
-                                                        setOnCheckedStateChangeListener{ _, checkedId ->
-                                                            if(checkedId.isEmpty()) {
-                                                                locationBottomSheetTourAdapter.setTourList(sortedTourList)
-                                                            } else {
-//                                                                val selectedChipText = findViewById<Chip>(checkedChipId).text.toString().substring(1)
-//                                                                Log.e(TAG,"SelectedChip = $selectedChipText")
-                                                                Log.e(TAG,"SelectedChipId = ${checkedId.first()}")
-                                                                sortedTourList.filter {
-                                                                    it.contentTypeId == checkedId.first().toString()
-                                                                }.also {
-                                                                    locationBottomSheetTourAdapter.setTourList(it)
-                                                                }
-                                                            }
-                                                        }
-                                                    }
                                                 }
                                             }
-
-
                                         }
                                     }
                                 }
+
+
                             }
                         }
                     }
@@ -403,49 +498,63 @@ class TourMapFragment
         }
     }
 
-    override fun onMapReady(naverMap: NaverMap) {
-        lifecycleScope.launch {
-            map = naverMap
-            initMapUi()
-            // 전체 관광지 마커
+    override fun onMapReady(map: NaverMap) {
+        naverMap = map
+        initMapUi()
+        updateMyLocation()  // 현재 위치 기능
 
-            updateMyLocation()  // 현재 위치 기능
+        with(naverMap) {
+            minZoom = 6.0
+            maxZoom = 16.0
+        }
 
-            /* 카메라 이동시키기
-               val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.5666102, 126.9783881))
-                .animate(CameraAnimation.Easing, 2000)
-                .reason(1000)
+        /* 카메라 이동시키기
+           val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.5666102, 126.9783881))
+            .animate(CameraAnimation.Easing, 2000)
+            .reason(1000)
 
-                 naverMap.moveCamera(cameraUpdate)
+             naverMap.moveCamera(cameraUpdate)
 */
-            with(map) {
-                // 카메라가 움직일 때 이벤트 처리 리스너
-                addOnCameraChangeListener { reason, animated ->
+        with(map) {
+            // 카메라가 움직일 때 이벤트 처리 리스너
+            addOnCameraChangeListener { reason, animated ->
 //                    Log.i("NaverMap", "카메라 변경 - reson: $reason, animated: $animated")
-                    /*
-                        public static final int REASON_DEVELOPER = 0;   (개발자 API 호출)
-                        public static final int REASON_GESTURE = -1;    (사용자 제스처)
-                        public static final int REASON_CONTROL = -2;    (사용자의 버튼 선택)
-                        public static final int REASON_LOCATION = -3;  (위치 정보 갱신)
-                     */
+                /*
+                    public static final int REASON_DEVELOPER = 0;   (개발자 API 호출)
+                    public static final int REASON_GESTURE = -1;    (사용자 제스처)
+                    public static final int REASON_CONTROL = -2;    (사용자의 버튼 선택)
+                    public static final int REASON_LOCATION = -3;  (위치 정보 갱신)
+                 */
 
-                    // 사용자 제스처가 있을 때, 현재 위치 버튼이 선택되어 있다면 선택 해제
-                    if(reason == -1)
-                        binding.btnTourMapMyLocation.isSelected = false
+                // 사용자 제스처가 있을 때, 현재 위치 버튼이 선택되어 있다면 선택 해제
+                if(reason == -1) {
+                    binding.btnTourMapMyLocation.isSelected = false
                 }
-
-                // 카메라가 멈췄을 때, 리스너
-                addOnCameraIdleListener {}
             }
 
-            binding.btnTourMapMyLocation.setOnClickListener {
-                updateMyLocation()
-            }
+            // 카메라가 멈췄을 때, 리스너
+            /*addOnCameraIdleListener {
+                with(map.cameraPosition.target) {
+
+                    Log.e(TAG,"현재 센터 좌표 위도 = $latitude, 경도 = $longitude")
+
+                    val latRes = String.format("%.10f", latitude)
+                    val longRes = String.format("%.10f", longitude)
+                    Log.e(TAG, "소수점 10자리 위도 = $latRes, 경도 = $longRes")
+                }
+            }*/
+
+            // 사용자 위치 추적
+//                addOnLocationChangeListener {}
+        }
+
+        binding.btnTourMapMyLocation.setOnClickListener {
+            updateMyLocation()
         }
     }
 
     private fun initMapUi() {
-        with(map.uiSettings) {
+        with(naverMap.uiSettings) {
             isCompassEnabled = false    // 나침반
             isZoomControlEnabled = false    // +, - 줌 버튼
             logoGravity = Gravity.TOP or Gravity.END
@@ -464,7 +573,7 @@ class TourMapFragment
             onPermissionGranted = {
                 fusedLocationSource = FusedLocationSource(requireActivity(), LOCATION_PERMISSION_REQUEST_CODE)
 
-                with(map) {
+                with(naverMap) {
                     locationSource = fusedLocationSource        // 현재 위치
                     locationTrackingMode = LocationTrackingMode.Follow // 위치를 추적하면서 카메라도 따라 움직인다.
                 }
@@ -484,9 +593,9 @@ class TourMapFragment
                         locationResult.locations.forEachIndexed { index, location ->
                             val cameraUpdate = CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
                                 .animate(CameraAnimation.Easing, 2000)
-                                .reason(1000)
+                                .reason(1000)   // 현재 위치 이동 reason = 1000
 
-                            map.moveCamera(cameraUpdate) // 현재 위치로 카메라 이동
+                            naverMap.moveCamera(cameraUpdate) // 현재 위치로 카메라 이동
 
                             Log.e(TAG, "현재 위도 = ${location.latitude}, 경도 = ${location.longitude}")
                             // 현재 날짜 (yyyyMMdd) 형식 필요
@@ -496,9 +605,11 @@ class TourMapFragment
                             val (nx, ny) = latLonToGrid(location.latitude, location.longitude)
                             Log.e(TAG,"X 좌표 = $nx, Y 좌표 = $ny")
 
-                            getAddress(location.latitude, location.longitude)
+                            getAddress(location.latitude, location.longitude)   // 현재 위치 주소 가져오기
 
                             with(tourMapViewModel) {
+                                getAroundTourList(location.latitude.toString(), location.longitude.toString()) // 현재 위치 근처 관광지 가져오기
+
                                 // 날씨 정보 가져오기
                                 // 위도, 경도 정수 값 필요
                                 // 05시 기상청 발표 값 가져오기

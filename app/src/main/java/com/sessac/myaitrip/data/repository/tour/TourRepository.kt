@@ -26,6 +26,17 @@ class TourRepository(
     private val tourRemoteDataSource: TourRemoteDataSource
 ) {
     /**
+     * Get around place list
+     * 현재 지도의 카메라 센터 좌표(위도, 경도) 근처 20km의 관광지 정보를 가져온다.
+     * @param latitude
+     * @param longitude
+     */
+    fun getAroundPlaceList(latitude: String, longitude: String) = flow {
+        emit(UiState.Loading)
+        emit(UiState.Success(tourApiService.getLocationBasedData(latitude = latitude, longitude = longitude, radius = "20000")))
+    }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
+
+    /**
      * [Preference] 관광지 저장한 개수 조회
      */
     suspend fun getTourPreferences(): Flow<TourPreferencesData> =

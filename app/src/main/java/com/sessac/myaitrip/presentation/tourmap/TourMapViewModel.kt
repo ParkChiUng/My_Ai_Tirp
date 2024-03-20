@@ -25,10 +25,21 @@ class TourMapViewModel(
     private val _locationTourStatus = MutableStateFlow<UiState<ApiResponse<LocationBasedTourItems>>>(UiState.Empty)
     val locationTourStatus get() = _locationTourStatus.asStateFlow()
 
+    private val _aroundPlaceStatus = MutableStateFlow<UiState<ApiResponse<LocationBasedTourItems>>>(UiState.Empty)
+    val aroundPlaceStatus get() = _aroundPlaceStatus.asStateFlow()
+
     fun getWeatherData(date: String, pointX: String, pointY: String) {
         viewModelScope.launch {
             weatherRepository.getWeatherData(date = date, pointX = pointX, pointY = pointY).collectLatest {
                 _weatherStatus.value = it
+            }
+        }
+    }
+
+    fun getAroundTourList(latitude: String, longitude: String) {
+        viewModelScope.launch {
+            tourRepository.getAroundPlaceList(latitude, longitude).collectLatest {
+                _aroundPlaceStatus.value = it
             }
         }
     }
