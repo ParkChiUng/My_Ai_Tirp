@@ -7,15 +7,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.firestore
 import com.sessac.myaitrip.R
 import com.sessac.myaitrip.databinding.FragmentHomeBinding
+import com.sessac.myaitrip.presentation.common.UiState
+import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
+import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.home.adapter.FullCardAdapter
 import com.sessac.myaitrip.presentation.home.adapter.SmallCardAdapter
-import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -34,13 +35,14 @@ class HomeFragment :
     private lateinit var contentIdList: List<String>
     private lateinit var areaList: Array<String>
     private lateinit var cityName: String
+    private lateinit var listType: HomeViewModel.ListType
 
-    private val homeViewModel: HomeViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by viewModels() { ViewModelFactory(requireContext()) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        areaList = resources.getStringArray(R.array.areas)
+        areaList = resources.getStringArray(R.array.areas_home)
         cityName = areaList[0]
 
         init()
@@ -77,83 +79,116 @@ class HomeFragment :
         }
     }
 
-    private fun getPopularTourList(){
-        Firebase.firestore.collection("tour").document("data").collection("popular")
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-
-                    /**
-                     * popular의 모든 리스트를 가져오고 counting 높은 순으로 5개만 정렬
-                     *
-                     * it.first -> contentId
-                     * it.second -> counting
-                     *
-                     */
-                    contentIdList = document.documents.map { doc ->
-                        Pair(doc.id, doc.getLong("counting") ?: 0)
-                    }.sortedByDescending { it.second }
-                        .take(5)
-                        .map{ it.first }
-
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        repeatOnLifecycle(Lifecycle.State.CREATED) {
-                            homeViewModel.getTourListByContentId(contentIdList,
-                                HomeViewModel.ListType.POPULAR
-                            )
-                        }
-                    }
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.d("TAG", "get failed with ", exception)
-            }
+    /**
+     * 인기 관광지 조회
+     */
+    private fun getPopularTourList() {
+        listType = HomeViewModel.ListType.POPULAR
+        homeViewModel.getPopularTourListFromFireBase(listType.toString())
     }
 
-    private fun getAreaRecommendTourList(){
-        Firebase.firestore.collection("tour").document("data").collection("recommend")
-            .document(cityName)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    contentIdList = (document.data?.get("contentId") as? List<*>)?.filterIsInstance<String>() ?: emptyList()
-
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        repeatOnLifecycle(Lifecycle.State.CREATED) {
-                            homeViewModel.getTourListByContentId(contentIdList,
-                                HomeViewModel.ListType.AREA_RECOMMEND
-                            )
-                        }
-                    }
-                } else {
-                    insertFireBase()
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.d("TAG", "get failed with ", exception)
-            }
+    /**
+     * 지역 별 추천 관광지 조회
+     */
+    private fun getAreaRecommendTourList() {
+        listType = HomeViewModel.ListType.AREA_RECOMMEND
+        homeViewModel.getAreaRecommendTourListFromFireBase(listType.toString(), cityName)
     }
 
     private fun setupCollect() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 launch {
-                    homeViewModel.popularTourList.collect { tourList ->
-                        popularAdapter.setTourList(tourList)
-                        popularRecyclerView.scrollToPosition(0)
+                    homeViewModel.popularTourList.collectLatest { state ->
+                        when (state) {
+                            is UiState.Success -> {
+                                popularAdapter.setTourList(state.data)
+                                popularRecyclerView.scrollToPosition(0)
+                            }
+
+                            is UiState.Error -> {
+                                Log.e("TourAPI HandleState", "${state.errorMessage}")
+                            }
+
+                            is UiState.Loading -> {
+                                Log.e("TourAPI HandleState", " loading : $$state")
+                            }
+
+                            else -> {
+                                Log.e("TourAPI HandleState", " else : $state")
+                            }
+                        }
                     }
                 }
 
                 launch {
-                    homeViewModel.areaRecommendTourList.collect { tourList ->
-                        recommendAdapter.setTourList(tourList)
-                        recommendRecyclerView.scrollToPosition(0)
+                    homeViewModel.areaRecommendTourList.collectLatest { state ->
+                        when (state) {
+                            is UiState.Success -> {
+                                recommendAdapter.setTourList(state.data)
+                                recommendRecyclerView.scrollToPosition(0)
+                            }
+
+                            is UiState.Error -> {
+
+                            }
+
+                            is UiState.Loading -> {
+
+                            }
+
+                            else -> {}
+                        }
                     }
                 }
+
                 launch {
-                    homeViewModel.nearbyTourList.collect { tourList ->
-                        nearbyAdapter.setTourList(tourList)
-                        nearbyRecyclerView.scrollToPosition(0)
+                    homeViewModel.nearbyTourList.collectLatest { state ->
+                        when (state) {
+                            is UiState.Success -> {
+                                nearbyAdapter.setTourList(state.data)
+                                nearbyRecyclerView.scrollToPosition(0)
+                            }
+
+                            is UiState.Error -> {
+
+                            }
+
+                            is UiState.Loading -> {
+
+                            }
+
+                            else -> {}
+                        }
+                    }
+                }
+
+                launch {
+                    homeViewModel.fireBaseResult.collectLatest { state ->
+                        when (state) {
+                            is UiState.Success -> {
+                                contentIdList = state.data["contentIdList"] as List<String>
+                                listType = HomeViewModel.ListType.valueOf(state.data["listType"] as String)
+
+                                viewLifecycleOwner.lifecycleScope.launch {
+                                    repeatOnLifecycle(Lifecycle.State.CREATED) {
+                                        homeViewModel.getTourListByContentId(contentIdList, listType)
+                                    }
+                                }
+                            }
+
+                            is UiState.Loading -> {
+
+                            }
+
+                            is UiState.Error -> {
+                                Log.e("TourAPI HandleState", "${state.errorMessage}")
+                            }
+
+                            else -> {
+                                Log.e("TourAPI HandleState", "$state")
+                            }
+                        }
                     }
                 }
             }
@@ -162,34 +197,23 @@ class HomeFragment :
         /**
          * fireBase에 추천 관광지 데이터 insert
          */
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                homeViewModel.tourList.collect { tourList ->
-                    for (item in tourList) {
-                        Firebase.firestore.collection("tour").document("data")
-                            .collection("recommend").document(cityName)
-                            .update("contentId", FieldValue.arrayUnion(item.contentId))
-                            .addOnSuccessListener {
-                                Log.d("TAG", "DocumentSnapshot successfully updated!")
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w("TAG", "Error updating document", e)
-                            }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * gemini api를 통해 가져온 관광지 정보로 fireBase의 지역 별 추천 관광지에 insert한다.
-     */
-    private fun insertFireBase() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                homeViewModel.geminiApi(getString(R.string.recommend_popular, cityName))
-            }
-        }
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            repeatOnLifecycle(Lifecycle.State.CREATED) {
+//                homeViewModel.tourList.collect { tourList ->
+//                    for (item in tourList) {
+//                        Firebase.firestore.collection("tour").document("data")
+//                            .collection("recommend").document(cityName)
+//                            .update("contentId", FieldValue.arrayUnion(item.contentId))
+//                            .addOnSuccessListener {
+//                                Log.d("TAG", "DocumentSnapshot successfully updated!")
+//                            }
+//                            .addOnFailureListener { e ->
+//                                Log.w("TAG", "Error updating document", e)
+//                            }
+//                    }
+//                }
+//            }
+//        }
     }
 
     /**
@@ -201,19 +225,40 @@ class HomeFragment :
         nearbyRecyclerView = binding.rcvNearbyRecommend
 
         popularAdapter = FullCardAdapter({ tourItem ->
-            Log.d("test", "tour click item = $tourItem")
+            val bundle = Bundle().apply {
+                putParcelable("tourItem", tourItem)
+            }
+            findNavController().navigate(R.id.action_HomeFragment_to_TourDetailFragment, bundle)
         }, viewLifecycleOwner.lifecycleScope)
 
         recommendAdapter = SmallCardAdapter({ tourItem ->
-            Log.d("test", "tour click item = $tourItem")
+            val bundle = Bundle().apply {
+                putParcelable("tourItem", tourItem)
+            }
+            findNavController().navigate(R.id.action_HomeFragment_to_TourDetailFragment, bundle)
         }, viewLifecycleOwner.lifecycleScope)
 
         nearbyAdapter = SmallCardAdapter({ tourItem ->
-            Log.d("test", "tour click item = $tourItem")
+            val bundle = Bundle().apply {
+                putParcelable("tourItem", tourItem)
+            }
+            findNavController().navigate(R.id.action_HomeFragment_to_TourDetailFragment, bundle)
         }, viewLifecycleOwner.lifecycleScope)
+
 
         popularRecyclerView.adapter = popularAdapter
         recommendRecyclerView.adapter = recommendAdapter
         nearbyRecyclerView.adapter = nearbyAdapter
     }
+
+    /**
+     * gemini api를 통해 가져온 관광지 정보로 fireBase의 지역 별 추천 관광지에 insert한다.
+     */
+//    private fun insertFireBase() {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            repeatOnLifecycle(Lifecycle.State.CREATED) {
+//                homeViewModel.geminiApi(getString(R.string.recommend_popular, cityName))
+//            }
+//        }
+//    }
 }

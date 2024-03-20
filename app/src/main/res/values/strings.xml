@@ -36,6 +36,27 @@
     <string-array name="areas">
         <item>서울</item>
         <item>인천</item>
+        <item>대전</item>
+        <item>대구</item>
+        <item>광주</item>
+        <item>부산</item>
+        <item>울산</item>
+        <item>세종</item>
+        <item>경기도</item>
+        <item>강원도</item>
+        <item>충청북도</item>
+        <item>충청남도</item>
+        <item>경상북도</item>
+        <item>경상남도</item>
+        <item>경상남도</item>
+        <item>전라북도</item>
+        <item>전라남도</item>
+        <item>제주도</item>
+    </string-array>
+
+    <string-array name="areas_home">
+        <item>서울</item>
+        <item>인천</item>
         <item>경기도</item>
         <item>강원도</item>
         <item>충청도</item>
@@ -43,13 +64,15 @@
         <item>경상도</item>
         <item>제주</item>
     </string-array>
+
     <string-array name="categories">
         <item>관광지</item>
-        <item>자연</item>
-        <item>축제</item>
+        <item>문화시설</item>
+        <item>축제공연행사</item>
+        <item>레포츠</item>
         <item>숙박</item>
         <item>쇼핑</item>
-        <item>음식</item>
+        <item>음식점</item>
     </string-array>
 
     <!-- fragment user -->
@@ -79,4 +102,10 @@
     <string name="register_profile_description">프로필 사진</string>
     <string name="register_profile_subdescription">(선택)</string>
     <string name="helper_register_nickname">특수문자를 제외하고 닉네임을 입력해주세요. 최대 8글자입니다.</string>
+
+    <string name="tour_detail_map">지도로 보기</string>
+    <string name="tour_detail_diary">다이어리</string>
+    <string name="tour_detail_share">공유하기</string>
+
+    <string name="tour_no_detail">해당 관광지에 대한 정보가 없습니다.</string>
 </resources>

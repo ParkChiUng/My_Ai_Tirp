@@ -38,4 +38,8 @@
     <dimen name="margin_top_photo">10dp</dimen>
     <dimen name="f_home_nsv_layout">0dp</dimen>
 
+    <!-- tour_detail -->
+    <dimen name="f_tour_detail_image_width">0dp</dimen>
+    <dimen name="f_tour_detail_image_height">2000dp</dimen>
+
 </resources>

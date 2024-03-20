@@ -7,6 +7,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("kotlin-kapt")
+    id("kotlin-parcelize")
 }
 
 val properties = Properties().apply {
@@ -126,4 +127,10 @@ dependencies {
 
     // 네이버 지도 SDK
     implementation("com.naver.maps:map-sdk:3.17.0")
+
+    // circle indicator
+    implementation("me.relex:circleindicator:2.1.6")
+
+    // paging
+    implementation("androidx.paging:paging-runtime-ktx:3.2.1")
 }
