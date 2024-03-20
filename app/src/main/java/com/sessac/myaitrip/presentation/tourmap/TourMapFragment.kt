@@ -11,8 +11,6 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
-import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -136,7 +134,7 @@ class TourMapFragment
                                                     val sortedTourList = tourList.sortedBy { tourItem ->
                                                         tourItem.distance.toDouble() // 가까운 순으로 정렬
                                                     }.filter {
-                                                        it.firstImageUrl.isNotEmpty() or it.firstImage2.isNotEmpty() // 이미지 있는 것만
+                                                        it.imageUrl.isNotEmpty() or it.subImageUrl.isNotEmpty() // 이미지 있는 것만
                                                     }.also {
                                                         locationBottomSheetTourAdapter.setTourList(it)
                                                     }
@@ -517,6 +515,7 @@ class TourMapFragment
                                         )
                                     }
                                 }
+
                                 // 현재 위도, 경도로 근처 관광지 정보 가져오기
                                 getPlaceListByLocation(location.latitude.toString(), location.longitude.toString())
                             }

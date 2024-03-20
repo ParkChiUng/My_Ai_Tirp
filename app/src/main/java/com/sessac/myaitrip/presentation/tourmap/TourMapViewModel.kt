@@ -10,6 +10,7 @@ import com.sessac.myaitrip.data.repository.tour.TourRepository
 import com.sessac.myaitrip.data.repository.weather.WeatherRepository
 import com.sessac.myaitrip.presentation.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -19,10 +20,10 @@ class TourMapViewModel(
 ): ViewModel() {
 
     private val _weatherStatus = MutableStateFlow<UiState<WeatherApiResponse<WeatherItems>>>(UiState.Empty)
-    val weatherStatus get() = _weatherStatus
+    val weatherStatus get() = _weatherStatus.asStateFlow()
 
     private val _locationTourStatus = MutableStateFlow<UiState<ApiResponse<LocationBasedTourItems>>>(UiState.Empty)
-    val locationTourStatus get() = _locationTourStatus
+    val locationTourStatus get() = _locationTourStatus.asStateFlow()
 
     fun getWeatherData(date: String, pointX: String, pointY: String) {
         viewModelScope.launch {
