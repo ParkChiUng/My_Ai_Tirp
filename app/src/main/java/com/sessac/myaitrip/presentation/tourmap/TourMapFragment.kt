@@ -102,14 +102,6 @@ class TourMapFragment
 
         setupWeatherStatusCollection()
         setUpLocationPlaceStatusCollection()
-
-        // 위치 바텀시트 관광지 어댑터
-        locationBottomSheetTourAdapter = LocationBottomSheetTourAdapter(
-            itemOnClick = { locationBasedTourItem ->
-                Log.d("TAG", "tour click item = $locationBasedTourItem")
-            },
-            scope = viewLifecycleOwner.lifecycleScope
-        )
     }
 
     private fun setUpLocationPlaceStatusCollection() {
@@ -131,6 +123,10 @@ class TourMapFragment
                                             val tourList = tourItems.item
                                             tourList?.let { tourList ->
                                                 if(tourList.isNotEmpty()) {
+
+                                                    // 위치 바텀시트 관광지 어댑터
+                                                    initMyLocationTourAdapter()
+
                                                     val sortedTourList = tourList.sortedBy { tourItem ->
                                                         tourItem.distance.toDouble() // 가까운 순으로 정렬
                                                     }.filter {
@@ -194,6 +190,17 @@ class TourMapFragment
         }
     }
 
+    private fun initMyLocationTourAdapter() {
+        locationBottomSheetTourAdapter = LocationBottomSheetTourAdapter(
+            itemOnClick = { locationBasedTourItem ->
+                Log.d("TAG", "tour click item = $locationBasedTourItem")
+            },
+            scope = viewLifecycleOwner.lifecycleScope
+        ).also {
+            binding.locationBottomSheetLayout.rvLocationBottomSheetTour.adapter = it
+        }
+    }
+
     private fun initMyLocationBottomSheet() {
         binding.locationBottomSheet.visibility = View.VISIBLE
         val bottomSheetBehavior = BottomSheetBehavior.from(binding.locationBottomSheet)
@@ -203,8 +210,6 @@ class TourMapFragment
             isFitToContents = true
 //            saveFlags = BottomSheetBehavior.SAVE_ALL
         }
-
-        binding.locationBottomSheetLayout.rvLocationBottomSheetTour.adapter = locationBottomSheetTourAdapter
     }
 
     /**
@@ -401,16 +406,10 @@ class TourMapFragment
     override fun onMapReady(naverMap: NaverMap) {
         lifecycleScope.launch {
             map = naverMap
-
             initMapUi()
-            updateMyLocation()
+            // 전체 관광지 마커
 
-            fusedLocationSource = FusedLocationSource(requireActivity(), LOCATION_PERMISSION_REQUEST_CODE)
-
-            with(map) {
-                locationSource = fusedLocationSource        // 현재 위치
-                locationTrackingMode = LocationTrackingMode.Follow // 위치를 추적하면서 카메라도 따라 움직인다.
-            }
+            updateMyLocation()  // 현재 위치 기능
 
             /* 카메라 이동시키기
                val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.5666102, 126.9783881))
@@ -463,6 +462,13 @@ class TourMapFragment
         PermissionUtil.requestPermissionResultByNormal(
             *LOCATION_PERMISSIONS,
             onPermissionGranted = {
+                fusedLocationSource = FusedLocationSource(requireActivity(), LOCATION_PERMISSION_REQUEST_CODE)
+
+                with(map) {
+                    locationSource = fusedLocationSource        // 현재 위치
+                    locationTrackingMode = LocationTrackingMode.Follow // 위치를 추적하면서 카메라도 따라 움직인다.
+                }
+
                 fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
                 val locationRequest = LocationRequest
                     .Builder(Priority.PRIORITY_HIGH_ACCURACY, LOCATION_REQUEST_INTERVAL.toLong())
