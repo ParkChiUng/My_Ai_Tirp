@@ -1,6 +1,7 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.io.FileInputStream
 import java.util.Properties
+import java.util.regex.Pattern.compile
 
 plugins {
     id("com.android.application")
@@ -124,6 +125,13 @@ dependencies {
     // glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0") // Annotation processor for Glide (Glide의 버전에 맞춰서)
+
+    // OkHttp
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+
+    // Glide + OkHttp
+    implementation("com.github.bumptech.glide:okhttp3-integration:4.16.0@aar") // Glide와 OkHttp를 통합하는 라이브러리
 
     // Gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.2.1")
