@@ -16,6 +16,7 @@ import com.sessac.myaitrip.presentation.progress.ProgressViewModel
 import com.sessac.myaitrip.presentation.register.RegisterViewModel
 import com.sessac.myaitrip.presentation.splash.SplashViewModel
 import com.sessac.myaitrip.presentation.tourDetail.TourDetailViewModel
+import com.sessac.myaitrip.presentation.tours.ToursViewModel
 
 class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -83,6 +84,18 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
                     tourRemoteDataSource
                 )
                 TourDetailViewModel(tourRepository) as T
+            }
+
+            modelClass.isAssignableFrom(ToursViewModel::class.java) -> {
+                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore)
+                val tourRemoteDataSource = TourRemoteDataSource()
+                val tourRepository = TourRepository(
+                    tourDao,
+                    tourApiService,
+                    tourLocalDataSource,
+                    tourRemoteDataSource
+                )
+                ToursViewModel(tourRepository) as T
             }
 
             else -> {

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.databinding.ItemFullTourImgCardBinding
 import com.sessac.myaitrip.util.GlideUtil
@@ -25,7 +24,7 @@ class FullCardAdapter(
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<TourItem>() {
             override fun areItemsTheSame(oldItem: TourItem, newItem: TourItem): Boolean {
-                return oldItem.contentTypeId == newItem.contentTypeId
+                return oldItem.contentId == newItem.contentId
             }
 
             override fun areContentsTheSame(oldItem: TourItem, newItem: TourItem): Boolean {
@@ -39,9 +38,6 @@ class FullCardAdapter(
         fun widgetBinding(tourItem: TourItem) {
             tourItem.let { tour ->
                 with(binding) {
-//                    Glide.with(ivTour.context)
-//                        .load(tour.firstImage)
-//                        .into(ivTour)
                     tour.firstImage?.let {
                         GlideUtil.loadImage(ivTour.context, tour.firstImage, ivTour)
                     }

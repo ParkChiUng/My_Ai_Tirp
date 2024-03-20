@@ -1,24 +1,25 @@
-package com.sessac.myaitrip.presentation.home.adapter
+package com.sessac.myaitrip.presentation.tours.adapter
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.sessac.myaitrip.data.entities.TourItem
-import com.sessac.myaitrip.databinding.ItemSmallTourImgCardBinding
+import com.sessac.myaitrip.databinding.ItemTourImgCardBinding
 import com.sessac.myaitrip.util.GlideUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import reactivecircus.flowbinding.android.view.clicks
 
-class SmallCardAdapter(
+class ToursPagingAdapter(
     val itemOnClick: (TourItem) -> (Unit),
     private val scope: CoroutineScope
 ) :
-    ListAdapter<TourItem, SmallCardAdapter.HomeViewHolder>(diffUtil) {
+    PagingDataAdapter<TourItem, ToursPagingAdapter.TourItemViewHolder>(diffUtil) {
 
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<TourItem>() {
@@ -32,7 +33,7 @@ class SmallCardAdapter(
         }
     }
 
-    inner class HomeViewHolder(private val binding: ItemSmallTourImgCardBinding) :
+    inner class TourItemViewHolder(val binding: ItemTourImgCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun widgetBinding(tourItem: TourItem) {
             tourItem.let { tour ->
@@ -42,6 +43,12 @@ class SmallCardAdapter(
                     }
 
                     tvTourName.text = tour.title
+
+                    val gradient = GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        intArrayOf(Color.TRANSPARENT, Color.BLACK)
+                    )
+                    layoutText.background = gradient
 
                     root.clicks()
                         .onEach {
@@ -53,9 +60,9 @@ class SmallCardAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeViewHolder {
-        return HomeViewHolder(
-            ItemSmallTourImgCardBinding.inflate(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TourItemViewHolder {
+        return TourItemViewHolder(
+            ItemTourImgCardBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -63,11 +70,10 @@ class SmallCardAdapter(
         )
     }
 
-    override fun onBindViewHolder(holder: HomeViewHolder, position: Int) {
-        holder.widgetBinding(getItem(position))
-    }
-
-    fun setTourList(tour: List<TourItem>) {
-        submitList(tour)
+    override fun onBindViewHolder(holder: TourItemViewHolder, position: Int) {
+        val tourItem = getItem(position)
+        tourItem?.let {
+            holder.widgetBinding(it)
+        }
     }
 }

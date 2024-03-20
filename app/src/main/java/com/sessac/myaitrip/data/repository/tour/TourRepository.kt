@@ -1,6 +1,11 @@
 package com.sessac.myaitrip.data.repository.tour
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.google.firebase.FirebaseException
+import com.sessac.myaitrip.common.DEFAULT_PAGING_SIZE
+import com.sessac.myaitrip.common.DEFAULT_PREFETCH_DISTANCE
 import com.sessac.myaitrip.data.api.TourApiService
 import com.sessac.myaitrip.data.database.TourDao
 import com.sessac.myaitrip.data.entities.TourItem
@@ -8,6 +13,7 @@ import com.sessac.myaitrip.data.entities.local.TourPreferencesData
 import com.sessac.myaitrip.data.repository.tour.local.TourLocalDataSource
 import com.sessac.myaitrip.data.repository.tour.remote.TourRemoteDataSource
 import com.sessac.myaitrip.presentation.common.UiState
+import com.sessac.myaitrip.presentation.tours.source.TourPagingSource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -49,12 +55,20 @@ class TourRepository(
     }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
 
     /**
-     * [Room DB] 지역 명과 카테고리로 관광지 리스트 조회
+     * [Room DB] 지역 명, 카테고리, 검색어로 관광지 리스트 조회 ( 페이징 )
+     *
+     * @param area 지역명
+     * @param category 카테고리
+     * @param inputText 검색어
+     *
+     * 검색어가 없다면 inputText == null
      */
-    fun getTourList(area: String, category: String) = flow {
-        emit(UiState.Loading)
-        emit(UiState.Success(tourDao.getTourList(area, category)))
-    }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
+    fun getTourList(area: String, category: String, inputText: String): Flow<PagingData<TourItem>> {
+        return Pager(
+            config = PagingConfig(pageSize = DEFAULT_PAGING_SIZE, prefetchDistance = DEFAULT_PREFETCH_DISTANCE),
+            pagingSourceFactory = { TourPagingSource(tourDao = tourDao, area = area, category = category, inputText = inputText) }
+        ).flow
+    }
 
     /**
      * [공공 API] 관광지 전체 리스트 조회

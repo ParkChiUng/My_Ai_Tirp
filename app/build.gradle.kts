@@ -130,4 +130,7 @@ dependencies {
 
     // circle indicator
     implementation("me.relex:circleindicator:2.1.6")
+
+    // paging
+    implementation("androidx.paging:paging-runtime-ktx:3.2.1")
 }
