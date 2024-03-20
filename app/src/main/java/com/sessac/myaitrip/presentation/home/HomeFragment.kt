@@ -42,7 +42,7 @@ class HomeFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        areaList = resources.getStringArray(R.array.areas)
+        areaList = resources.getStringArray(R.array.areas_home)
         cityName = areaList[0]
 
         init()
@@ -168,15 +168,11 @@ class HomeFragment :
                         when (state) {
                             is UiState.Success -> {
                                 contentIdList = state.data["contentIdList"] as List<String>
-                                listType =
-                                    HomeViewModel.ListType.valueOf(state.data["listType"] as String)
+                                listType = HomeViewModel.ListType.valueOf(state.data["listType"] as String)
 
                                 viewLifecycleOwner.lifecycleScope.launch {
                                     repeatOnLifecycle(Lifecycle.State.CREATED) {
-                                        homeViewModel.getTourListByContentId(
-                                            contentIdList,
-                                            listType
-                                        )
+                                        homeViewModel.getTourListByContentId(contentIdList, listType)
                                     }
                                 }
                             }

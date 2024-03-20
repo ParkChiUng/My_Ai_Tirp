@@ -46,13 +46,9 @@ class HomeViewModel(
      * @param listType
      */
     fun getTourListByContentId(contentIdList: List<String>, listType: ListType) {
-        val test = listType
-        Log.d("test", "test : $test")
-
         viewModelScope.launch {
             async(dispatchers.coroutineContext) {
                 tourRepository.getTourList(contentIdList).collectLatest { tourList ->
-                    Log.d("test", "tourList : $tourList")
                     when (listType) {
                         ListType.POPULAR -> _popularTourList.value = tourList
                         ListType.AREA_RECOMMEND -> _areaRecommendTourList.value = tourList
