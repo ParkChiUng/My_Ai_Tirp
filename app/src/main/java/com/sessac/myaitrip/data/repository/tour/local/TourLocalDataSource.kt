@@ -9,8 +9,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import com.sessac.myaitrip.common.DEFAULT_PAGE_NUMBER
 import com.sessac.myaitrip.common.DEFAULT_TOTAL_COUNT
 import com.sessac.myaitrip.data.entities.local.TourPreferencesData
-import com.sessac.myaitrip.data.repository.tour.local.TourLocalDataSource.UserPreferenceKeys.KEY_PAGE_NUMBER
-import com.sessac.myaitrip.data.repository.tour.local.TourLocalDataSource.UserPreferenceKeys.KEY_TOTAL_COUNT
+import com.sessac.myaitrip.data.repository.tour.local.TourLocalDataSource.TourPreferenceKeys.KEY_PAGE_NUMBER
+import com.sessac.myaitrip.data.repository.tour.local.TourLocalDataSource.TourPreferenceKeys.KEY_TOTAL_COUNT
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -19,7 +19,7 @@ import java.io.IOException
 class TourLocalDataSource(
     private val tourDataStore: DataStore<Preferences>
 ) : ITourLocalDataSource {
-    private object UserPreferenceKeys {
+    private object TourPreferenceKeys {
         val KEY_TOTAL_COUNT = intPreferencesKey("TOTAL_COUNT")
         val KEY_PAGE_NUMBER = intPreferencesKey("PAGE_NUMBER")
     }
