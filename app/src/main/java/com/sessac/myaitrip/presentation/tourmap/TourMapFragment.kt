@@ -2,6 +2,7 @@ package com.sessac.myaitrip.presentation.tourmap
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
@@ -28,25 +29,37 @@ import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.clustering.Clusterer
+import com.naver.maps.map.clustering.Clusterer.ComplexBuilder
+import com.naver.maps.map.clustering.DefaultClusterMarkerUpdater
+import com.naver.maps.map.clustering.DefaultClusterOnClickListener
+import com.naver.maps.map.clustering.DefaultDistanceStrategy
+import com.naver.maps.map.clustering.DefaultMarkerManager
+import com.naver.maps.map.clustering.DistanceStrategy
+import com.naver.maps.map.clustering.Node
+import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MarkerIcons
 import com.sessac.myaitrip.R
-import com.sessac.myaitrip.data.entities.TourClusterItem
-import com.sessac.myaitrip.data.entities.remote.LocationBasedTourItem
+import com.sessac.myaitrip.data.entities.TourClusterItemData
+import com.sessac.myaitrip.data.entities.TourClusterItemKey
 import com.sessac.myaitrip.databinding.FragmentTourMapBinding
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.util.DateUtil
 import com.sessac.myaitrip.util.PermissionUtil
+import com.sessac.myaitrip.util.repeatOnCreated
 import com.sessac.myaitrip.util.repeatOnResumed
-import com.sessac.myaitrip.util.repeatOnStarted
 import com.sessac.myaitrip.util.showToast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import ted.gun0912.clustering.naver.TedNaverClustering
-import ted.gun0912.clustering.naver.TedNaverMarker
+import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -68,11 +81,7 @@ class TourMapFragment
     private lateinit var locationCallback: LocationCallback
     private lateinit var fusedLocationSource: FusedLocationSource
 
-//    private val markers = mutableListOf<Marker>()
-//    private val markers = mutableListOf<TedNaverMarker>()
-
-    private val locationItemList = mutableListOf<LocationBasedTourItem>()
-    private val clusterItemList = mutableListOf<TourClusterItem>()
+    private var clusterer: Clusterer<TourClusterItemKey>? = null
 
     companion object {
         private const val TAG = "NaverMap"
@@ -133,34 +142,25 @@ class TourMapFragment
                                val tourList = tourItems.item
                                tourList?.let { tourList ->
 
-                                   locationItemList.clear()
-                                   clusterItemList.clear()
+                                   val aroundTours = tourList.filter { it.imageUrl.isNotEmpty() or it.subImageUrl.isNotEmpty()  } // 이미지 있는 것만
 
-                                   val aroundTours = tourList.filter {
-                                       it.imageUrl.isNotEmpty() or it.subImageUrl.isNotEmpty() // 이미지 있는 것만
-                                   }.forEach {
-                                       locationItemList.add(it)
-                                       putClusterItem(it)
-                                   }
+                                   clusterer?.clear() // 이전 클러스터링 마커 제거
 
-                                   updateMarker(clusterItemList)    // 클러스터링하면서 마커 찍어주기
-
-                                   /*.forEach { tour ->
-                                        Marker().apply {
-                                            position = LatLng(tour.latitude.toDouble(), tour.longitude.toDouble())
-                                            map = naverMap
-                                            icon = OverlayImage.fromResource(R.drawable.ic_marker)
-                                            width = Marker.SIZE_AUTO
-                                            height = Marker.SIZE_AUTO
-
-                                            onClickListener = Overlay.OnClickListener {
-                                                TODO("Not yet implemented")
-
+                                   // 관광지 마커 추가하기
+                                   CoroutineScope(Dispatchers.IO).launch {
+                                       val tourMap = buildMap<TourClusterItemKey, TourClusterItemData> {
+                                            aroundTours.forEach {
+                                                put(
+                                                    TourClusterItemKey(it.contentId, LatLng(it.latitude.toDouble(), it.longitude.toDouble())),
+                                                    TourClusterItemData(it.title, it.address, it.subAddress, it.contentTypeId, it.distance, it.imageUrl, it.subImageUrl)
+                                                )
                                             }
-
-                                            markers.add(this)
-                                        }
-                                   }*/
+                                       }
+                                       withContext(Dispatchers.Main) {
+                                           clusterer?.addAll(tourMap)
+                                           clusterer?.map = naverMap
+                                       }
+                                   }
                                }
 
                            }
@@ -174,41 +174,8 @@ class TourMapFragment
         }
     }
 
-    private fun putClusterItem(locationBasedTourItem: LocationBasedTourItem) {
-        var clusterItem = TourClusterItem(
-            locationBasedTourItem.latitude.toDouble(),
-            locationBasedTourItem.longitude.toDouble(),
-            locationBasedTourItem.contentId,
-            locationBasedTourItem.title,
-            locationBasedTourItem.address,
-            locationBasedTourItem.address2,
-            locationBasedTourItem.contentTypeId,
-            locationBasedTourItem.distance,
-            locationBasedTourItem.imageUrl,
-            locationBasedTourItem.subImageUrl
-        )
-        clusterItemList.add(clusterItem)
-    }
-
-    private fun updateMarker(rows: List<TourClusterItem>) {
-        TedNaverClustering.with<TourClusterItem>(requireActivity(), naverMap)
-            .customMarker {
-                Marker().apply {
-                    icon = OverlayImage.fromResource(R.drawable.ic_marker)
-                    width = 60
-                    height = 86
-                }
-            }
-            .markerClickListener {
-
-            }
-            .minClusterSize(4)
-            .items(rows)
-            .make()
-    }
-
     private fun setUpLocationPlaceStatusCollection() {
-        repeatOnStarted {
+        repeatOnCreated {
             tourMapViewModel.locationTourStatus.collectLatest { state ->
                 when(state) {
                     is UiState.Loading -> {}
@@ -235,7 +202,6 @@ class TourMapFragment
 
                                         // 바텀시트 칩 그룹
                                         with(binding.locationBottomSheetLayout.chipgroupLocationBottomSheetTag) {
-                                            isSingleSelection = true
                                             removeAllViews() // 기존 칩들 제거 후 다시 추가
 
                                             sortedTourList.distinctBy { locationBasedTourItem -> locationBasedTourItem.contentTypeId } // content Type을 기준으로 중복 제거
@@ -260,9 +226,9 @@ class TourMapFragment
                                                 if(checkedId.isEmpty()) {
                                                     locationBottomSheetTourAdapter.setTourList(sortedTourList)
                                                 } else {
-                                                    //                                                                val selectedChipText = findViewById<Chip>(checkedChipId).text.toString().substring(1)
-                                                    //                                                                Log.e(TAG,"SelectedChip = $selectedChipText")
-                                                    Log.e(TAG,"SelectedChipId = ${checkedId.first()}")
+                                                    // val selectedChipText = findViewById<Chip>(checkedChipId).text.toString().substring(1)
+                                                    // Log.e(TAG,"SelectedChip = $selectedChipText")
+//                                                    Log.e(TAG,"SelectedChipId = ${checkedId.first()}")
                                                     sortedTourList.filter {
                                                         it.contentTypeId == checkedId.first().toString()
                                                     }.also {
@@ -288,7 +254,7 @@ class TourMapFragment
     private fun initMyLocationTourAdapter() {
         locationBottomSheetTourAdapter = LocationBottomSheetTourAdapter(
             itemOnClick = { locationBasedTourItem ->
-                Log.d("TAG", "tour click item = $locationBasedTourItem")
+                // TODO. 현재 위치 바텀 시트 관광지 클릭 시, 상세로 이동
             },
             scope = viewLifecycleOwner.lifecycleScope
         ).also {
@@ -353,7 +319,7 @@ class TourMapFragment
     }
 
     private fun setupWeatherStatusCollection() {
-        repeatOnStarted {
+        repeatOnCreated {
             tourMapViewModel.weatherStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Loading -> {
@@ -500,22 +466,15 @@ class TourMapFragment
 
     override fun onMapReady(map: NaverMap) {
         naverMap = map
+        clusterer = initClusterBuilder()
+
         initMapUi()
         updateMyLocation()  // 현재 위치 기능
 
         with(naverMap) {
             minZoom = 6.0
-            maxZoom = 16.0
-        }
+            maxZoom = 18.0
 
-        /* 카메라 이동시키기
-           val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.5666102, 126.9783881))
-            .animate(CameraAnimation.Easing, 2000)
-            .reason(1000)
-
-             naverMap.moveCamera(cameraUpdate)
-*/
-        with(map) {
             // 카메라가 움직일 때 이벤트 처리 리스너
             addOnCameraChangeListener { reason, animated ->
 //                    Log.i("NaverMap", "카메라 변경 - reson: $reason, animated: $animated")
@@ -533,7 +492,7 @@ class TourMapFragment
             }
 
             // 카메라가 멈췄을 때, 리스너
-            /*addOnCameraIdleListener {
+            addOnCameraIdleListener {
                 with(map.cameraPosition.target) {
 
                     Log.e(TAG,"현재 센터 좌표 위도 = $latitude, 경도 = $longitude")
@@ -541,17 +500,85 @@ class TourMapFragment
                     val latRes = String.format("%.10f", latitude)
                     val longRes = String.format("%.10f", longitude)
                     Log.e(TAG, "소수점 10자리 위도 = $latRes, 경도 = $longRes")
+
                 }
-            }*/
+            }
 
             // 사용자 위치 추적
 //                addOnLocationChangeListener {}
         }
 
-        binding.btnTourMapMyLocation.setOnClickListener {
+        // 현재 위치 버튼 클릭
+        binding.btnTourMapMyLocation.throttleClick().bind {
             updateMyLocation()
         }
     }
+
+    private fun initClusterBuilder() = ComplexBuilder<TourClusterItemKey>()
+        .minClusteringZoom(9)
+        .maxClusteringZoom(16)
+        .maxScreenDistance(200.0)
+        .thresholdStrategy { zoom ->
+            if (zoom <= 11) {
+                0.0
+            } else {
+                70.0
+            }
+        }
+        .distanceStrategy(object : DistanceStrategy {
+            private val defaultDistanceStrategy = DefaultDistanceStrategy()
+
+            override fun getDistance(zoom: Int, node1: Node, node2: Node): Double {
+                return when {
+                    zoom <= 11 -> -1.0
+                    else -> defaultDistanceStrategy.getDistance(zoom, node1, node2)
+                }
+            }
+        })
+        .markerManager(object : DefaultMarkerManager() {
+            override fun createMarker() = super.createMarker().apply {
+                subCaptionTextSize = 10f
+                subCaptionColor = Color.WHITE
+                subCaptionHaloColor = Color.TRANSPARENT
+            }
+        })
+        .clusterMarkerUpdater { info, marker ->
+            val size = info.size
+
+            with(marker) {
+                icon = when {
+                    info.minZoom <= 10 -> MarkerIcons.CLUSTER_HIGH_DENSITY
+                    size < 10 -> MarkerIcons.CLUSTER_LOW_DENSITY
+                    else -> MarkerIcons.CLUSTER_MEDIUM_DENSITY
+                }
+
+                anchor = DefaultClusterMarkerUpdater.DEFAULT_CLUSTER_ANCHOR
+                captionText = size.toString()
+                setCaptionAligns(Align.Center)
+                captionColor = Color.WHITE
+                captionHaloColor = Color.TRANSPARENT
+                onClickListener = DefaultClusterOnClickListener(info)
+            }
+        }
+        .leafMarkerUpdater { info, marker ->
+            with(marker) {
+                icon = OverlayImage.fromResource(R.drawable.ic_marker)
+                width = 60
+                width = 86
+                anchor = Marker.DEFAULT_ANCHOR
+                captionText = (info.tag as TourClusterItemData).title
+                setCaptionAligns(Align.Bottom)
+                captionColor = Color.BLACK
+                captionHaloColor = Color.WHITE
+                subCaptionText = ""
+                onClickListener = Overlay.OnClickListener {
+                    // TODO. 지도 마커 클릭 시, 리스너
+
+                    true
+                }
+            }
+        }
+        .build()
 
     private fun initMapUi() {
         with(naverMap.uiSettings) {
