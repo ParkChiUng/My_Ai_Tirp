@@ -1,7 +1,5 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.io.FileInputStream
 import java.util.Properties
-import java.util.regex.Pattern.compile
 
 plugins {
     id("com.android.application")
@@ -14,6 +12,12 @@ plugins {
 val properties = Properties().apply {
     load(FileInputStream(rootProject.file("local.properties")))
 }
+
+fun getApiKey(propertyKey: String): String {
+//    return gradleLocalProperties(rootDir).getProperty(propertyKey).toString()
+    return properties.getProperty(propertyKey)
+}
+
 android {
     namespace = "com.sessac.myaitrip"
     compileSdk = 34
@@ -42,7 +46,8 @@ android {
             "\"${getApiKey("NAVER_CLIENT_SECRET")}\"")
 
         buildConfigField("String","WEATHER_API_KEY",
-            "\"${getApiKey("WEATHER_API_KEY")}\"")
+            "\"${getApiKey("WEATHER_API_KEY")}\""
+        )
 
         manifestPlaceholders["KAKAO_NATIVE_KEY"] = getApiKey("KAKAO_NATIVE_KEY")
         manifestPlaceholders["NAVER_CLIENT_ID"] = getApiKey("NAVER_CLIENT_ID")
@@ -73,10 +78,7 @@ android {
     }
 }
 
-// 2. local.properties 내부에서 key값을 가져오는 함수 구현방식
-fun getApiKey(propertyKey: String): String {
-    return gradleLocalProperties(rootDir).getProperty(propertyKey).toString()
-}
+
 
 dependencies {
 
@@ -137,8 +139,7 @@ dependencies {
     implementation("com.google.ai.client.generativeai:generativeai:0.2.1")
 
     // 네이버 지도 SDK
-    implementation("com.naver.maps:map-sdk:3.17.0")
-    implementation("io.github.ParkSangGwon:tedclustering-naver:1.0.2") // 네이버 지도 Ted 클러스터링
+    implementation("com.naver.maps:map-sdk:3.18.0")
 
     // 현재 위치
     implementation("com.google.android.gms:play-services-location:21.2.0")

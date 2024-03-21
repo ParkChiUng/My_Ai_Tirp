@@ -66,11 +66,6 @@
             android:name=".MainActivity"
             android:exported="true" />
 
-        <service
-            android:name=".service.TourDataUpdateService"
-            android:enabled="true"
-            android:exported="false" />
-
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="${NAVER_CLIENT_ID}" />
