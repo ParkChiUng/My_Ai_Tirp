@@ -42,7 +42,6 @@ import com.naver.maps.map.clustering.Node
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
-import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
 import com.sessac.myaitrip.R
@@ -55,7 +54,6 @@ import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.util.DateUtil
 import com.sessac.myaitrip.util.PermissionUtil
 import com.sessac.myaitrip.util.repeatOnCreated
-import com.sessac.myaitrip.util.repeatOnResumed
 import com.sessac.myaitrip.util.repeatOnStarted
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.CoroutineScope
@@ -133,7 +131,7 @@ class TourMapFragment
     }
 
     private fun setupAroundPlaceStatusCollection() {
-        repeatOnResumed {
+        repeatOnStarted {
             tourMapViewModel.aroundPlaceStatus.collectLatest { state ->
                 when(state) {
                     is UiState.Loading -> {}
@@ -261,15 +259,27 @@ class TourMapFragment
             itemOnClick = { locationBasedTourItem ->
                 // TODO. 현재 위치 바텀 시트 관광지 클릭 시, 상세로 이동
                 with(locationBasedTourItem) {
+                    val position = LatLng(latitude.toDouble(), longitude.toDouble())
                     val moveAndZoomToPosition = CameraUpdate
-                        .scrollAndZoomTo(
-                            LatLng(latitude.toDouble(), longitude.toDouble()),
-                            18.0
-                        ).animate(CameraAnimation.Easing, 1000)
+                        .scrollTo(position)
+                        .animate(CameraAnimation.Easing, 1000)
 
                     naverMap.moveCamera(moveAndZoomToPosition) // 화면 이동 & Zoom
 
                     // TODO. 마커 Focus 어떻게 하지?
+                    val positionMarker = Marker().apply {
+                        this.position = position
+                        map = naverMap
+                        icon = MarkerIcons.BLUE
+                        width = 60
+                        height = 86
+
+                        anchor = Marker.DEFAULT_ANCHOR
+                        captionText = locationBasedTourItem.title
+                        setCaptionAligns(Align.Bottom)
+                        captionColor = Color.BLACK
+                        captionHaloColor = Color.WHITE
+                    }
 
                     locationBottomSheetBehavior?.let {
                         it.state = BottomSheetBehavior.STATE_COLLAPSED // Location 바텀 시트 숨기기
@@ -277,10 +287,11 @@ class TourMapFragment
                         // 상세 바텀 시트 Show
                         val tourKey = toMarkerKey()
                         val tourData = toMarkerData()
-                        val tourDetailBottomSheet = TourDetailBottomSheetFragment(tourData,
+                        val tourDetailBottomSheet = TourDetailBottomSheetFragment(tourData, positionMarker,
                             itemClick =  {
                                 // 상세 바텀 시트 클릭
                                 moveToDetail(tourKey)
+                                positionMarker.map = null
                             }
                         )
                         tourDetailBottomSheet.show(parentFragmentManager, tourDetailBottomSheet.tag)
@@ -606,7 +617,7 @@ class TourMapFragment
         }
         .leafMarkerUpdater { info, marker ->
             with(marker) {
-                icon = OverlayImage.fromResource(R.drawable.ic_marker)
+                icon = MarkerIcons.BLUE
                 width = 60
                 width = 86
                 anchor = Marker.DEFAULT_ANCHOR
@@ -620,7 +631,7 @@ class TourMapFragment
                     val selectedTourKey = (info.key as TourClusterItemKey)
                     val selectedTourItem = (info.tag as TourClusterItemData)
 
-                    val tourDetailBottomSheet =TourDetailBottomSheetFragment(selectedTourItem,
+                    val tourDetailBottomSheet = TourDetailBottomSheetFragment(selectedTourItem,
                         itemClick = {
                             moveToDetail(selectedTourKey)
                         }

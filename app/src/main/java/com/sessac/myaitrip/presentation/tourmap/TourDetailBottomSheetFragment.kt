@@ -1,11 +1,13 @@
 package com.sessac.myaitrip.presentation.tourmap
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.naver.maps.map.overlay.Marker
 import com.sessac.myaitrip.R
 import com.sessac.myaitrip.data.entities.TourClusterItemData
 import com.sessac.myaitrip.data.entities.TourClusterItemKey
@@ -17,6 +19,7 @@ import reactivecircus.flowbinding.android.view.clicks
 
 class TourDetailBottomSheetFragment(
     private val tourData: TourClusterItemData,
+    private val positionMarker: Marker? = null,
     val itemClick: () -> Unit
     ): BottomSheetDialogFragment() {
 
@@ -44,6 +47,11 @@ class TourDetailBottomSheetFragment(
         return binding.root
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        positionMarker?.map = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -65,7 +73,7 @@ class TourDetailBottomSheetFragment(
             else if(tourData.subImageUrl.isNotEmpty())
                 GlideUtil.loadImage(ivTourDetailBottomSheetImg.context, tourData.subImageUrl, ivTourDetailBottomSheetImg)
 
-            // TODO. 좋아요 개수
+            // TODO. 좋아요 개수 or 조회수
 //            tvTourDetailBottomSheetLikeCount
 
             root.clicks().onEach {
