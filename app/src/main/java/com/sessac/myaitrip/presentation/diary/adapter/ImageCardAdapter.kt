@@ -1,6 +1,5 @@
 package com.sessac.myaitrip.presentation.diary.adapter
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,13 +17,14 @@ class ImageCardAdapter(
 ) :
     RecyclerView.Adapter<ImageCardAdapter.ImageCardViewHolder>() {
 
-    private var images: MutableList<String> = mutableListOf()
+    private var images: MutableList<Uri> = mutableListOf()
 
     class ImageCardViewHolder(val binding: ItemDiaryImgCardBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageCardViewHolder {
-        return ImageCardViewHolder(ItemDiaryImgCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ImageCardViewHolder(
+            ItemDiaryImgCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
     }
 
@@ -35,7 +35,10 @@ class ImageCardAdapter(
 
             btnDelete.clicks()
                 .onEach {
-                    Log.d("test"," test delete button on click")
+                    Log.d("test", " test delete button on click")
+                    images.removeAt(position)
+                    notifyItemRemoved(position)
+                    notifyItemRangeChanged(position, images.size)
                 }
                 .launchIn(scope)
         }
@@ -45,7 +48,7 @@ class ImageCardAdapter(
         return images.size
     }
 
-    fun updateImages(newImages: MutableList<String>) {
+    fun updateImages(newImages: MutableList<Uri>) {
         images = newImages
         notifyDataSetChanged()
     }

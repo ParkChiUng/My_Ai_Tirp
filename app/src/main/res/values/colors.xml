@@ -24,5 +24,7 @@
     <color name="gray_200">#EFEFEF</color>
     <color name="gray_100">#F5F5F5</color>
 
+    <color name="gray_white">#F4F5F9</color>
+
     <color name="kakao_yellow">#FEE500</color>
 </resources>
