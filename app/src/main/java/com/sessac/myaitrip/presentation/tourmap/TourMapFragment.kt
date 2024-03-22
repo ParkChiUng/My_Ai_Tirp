@@ -277,7 +277,7 @@ class TourMapFragment
                         // 상세 바텀 시트 Show
                         val tourKey = toMarkerKey()
                         val tourData = toMarkerData()
-                        val tourDetailBottomSheet = TourDetailBottomSheetFragment(tourKey, tourData,
+                        val tourDetailBottomSheet = TourDetailBottomSheetFragment(tourData,
                             itemClick =  {
                                 // 상세 바텀 시트 클릭
                                 moveToDetail(tourKey)
@@ -620,7 +620,7 @@ class TourMapFragment
                     val selectedTourKey = (info.key as TourClusterItemKey)
                     val selectedTourItem = (info.tag as TourClusterItemData)
 
-                    val tourDetailBottomSheet =TourDetailBottomSheetFragment(selectedTourKey, selectedTourItem,
+                    val tourDetailBottomSheet =TourDetailBottomSheetFragment(selectedTourItem,
                         itemClick = {
                             moveToDetail(selectedTourKey)
                         }

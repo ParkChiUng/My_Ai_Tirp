@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.onEach
 import reactivecircus.flowbinding.android.view.clicks
 
 class TourDetailBottomSheetFragment(
-    private val tourKey: TourClusterItemKey,
     private val tourData: TourClusterItemData,
     val itemClick: () -> Unit
     ): BottomSheetDialogFragment() {
@@ -70,7 +69,9 @@ class TourDetailBottomSheetFragment(
 //            tvTourDetailBottomSheetLikeCount
 
             root.clicks().onEach {
+                itemClick()
 
+                dismiss()
             }.launchIn(lifecycleScope)
         }
     }
