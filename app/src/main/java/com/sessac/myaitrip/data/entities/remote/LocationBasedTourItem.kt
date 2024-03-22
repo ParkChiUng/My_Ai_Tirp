@@ -1,6 +1,10 @@
 package com.sessac.myaitrip.data.entities.remote
 
 import com.google.gson.annotations.SerializedName
+import com.naver.maps.geometry.LatLng
+import com.sessac.myaitrip.data.entities.TourClusterItemData
+import com.sessac.myaitrip.data.entities.TourClusterItemKey
+import com.sessac.myaitrip.data.entities.TourItem
 
 data class LocationBasedTourItem(
     @SerializedName("contentid") val contentId: String,
@@ -25,4 +29,13 @@ data class LocationBasedTourItem(
     @SerializedName("sigungucode") val siGunGuCode: String,
     @SerializedName("tel") val telephone: String,
     @SerializedName("zipcode") val zipCode: String
-)
+) {
+    fun toMarkerKey() = TourClusterItemKey(
+        contentId,
+        LatLng(latitude.toDouble(), longitude.toDouble())
+    )
+
+    fun toMarkerData() = TourClusterItemData(
+        title, address, subAddress, contentTypeId, distance, imageUrl, subImageUrl
+    )
+}

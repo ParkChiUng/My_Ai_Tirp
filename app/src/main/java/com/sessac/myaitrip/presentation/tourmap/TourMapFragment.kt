@@ -12,8 +12,10 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -54,6 +56,7 @@ import com.sessac.myaitrip.util.DateUtil
 import com.sessac.myaitrip.util.PermissionUtil
 import com.sessac.myaitrip.util.repeatOnCreated
 import com.sessac.myaitrip.util.repeatOnResumed
+import com.sessac.myaitrip.util.repeatOnStarted
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -80,6 +83,8 @@ class TourMapFragment
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private lateinit var fusedLocationSource: FusedLocationSource
+
+    private var locationBottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>? = null
 
     private var clusterer: Clusterer<TourClusterItemKey>? = null
 
@@ -151,8 +156,8 @@ class TourMapFragment
                                        val tourMap = buildMap<TourClusterItemKey, TourClusterItemData> {
                                             aroundTours.forEach {
                                                 put(
-                                                    TourClusterItemKey(it.contentId, LatLng(it.latitude.toDouble(), it.longitude.toDouble())),
-                                                    TourClusterItemData(it.title, it.address, it.subAddress, it.contentTypeId, it.distance, it.imageUrl, it.subImageUrl)
+                                                    it.toMarkerKey(),
+                                                    it.toMarkerData()
                                                 )
                                             }
                                        }
@@ -255,6 +260,33 @@ class TourMapFragment
         locationBottomSheetTourAdapter = LocationBottomSheetTourAdapter(
             itemOnClick = { locationBasedTourItem ->
                 // TODO. 현재 위치 바텀 시트 관광지 클릭 시, 상세로 이동
+                with(locationBasedTourItem) {
+                    val moveAndZoomToPosition = CameraUpdate
+                        .scrollAndZoomTo(
+                            LatLng(latitude.toDouble(), longitude.toDouble()),
+                            18.0
+                        ).animate(CameraAnimation.Easing, 1000)
+
+                    naverMap.moveCamera(moveAndZoomToPosition) // 화면 이동 & Zoom
+
+                    // TODO. 마커 Focus 어떻게 하지?
+
+                    locationBottomSheetBehavior?.let {
+                        it.state = BottomSheetBehavior.STATE_COLLAPSED // Location 바텀 시트 숨기기
+
+                        // 상세 바텀 시트 Show
+                        val tourKey = toMarkerKey()
+                        val tourData = toMarkerData()
+                        val tourDetailBottomSheet = TourDetailBottomSheetFragment(tourKey, tourData,
+                            itemClick =  {
+                                // 상세 바텀 시트 클릭
+                                moveToDetail(tourKey)
+                            }
+                        )
+                        tourDetailBottomSheet.show(parentFragmentManager, tourDetailBottomSheet.tag)
+                    }
+                }
+
             },
             scope = viewLifecycleOwner.lifecycleScope
         ).also {
@@ -262,14 +294,26 @@ class TourMapFragment
         }
     }
 
+    private fun moveToDetail(tourKey: TourClusterItemKey, /*tourClusterItemData: TourClusterItemData*/) {
+        val bundle = Bundle().apply {
+//            tourKey.position.latitude
+//            tourKey.position.longitude
+            putString("tourContentId", tourKey.contentId)
+        }
+
+        findNavController().navigate(R.id.action_TourMap_to_TourDetail, bundle)
+    }
+
     private fun initMyLocationBottomSheet() {
         binding.locationBottomSheet.visibility = View.VISIBLE
-        val bottomSheetBehavior = BottomSheetBehavior.from(binding.locationBottomSheet)
+        locationBottomSheetBehavior = BottomSheetBehavior.from(binding.locationBottomSheet)
 
-        bottomSheetBehavior.apply {
-            maxHeight = (0.9 * resources.displayMetrics.heightPixels).toInt()
-            isFitToContents = true
-//            saveFlags = BottomSheetBehavior.SAVE_ALL
+        locationBottomSheetBehavior?.let{
+            it.apply {
+                maxHeight = (0.9 * resources.displayMetrics.heightPixels).toInt()
+                isFitToContents = true
+                saveFlags = BottomSheetBehavior.SAVE_ALL
+            }
         }
     }
 
@@ -319,7 +363,7 @@ class TourMapFragment
     }
 
     private fun setupWeatherStatusCollection() {
-        repeatOnCreated {
+        repeatOnStarted {
             tourMapViewModel.weatherStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Loading -> {
@@ -572,7 +616,16 @@ class TourMapFragment
                 captionHaloColor = Color.WHITE
                 subCaptionText = ""
                 onClickListener = Overlay.OnClickListener {
-                    // TODO. 지도 마커 클릭 시, 리스너
+                    //  지도 마커 클릭 시, 리스너, 상세 바텀 시트
+                    val selectedTourKey = (info.key as TourClusterItemKey)
+                    val selectedTourItem = (info.tag as TourClusterItemData)
+
+                    val tourDetailBottomSheet =TourDetailBottomSheetFragment(selectedTourKey, selectedTourItem,
+                        itemClick = {
+                            moveToDetail(selectedTourKey)
+                        }
+                    )
+                    tourDetailBottomSheet.show(parentFragmentManager, tourDetailBottomSheet.tag)
 
                     true
                 }

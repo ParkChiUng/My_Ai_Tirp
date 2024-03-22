@@ -25,7 +25,10 @@
         android:id="@+id/TourMapFragment"
         android:name="com.sessac.myaitrip.presentation.tourmap.TourMapFragment"
         android:label="fragment_tourMap"
-        tools:layout="@layout/fragment_ai_recommend">
+        tools:layout="@layout/fragment_tour_map">
+        <action
+            android:id="@+id/action_TourMap_to_TourDetail"
+            app:destination="@id/TourDetailFragment" />
     </fragment>
 
     <fragment
