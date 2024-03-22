@@ -54,7 +54,6 @@ import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.util.DateUtil
 import com.sessac.myaitrip.util.PermissionUtil
 import com.sessac.myaitrip.util.repeatOnCreated
-import com.sessac.myaitrip.util.repeatOnStarted
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -131,7 +130,7 @@ class TourMapFragment
     }
 
     private fun setupAroundPlaceStatusCollection() {
-        repeatOnStarted {
+        repeatOnCreated {
             tourMapViewModel.aroundPlaceStatus.collectLatest { state ->
                 when(state) {
                     is UiState.Loading -> {}
@@ -315,6 +314,10 @@ class TourMapFragment
         findNavController().navigate(R.id.action_TourMap_to_TourDetail, bundle)
     }
 
+    /**
+     * Init my location bottom sheet
+     * 현재 위치 주변 날씨, 장소 정보 바텀시트
+     */
     private fun initMyLocationBottomSheet() {
         binding.locationBottomSheet.visibility = View.VISIBLE
         locationBottomSheetBehavior = BottomSheetBehavior.from(binding.locationBottomSheet)
@@ -374,7 +377,7 @@ class TourMapFragment
     }
 
     private fun setupWeatherStatusCollection() {
-        repeatOnStarted {
+        repeatOnCreated {
             tourMapViewModel.weatherStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Loading -> {
@@ -442,11 +445,13 @@ class TourMapFragment
 
                                         WEATHER_INFO_CATEGORY_HUMIDITY -> {
                                             // 현재 시각 습도
+                                            ivLocationBottomSheetWater.visibility = View.VISIBLE
                                             tvLocationBottomSheetHumidity.text = getString(R.string.humidity_format, weatherInfo.forecastValue.toInt())
                                         }
 
                                         WEATHER_INFO_CATEGORY_RAINFALL_PROBABILITY -> {
                                             // 현재 시각 강수확률
+                                            ivLocationBottomSheetWater.visibility = View.VISIBLE
                                             tvLocationBottomSheetRainProbability.text = getString(R.string.rain_probability_format, weatherInfo.forecastValue.toInt())
                                         }
 
@@ -461,11 +466,13 @@ class TourMapFragment
 
                                                 "1", "4" -> {
                                                     // 비 이미지로
+                                                    ivLocationBottomSheetWeather.visibility = View.VISIBLE
                                                     ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_rainy)
                                                 }
 
                                                 "2", "3" -> {
                                                     // 눈 이미지로
+                                                    ivLocationBottomSheetWeather.visibility = View.VISIBLE
                                                     ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_snowing)
                                                 }
 
@@ -493,12 +500,15 @@ class TourMapFragment
                                         when(weatherInfo.forecastValue) {
                                             // 하늘상태(SKY) 코드 : 맑음(1), 구름많음(3), 흐림(4)
                                             "1" -> {
+                                                ivLocationBottomSheetWeather.visibility = View.VISIBLE
                                                 ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_sunny)
                                             }
                                             "3" -> {
+                                                ivLocationBottomSheetWeather.visibility = View.VISIBLE
                                                 ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_partly_cloudy)
                                             }
                                             "4" -> {
+                                                ivLocationBottomSheetWeather.visibility = View.VISIBLE
                                                 ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_cloudy)
                                             }
                                             else -> {}

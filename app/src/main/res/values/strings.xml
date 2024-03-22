@@ -6,7 +6,7 @@
 
     <!-- Bottom Navigation Label -->
     <string name="navi_ai">AI 추천</string>
-    <string name="navi_map">지도로 보기</string>
+    <string name="navi_map">주변</string>
     <string name="navi_home">홈</string>
     <string name="navi_tour">둘러보기</string>
     <string name="navi_mypage">마이페이지</string>
