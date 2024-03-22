@@ -12,4 +12,10 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         tools:srcCompat="@tools:sample/avatars" />
+
+    <View
+        android:id="@+id/view_FadingEdge"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_gravity="bottom"/>
 </androidx.cardview.widget.CardView>

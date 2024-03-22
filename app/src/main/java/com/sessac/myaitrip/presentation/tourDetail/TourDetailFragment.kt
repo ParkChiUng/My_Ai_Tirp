@@ -112,13 +112,15 @@ class TourDetailFragment :
                     is UiState.Success -> {
                         val response = state.data.response.body
                         val images = response.items?.item?.mapNotNull { it.originImgUrl}
-                        val adapter = ImageSliderAdapter(images)
-                        binding.vpTour.adapter = adapter
-                        binding.layoutIndicators.setViewPager(binding.vpTour)
+                        images?.let {
+                            val adapter = ImageSliderAdapter(it)
+                            binding.vpTour.adapter = adapter
+                            binding.layoutIndicators.setViewPager(binding.vpTour)
 
-                        bundle = Bundle().apply {
-                            putStringArrayList(TOUR_IMAGE_LIST, images?.let { ArrayList(it) })
-                            putParcelable(TOUR_ITEM, tourItem)
+                            bundle = Bundle().apply {
+                                putStringArrayList(TOUR_IMAGE_LIST, ArrayList(it))
+                                putParcelable(TOUR_ITEM, tourItem)
+                            }
                         }
                     }
 

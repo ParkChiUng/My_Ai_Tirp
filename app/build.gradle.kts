@@ -1,4 +1,3 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -8,6 +7,14 @@ plugins {
     id("com.google.gms.google-services")
     id("kotlin-kapt")
     id("kotlin-parcelize")
+}
+
+val properties = Properties().apply {
+    load(FileInputStream(rootProject.file("local.properties")))
+}
+
+fun getApiKey(propertyKey: String): String {
+    return properties.getProperty(propertyKey)
 }
 
 android {
@@ -64,14 +71,6 @@ android {
         viewBinding = true
         buildConfig = true
     }
-}
-
-val properties = Properties().apply {
-    load(FileInputStream(rootProject.file("local.properties")))
-}
-
-fun getApiKey(propertyKey: String): String {
-    return properties.getProperty(propertyKey)
 }
 
 dependencies {

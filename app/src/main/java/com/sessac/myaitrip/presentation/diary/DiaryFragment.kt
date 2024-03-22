@@ -36,7 +36,7 @@ class DiaryFragment :
     private lateinit var userImageAdapter: ImageCardAdapter
     private var tourImageList: List<String>? = null
     private var parcelableTourItem: TourItem? = null
-    private var userImageList: MutableList<Uri> = mutableListOf()
+    private var userImageList: MutableList<String> = mutableListOf()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -93,10 +93,10 @@ class DiaryFragment :
             if (clipData != null) {
                 for (i in 0 until clipData.itemCount) {
                     val uri = clipData.getItemAt(i).uri
-                    userImageList.add(uri)
+                    userImageList.add(uri.toString())
                 }
             } else if (imageUri != null) {
-                userImageList.add(imageUri)
+                userImageList.add(imageUri.toString())
             }
 
             userImageAdapter.updateImages(userImageList)
@@ -110,7 +110,10 @@ class DiaryFragment :
             parcelableTourItem?.let {
                 tvTourName.setText(it.title)
                 tvTourAddress.setText(it.address)
-                imageSliderAdapter = ImageSliderAdapter(tourImageList)
+            }
+
+            tourImageList?.let{
+                imageSliderAdapter = ImageSliderAdapter(it)
                 vpTour.adapter = imageSliderAdapter
                 layoutIndicators.setViewPager(vpTour)
             }

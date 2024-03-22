@@ -18,7 +18,7 @@ class ImageCardAdapter(
 ) :
     RecyclerView.Adapter<ImageCardAdapter.ImageCardViewHolder>() {
 
-    private var images: MutableList<Uri> = mutableListOf()
+    private var images: MutableList<String> = mutableListOf()
 
     class ImageCardViewHolder(val binding: ItemDiaryImgCardBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -31,7 +31,7 @@ class ImageCardAdapter(
     override fun onBindViewHolder(holder: ImageCardViewHolder, position: Int) {
         with(holder.binding) {
 
-            GlideUtil.loadProfileImage(ivTour.context, images[position], ivTour)
+            GlideUtil.loadImage(ivTour.context, images[position], ivTour)
 
             btnDelete.clicks()
                 .onEach {
@@ -45,7 +45,7 @@ class ImageCardAdapter(
         return images.size
     }
 
-    fun updateImages(newImages: MutableList<Uri>) {
+    fun updateImages(newImages: MutableList<String>) {
         images = newImages
         notifyDataSetChanged()
     }
