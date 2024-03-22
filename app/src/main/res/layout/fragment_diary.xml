@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="다이어리 등록"
+            android:text="@string/diary_bar"
             android:textColor="@color/black"
             android:textSize="@dimen/f_home_tv_text_size"
             android:textStyle="bold" />
@@ -57,44 +57,43 @@
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vp_tour"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="@dimen/f_diary_view_pager_width"
+        android:layout_height="@dimen/f_diary_view_pager_height"
         android:scaleType="centerCrop"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/f_diary_view_pager_marginTop"
         app:layout_constraintLeft_toRightOf="@id/gl_left"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <me.relex.circleindicator.CircleIndicator3
         android:id="@+id/layout_Indicators"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/default_layout"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingBottom="10dp"
+        android:paddingBottom="@dimen/f_diary_padding_bottom"
         app:layout_constraintBottom_toBottomOf="@id/vp_tour"
         app:layout_constraintEnd_toEndOf="@+id/vp_tour"
         app:layout_constraintStart_toStartOf="@+id/vp_tour" />
 
     <androidx.appcompat.widget.AppCompatAutoCompleteTextView
         android:id="@+id/tv_tour_name"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/default_layout"
         android:layout_height="wrap_content"
-        android:text="고나광지 이름"
-        android:layout_marginLeft="20dp"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/f_diary_margin_left"
+        android:layout_marginTop="@dimen/f_diary_margin_top50"
         android:background="@color/white"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_tour_address"
         app:layout_constraintStart_toEndOf="@+id/vp_tour"
         app:layout_constraintEnd_toEndOf="parent"
         />
 
     <androidx.appcompat.widget.AppCompatAutoCompleteTextView
         android:id="@+id/tv_tour_address"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/default_layout"
         android:layout_height="wrap_content"
-        android:text="주소주소"
         android:background="@color/white"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/f_diary_margin_top10"
         app:layout_constraintTop_toBottomOf="@+id/tv_tour_name"
         app:layout_constraintStart_toEndOf="@+id/vp_tour"
         app:layout_constraintStart_toStartOf="@+id/tv_tour_name"
@@ -103,9 +102,9 @@
 
     <View
         android:id="@+id/line"
-        android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="@dimen/default_layout"
+        android:layout_height="@dimen/f_diary_line"
+        android:layout_marginTop="@dimen/f_diary_edit_text_margin_top"
         android:background="@android:color/darker_gray"
         app:layout_constraintLeft_toLeftOf="@id/gl_left"
         app:layout_constraintRight_toRightOf="@+id/gl_right"
@@ -113,75 +112,68 @@
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_diary_title"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
+        android:layout_width="@dimen/default_layout"
+        android:layout_height="@dimen/f_diary_edit_text_height80"
         android:background="@drawable/search_layout_background"
-        android:hint="다이어리 제목"
-        android:padding="10dp"
+        android:hint="@string/diary_title"
+        android:padding="@dimen/f_diary_edit_padding"
         android:imeOptions="actionSearch"
         android:inputType="text"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/f_diary_edit_text_margin_top"
+        android:backgroundTint="@color/gray_white"
         app:layout_constraintStart_toStartOf="@+id/gl_left"
         app:layout_constraintEnd_toEndOf="@+id/gl_right"
         app:layout_constraintTop_toBottomOf="@id/line" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_diary_review"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_width="@dimen/default_layout"
+        android:layout_height="@dimen/f_diary_edit_text_height200"
         android:background="@drawable/search_layout_background"
-        android:hint="다이어리 내용"
-        android:padding="10dp"
+        android:hint="@string/diary_review"
+        android:padding="@dimen/f_diary_edit_padding"
         android:imeOptions="actionSearch"
         android:inputType="textMultiLine"
         android:gravity="top|start"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/f_diary_edit_text_margin_top"
         app:layout_constraintStart_toStartOf="@+id/gl_left"
         app:layout_constraintEnd_toEndOf="@+id/gl_right"
         app:layout_constraintTop_toBottomOf="@id/et_diary_title"/>
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btn_add_img"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/f_diary_btn_add_img_layout"
+        android:layout_height="@dimen/f_diary_btn_add_img_layout"
         android:background="@drawable/search_layout_background"
         android:src="@drawable/ic_add"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginTop="@dimen/f_diary_edit_text_margin_top"
+        android:layout_marginEnd="@dimen/f_diary_edit_padding"
         app:layout_constraintStart_toStartOf="@+id/gl_left"
         app:layout_constraintTop_toBottomOf="@id/et_diary_review"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv_img"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/default_layout"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginTop="@dimen/f_diary_rcv_img_margin_top"
+        android:layout_marginStart="@dimen/f_diary_rcv_img_margin_start"
         tools:listitem="@layout/item_diary_img_card"
         app:layout_constraintStart_toEndOf="@+id/btn_add_img"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/et_diary_review" />
 
-<!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:id="@+id/rcv_img"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="60dp"-->
-<!--        android:orientation="horizontal"-->
-<!--        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
-<!--        tools:listitem="@layout/item_diary_img_card"-->
-<!--        android:layout_margin="20dp"-->
-<!--        app:layout_constraintStart_toEndOf="@+id/btn_add_img"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/et_diary_review"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/btn_submit"/>-->
-
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_submit"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
-        android:text="등록하기"
+        android:layout_width="@dimen/default_layout"
+        android:layout_height="@dimen/f_diary_btn_submit_height"
+        android:layout_marginTop="@dimen/f_diary_edit_text_margin_top"
+        android:text="@string/diary_submit"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="@dimen/f_diary_btn_text_size"
+        android:background="@drawable/selector_btn_blue"
         app:layout_constraintStart_toStartOf="@+id/gl_left"
         app:layout_constraintEnd_toEndOf="@+id/gl_right"
         app:layout_constraintTop_toBottomOf="@id/btn_add_img" />
