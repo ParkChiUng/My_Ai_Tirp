@@ -49,6 +49,7 @@
             android:layout_marginTop="@dimen/f_home_tv_margin_top"
             android:textStyle="bold"
             android:textSize="@dimen/f_home_tv_text_size"
+            android:textColor="@color/black"
             android:text="@string/popular_tour"
             app:layout_constraintTop_toBottomOf="@id/layout_search"
             app:layout_constraintLeft_toLeftOf="parent"/>
@@ -68,6 +69,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/f_home_tv_margin_top"
             android:textStyle="bold"
+            android:textColor="@color/black"
             android:textSize="@dimen/f_home_tv_text_size"
             android:text="@string/location_tour_recommend"
             app:layout_constraintTop_toBottomOf="@id/rcv_popular"

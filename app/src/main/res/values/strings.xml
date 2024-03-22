@@ -108,4 +108,9 @@
     <string name="tour_detail_share">공유하기</string>
 
     <string name="tour_no_detail">해당 관광지에 대한 정보가 없습니다.</string>
+
+    <string name="diary_bar">다이어리 등록</string>
+    <string name="diary_title">다이어리 제목</string>
+    <string name="diary_review">다이어리 내용</string>
+    <string name="diary_submit">등록하기</string>
 </resources>
