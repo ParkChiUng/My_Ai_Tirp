@@ -1,7 +1,10 @@
 package com.sessac.myaitrip.data.entities
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class TourImageItem(
     @SerializedName("contentid")
     val contentId: String,
@@ -15,4 +18,4 @@ data class TourImageItem(
     val cpyRhtDivCd: String? = null,
     @SerializedName("serialnum")
     val serialNum: String? = null,
-)
+): Parcelable

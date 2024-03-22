@@ -77,6 +77,9 @@
         android:name="com.sessac.myaitrip.presentation.tourDetail.TourDetailFragment"
         android:label="fragment_tourDetail"
         tools:layout="@layout/fragment_tour_detail">
+        <action
+            android:id="@+id/action_TourDetailFragment_to_DiaryFragment"
+            app:destination="@id/DiaryFragment" />
     </fragment>
 
     <fragment
@@ -88,7 +91,7 @@
 
     <fragment
         android:id="@+id/DiaryFragment"
-        android:name="com.sessac.myaitrip.presentation.DiaryFragment"
+        android:name="com.sessac.myaitrip.presentation.diary.DiaryFragment"
         android:label="fragment_diary"
         tools:layout="@layout/fragment_diary">
     </fragment>

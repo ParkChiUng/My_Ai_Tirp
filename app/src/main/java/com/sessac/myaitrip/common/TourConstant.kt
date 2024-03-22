@@ -5,6 +5,9 @@ const val DEFAULT_PAGE_NUMBER = 1
 const val DEFAULT_NUM_OF_ROWS = 1000
 const val DEFAULT_PAGING_SIZE  = 10
 const val DEFAULT_PREFETCH_DISTANCE = 3
+const val TOUR_CONTENT_ID = "tourContentId"
+const val TOUR_IMAGE_LIST = "tourImageList"
+const val TOUR_ITEM = "tourItem"
 val CONTENT_TYPE_ID_CATEGORY  = mapOf(
     "관광지" to "12",
     "문화시설" to "14",

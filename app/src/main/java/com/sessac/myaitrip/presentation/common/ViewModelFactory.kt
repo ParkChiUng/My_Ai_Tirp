@@ -10,13 +10,14 @@ import com.sessac.myaitrip.data.repository.tour.remote.TourRemoteDataSource
 import com.sessac.myaitrip.data.repository.user.UserRepository
 import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
 import com.sessac.myaitrip.data.repository.user.remote.UserRemoteDataSource
+import com.sessac.myaitrip.presentation.diary.DiaryViewModel
 import com.sessac.myaitrip.data.repository.weather.WeatherRepository
 import com.sessac.myaitrip.network.RetrofitServiceInstance
 import com.sessac.myaitrip.presentation.home.HomeViewModel
 import com.sessac.myaitrip.presentation.login.LoginViewModel
 import com.sessac.myaitrip.presentation.progress.ProgressViewModel
 import com.sessac.myaitrip.presentation.register.RegisterViewModel
-import com.sessac.myaitrip.presentation.tourmap.TourMapViewModel
+import com.sessac.myaitrip.presentation.splash.SplashViewModel
 import com.sessac.myaitrip.presentation.tourDetail.TourDetailViewModel
 import com.sessac.myaitrip.presentation.tours.ToursViewModel
 
@@ -106,6 +107,18 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
                     tourRemoteDataSource
                 )
                 ToursViewModel(tourRepository) as T
+            }
+
+            modelClass.isAssignableFrom(DiaryViewModel::class.java) -> {
+                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore)
+                val tourRemoteDataSource = TourRemoteDataSource()
+                val tourRepository = TourRepository(
+                    tourDao,
+                    tourApiService,
+                    tourLocalDataSource,
+                    tourRemoteDataSource
+                )
+                DiaryViewModel(tourRepository) as T
             }
 
             else -> {

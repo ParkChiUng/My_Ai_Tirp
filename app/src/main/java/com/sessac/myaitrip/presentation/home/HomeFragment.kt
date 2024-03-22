@@ -10,6 +10,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.sessac.myaitrip.R
+import com.sessac.myaitrip.common.TOUR_CONTENT_ID
 import com.sessac.myaitrip.databinding.FragmentHomeBinding
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
@@ -226,21 +227,21 @@ class HomeFragment :
 
         popularAdapter = FullCardAdapter({ tourItem ->
             val bundle = Bundle().apply {
-                putParcelable("tourItem", tourItem)
+                putString(TOUR_CONTENT_ID, tourItem.contentId)
             }
             findNavController().navigate(R.id.action_HomeFragment_to_TourDetailFragment, bundle)
         }, viewLifecycleOwner.lifecycleScope)
 
         recommendAdapter = SmallCardAdapter({ tourItem ->
             val bundle = Bundle().apply {
-                putParcelable("tourItem", tourItem)
+                putString(TOUR_CONTENT_ID, tourItem.contentId)
             }
             findNavController().navigate(R.id.action_HomeFragment_to_TourDetailFragment, bundle)
         }, viewLifecycleOwner.lifecycleScope)
 
         nearbyAdapter = SmallCardAdapter({ tourItem ->
             val bundle = Bundle().apply {
-                putParcelable("tourItem", tourItem)
+                putString(TOUR_CONTENT_ID, tourItem.contentId)
             }
             findNavController().navigate(R.id.action_HomeFragment_to_TourDetailFragment, bundle)
         }, viewLifecycleOwner.lifecycleScope)
