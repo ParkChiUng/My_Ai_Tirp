@@ -117,4 +117,5 @@
     <string name="rain_probability_format">강수확률 %1$d%%</string>\
 
     <string name="distance_format">내 위치와 %1$.1fkm 떨어져 있어요!</string>
+    <string name="title_tour_detail_by_map">지도로 보기</string>
 </resources>
