@@ -1,5 +1,7 @@
 package com.sessac.myaitrip.presentation.tourDetail.adapter
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,12 +9,14 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sessac.myaitrip.R
+import com.sessac.myaitrip.util.GlideUtil
 
-class ImageSliderAdapter(private val images: List<String>?) :
+class ImageSliderAdapter(private val images: List<String>) :
     RecyclerView.Adapter<ImageSliderAdapter.SliderViewHolder>() {
 
     inner class SliderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.iv_slider)
+        val darkView: View = view.findViewById(R.id.view_FadingEdge)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SliderViewHolder {
@@ -22,12 +26,16 @@ class ImageSliderAdapter(private val images: List<String>?) :
     }
 
     override fun onBindViewHolder(holder: SliderViewHolder, position: Int) {
-        Glide.with(holder.imageView.context)
-            .load(images?.get(position))
-            .into(holder.imageView)
+        GlideUtil.loadImage(holder.imageView.context, images[position], holder.imageView)
+
+        val gradient = GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(Color.TRANSPARENT, Color.BLACK)
+        )
+        holder.darkView.background = gradient
     }
 
     override fun getItemCount(): Int {
-        return images?.size ?: 0
+        return images.size ?: 0
     }
 }

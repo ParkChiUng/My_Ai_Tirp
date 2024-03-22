@@ -1,4 +1,3 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -13,6 +12,11 @@ plugins {
 val properties = Properties().apply {
     load(FileInputStream(rootProject.file("local.properties")))
 }
+
+fun getApiKey(propertyKey: String): String {
+    return properties.getProperty(propertyKey)
+}
+
 android {
     namespace = "com.sessac.myaitrip"
     compileSdk = 34
@@ -67,11 +71,6 @@ android {
         viewBinding = true
         buildConfig = true
     }
-}
-
-// 2. local.properties 내부에서 key값을 가져오는 함수 구현방식
-fun getApiKey(propertyKey: String): String {
-    return gradleLocalProperties(rootDir).getProperty(propertyKey).toString()
 }
 
 dependencies {

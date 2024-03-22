@@ -55,6 +55,14 @@ class TourRepository(
     }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
 
     /**
+     * [Room DB] contentId 1개의 관광지 리스트 조회
+     */
+    fun getTourList(contentIdList: String) = flow {
+        emit(UiState.Loading)
+        emit(UiState.Success(tourDao.getTourList(contentIdList)))
+    }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
+
+    /**
      * [Room DB] 지역 명, 카테고리, 검색어로 관광지 리스트 조회 ( 페이징 )
      *
      * @param area 지역명

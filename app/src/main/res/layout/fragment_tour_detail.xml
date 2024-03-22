@@ -54,7 +54,7 @@
     </com.google.android.material.appbar.MaterialToolbar>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_image"
+        android:id="@+id/layout_tour"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/f_home_rcv_margin_top"
@@ -74,13 +74,6 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <View
-            android:id="@+id/view_FadingEdge"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:background="@drawable/bg_fading_edge"
-            app:layout_constraintBottom_toBottomOf="@+id/vp_tour" />
-
         <me.relex.circleindicator.CircleIndicator3
             android:id="@+id/layout_Indicators"
             android:layout_width="0dp"
@@ -88,7 +81,7 @@
             android:orientation="horizontal"
             android:gravity="center"
             android:paddingBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="@id/view_FadingEdge"
+            app:layout_constraintBottom_toBottomOf="@id/vp_tour"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -97,7 +90,7 @@
         android:id="@+id/layout_tools"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/layout_image"
+        app:layout_constraintTop_toBottomOf="@id/layout_tour"
         app:layout_constraintLeft_toLeftOf="@id/gl_left"
         app:layout_constraintRight_toRightOf="@id/gl_right"
         app:layout_constraintBottom_toTopOf="@id/layout_description"

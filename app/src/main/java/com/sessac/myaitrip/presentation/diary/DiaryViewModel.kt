@@ -1,4 +1,4 @@
-package com.sessac.myaitrip.presentation.tours
+package com.sessac.myaitrip.presentation.diary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class ToursViewModel(
+class DiaryViewModel(
     private val tourRepository: TourRepository
 ) : ViewModel() {
 
@@ -21,7 +21,8 @@ class ToursViewModel(
 
     fun getTourList(area: String, category: String, inputText: String) {
         viewModelScope.launch {
-            tourRepository.getTourList(area, category, inputText).cachedIn(viewModelScope).collectLatest { pagingData ->
+            tourRepository.getTourList(area, category, inputText).cachedIn(viewModelScope)
+                .collectLatest { pagingData ->
                     _tourStatus.value = pagingData
                 }
         }
