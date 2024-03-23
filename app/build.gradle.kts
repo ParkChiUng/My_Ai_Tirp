@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -43,6 +44,10 @@ android {
 
         buildConfigField("String","NAVER_CLIENT_SECRET",
             "\"${getApiKey("NAVER_CLIENT_SECRET")}\"")
+
+        buildConfigField("String","WEATHER_API_KEY",
+            "\"${getApiKey("WEATHER_API_KEY")}\""
+        )
 
         manifestPlaceholders["KAKAO_NATIVE_KEY"] = getApiKey("KAKAO_NATIVE_KEY")
         manifestPlaceholders["NAVER_CLIENT_ID"] = getApiKey("NAVER_CLIENT_ID")
@@ -120,12 +125,27 @@ dependencies {
     // glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0") // Annotation processor for Glide (Glide의 버전에 맞춰서)
+
+    // OkHttp
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+
+    // Glide + OkHttp
+    implementation("com.github.bumptech.glide:okhttp3-integration:4.16.0@aar") // Glide와 OkHttp를 통합하는 라이브러리
 
     // Gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.2.1")
 
     // 네이버 지도 SDK
-    implementation("com.naver.maps:map-sdk:3.17.0")
+    implementation("com.naver.maps:map-sdk:3.18.0")
+
+    // 현재 위치
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+
+    // Ted Permission
+    val tedpermission_version = "3.3.0"
+    implementation ("io.github.ParkSangGwon:tedpermission-normal:$tedpermission_version")   // Normal ver
+    implementation("io.github.ParkSangGwon:tedpermission-coroutine:$tedpermission_version") // Coroutine ver
 
     // circle indicator
     implementation("me.relex:circleindicator:2.1.6")

@@ -1,5 +1,6 @@
 package com.sessac.myaitrip.presentation.tourDetail
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
@@ -65,6 +66,24 @@ class TourDetailFragment :
             btnDiary.throttleClick().bind {
                 findNavController().navigate(R.id.action_TourDetailFragment_to_DiaryFragment, bundle)
             }
+
+            // 지도로 보기 버튼
+            btnMap.throttleClick().bind {
+                moveToMap()
+            }
+        }
+    }
+
+    /**
+     * Move to map
+     * 지도로 보기 화면으로 이동
+     */
+    private fun moveToMap() {
+        Intent(requireContext(), TourDetailByMapActivity::class.java).apply {
+            tourItem?.let {
+                putExtra("tourItem", it)
+            }
+            startActivity(this)
         }
     }
 

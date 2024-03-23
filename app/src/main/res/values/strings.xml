@@ -1,11 +1,12 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">마이AI트립</string>
 
-    <string name = "default_img_url">https://t1.kakaocdn.net/account_images/default_profile.jpeg.twg.thumb.R640x640</string>
+    <string name="default_img_url">https://t1.kakaocdn.net/account_images/default_profile.jpeg.twg.thumb.R640x640</string>
+    <string name="text_separate" tools:ignore="ExtraTranslation">|</string>
 
     <!-- Bottom Navigation Label -->
     <string name="navi_ai">AI 추천</string>
-    <string name="navi_map">지도로 보기</string>
+    <string name="navi_map">주변</string>
     <string name="navi_home">홈</string>
     <string name="navi_tour">둘러보기</string>
     <string name="navi_mypage">마이페이지</string>
@@ -113,4 +114,13 @@
     <string name="diary_title">다이어리 제목</string>
     <string name="diary_review">다이어리 내용</string>
     <string name="diary_submit">등록하기</string>
+
+    <string name="temperature_normal_format">%1$d°</string>
+    <string name="temperature_high_format">최고 %1$d°</string>
+    <string name="temperature_low_format">최저 %1$d°</string>
+    <string name="humidity_format">습도 %1$d%%</string>
+    <string name="rain_probability_format">강수확률 %1$d%%</string>\
+
+    <string name="distance_format">내 위치와 %1$.1fkm 떨어져 있어요!</string>
+    <string name="title_tour_detail_by_map">지도로 보기</string>
 </resources>

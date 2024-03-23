@@ -1,4 +1,4 @@
-package com.sessac.myaitrip.data.entities.remote
+package com.sessac.myaitrip.data.entities.remote.firebase
 
 data class UserData(
     val id: String,
