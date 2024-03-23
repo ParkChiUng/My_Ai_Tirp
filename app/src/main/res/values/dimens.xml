@@ -21,6 +21,8 @@
     <dimen name="card_area_text_size">13sp</dimen>
     <dimen name="scroll_layout">0dp</dimen>
 
+    <dimen name="default_layout">0dp</dimen>
+
 
     <!-- view_search.xml -->
     <dimen name="search_icon">20dp</dimen>
@@ -41,5 +43,24 @@
     <!-- tour_detail -->
     <dimen name="f_tour_detail_image_width">0dp</dimen>
     <dimen name="f_tour_detail_image_height">2000dp</dimen>
+
+    <dimen name="f_diary_view_pager_width">150dp</dimen>
+    <dimen name="f_diary_view_pager_height">150dp</dimen>
+    <dimen name="f_diary_view_pager_marginTop">30dp</dimen>
+    <dimen name="f_diary_padding_bottom">10dp</dimen>
+    <dimen name="f_diary_margin_left">10dp</dimen>
+    <dimen name="f_diary_margin_top10">10dp</dimen>
+    <dimen name="f_diary_margin_top50">50dp</dimen>
+    <dimen name="f_diary_line">2dp</dimen>
+    <dimen name="f_diary_edit_text_height80">80dp</dimen>
+    <dimen name="f_diary_edit_text_height200">200dp</dimen>
+    <dimen name="f_diary_edit_text_margin_top">30dp</dimen>
+    <dimen name="f_diary_edit_padding">10dp</dimen>
+    <dimen name="f_diary_btn_add_img_layout">80dp</dimen>
+    <dimen name="f_diary_rcv_img_margin_top">20dp</dimen>
+    <dimen name="f_diary_rcv_img_margin_start">10dp</dimen>
+    <dimen name="f_diary_btn_submit_height">60dp</dimen>
+    <dimen name="f_diary_btn_text_size">20sp</dimen>
+    <dimen name="f_diary_card_size">80dp</dimen>
 
 </resources>

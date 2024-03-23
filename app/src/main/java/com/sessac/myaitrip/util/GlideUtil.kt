@@ -46,4 +46,12 @@ object GlideUtil {
             .into(imageView)
     }
 
+    fun loadImage(context: Context, imgUrl: Uri, imageView: ImageView) {
+        Glide.with(context)
+            .load(imgUrl)
+            .placeholder(R.drawable.progress_animation)
+            .error(R.drawable.error_image)
+            .into(imageView)
+    }
+
 }

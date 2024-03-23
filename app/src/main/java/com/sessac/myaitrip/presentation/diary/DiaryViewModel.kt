@@ -2,29 +2,39 @@ package com.sessac.myaitrip.presentation.diary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
-import com.sessac.myaitrip.data.entities.TourItem
-import com.sessac.myaitrip.data.repository.tour.TourRepository
+import com.sessac.myaitrip.data.entities.DiaryItem
+import com.sessac.myaitrip.data.entities.local.UserPreferencesData
+import com.sessac.myaitrip.data.repository.diary.DiaryRepository
+import com.sessac.myaitrip.presentation.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class DiaryViewModel(
-    private val tourRepository: TourRepository
+    private val diaryRepository: DiaryRepository
 ) : ViewModel() {
 
-    private val _tourStatus =
-        MutableStateFlow<PagingData<TourItem>>(PagingData.empty())
-    val tourStatus get() = _tourStatus.asStateFlow()
+    private val _userPreferenceStatus =
+        MutableStateFlow<UiState<UserPreferencesData>>(UiState.Empty)
+    val userPreferenceStatus get() = _userPreferenceStatus.asStateFlow()
 
-    fun getTourList(area: String, category: String, inputText: String) {
+    private val _fireBaseResult = MutableStateFlow<UiState<String>>(UiState.Empty)
+    val fireBaseResult get() = _fireBaseResult.asStateFlow()
+
+    fun getUserPreferences() {
         viewModelScope.launch {
-            tourRepository.getTourList(area, category, inputText).cachedIn(viewModelScope)
-                .collectLatest { pagingData ->
-                    _tourStatus.value = pagingData
-                }
+            diaryRepository.getUserPreferences().collectLatest {
+                _userPreferenceStatus.value = UiState.Success(it)
+            }
+        }
+    }
+
+    fun addDiaryFromFireBase(userId: String, diaryItem: DiaryItem) {
+        viewModelScope.launch {
+            diaryRepository.addDiaryFromFireBase(userId, diaryItem).collectLatest {
+                _fireBaseResult.value = it
+            }
         }
     }
 }

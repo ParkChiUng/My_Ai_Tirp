@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.sessac.myaitrip.common.MyAiTripApplication
+import com.sessac.myaitrip.data.repository.diary.DiaryRepository
+import com.sessac.myaitrip.data.repository.diary.remote.DiaryRemoteDataSource
 import com.sessac.myaitrip.data.repository.tour.TourRepository
 import com.sessac.myaitrip.data.repository.tour.local.TourLocalDataSource
 import com.sessac.myaitrip.data.repository.tour.remote.TourRemoteDataSource
@@ -110,15 +112,13 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
             }
 
             modelClass.isAssignableFrom(DiaryViewModel::class.java) -> {
-                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore)
-                val tourRemoteDataSource = TourRemoteDataSource()
-                val tourRepository = TourRepository(
-                    tourDao,
-                    tourApiService,
-                    tourLocalDataSource,
-                    tourRemoteDataSource
+                val userLocalDataSource = UserLocalDataSource(dataStore.userDataStore)
+                val diaryRemoteDataSource = DiaryRemoteDataSource()
+                val diaryRepository = DiaryRepository(
+                    userLocalDataSource,
+                    diaryRemoteDataSource
                 )
-                DiaryViewModel(tourRepository) as T
+                DiaryViewModel(diaryRepository) as T
             }
 
             else -> {

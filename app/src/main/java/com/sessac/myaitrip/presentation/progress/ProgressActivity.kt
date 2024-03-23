@@ -47,6 +47,17 @@ class ProgressActivity :
                         getFirstTourItemForTotalCount()
                     }
 
+                    is UiState.Error -> {
+                        errorCount++
+                        if (errorCount >= 3) {
+                            Log.e("TourAPI HandleState", "API 연결이 5번 실패했습니다.")
+                            moveToMain()
+                        } else {
+                            delay(2000)
+                            setUpCollect()
+                        }
+                    }
+
                     else -> {}
                 }
             }
@@ -95,11 +106,11 @@ class ProgressActivity :
                     is UiState.Error -> {
                         Log.e("TourAPI HandleState", "${state.errorMessage}")
                         errorCount++
-                        if (errorCount >= 5) {
+                        if (errorCount >= 3) {
                             Log.e("TourAPI HandleState", "API 연결이 5번 실패했습니다.")
                             moveToMain()
                         } else {
-                            delay(3000)
+                            delay(2000)
                             setUpCollect()
                         }
                     }
