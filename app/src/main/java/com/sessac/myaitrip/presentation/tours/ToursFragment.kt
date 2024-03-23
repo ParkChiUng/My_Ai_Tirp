@@ -5,9 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,8 +18,8 @@ import com.sessac.myaitrip.databinding.FragmentToursBinding
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.tours.adapter.ToursPagingAdapter
+import com.sessac.myaitrip.util.repeatOnCreated
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 /**
  * 관광지 페이지
@@ -117,13 +115,9 @@ class ToursFragment :
     }
 
     private fun setupCollect() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                launch {
-                    toursViewModel.tourStatus.collectLatest { pagingData ->
-                        toursAdapter.submitData(pagingData)
-                    }
-                }
+        repeatOnCreated {
+            toursViewModel.tourStatus.collectLatest { pagingData ->
+                toursAdapter.submitData(pagingData)
             }
         }
     }
@@ -143,5 +137,10 @@ class ToursFragment :
 
         toursRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         toursRecyclerView.adapter = toursAdapter
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.layoutSearch.searchInput.setText("")
     }
 }

@@ -26,6 +26,7 @@ import com.sessac.myaitrip.presentation.diary.adapter.ImageCardAdapter
 import com.sessac.myaitrip.presentation.tourDetail.adapter.ImageSliderAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import com.sessac.myaitrip.util.showToast
 
 /**
  * 다이어리 페이지
@@ -95,11 +96,11 @@ class DiaryFragment :
         var check = true
         with(binding) {
             if (etDiaryTitle.text.toString() == "") {
-                Toast.makeText(context, "다이어리 제목을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                requireContext().showToast("다이어리 제목을 입력해주세요.")
                 check = false
             }
             if (etDiaryReview.text.toString() == "") {
-                Toast.makeText(context, "다이어리 내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                requireContext().showToast("다이어리 내용을 입력해주세요.")
                 check = false
             }
         }
@@ -198,12 +199,12 @@ class DiaryFragment :
             diaryViewModel.fireBaseResult.collectLatest { state ->
                 when (state) {
                     is UiState.Success -> {
-                        Toast.makeText(context, "다이어리 저장 완료", Toast.LENGTH_SHORT).show()
+                        requireContext().showToast("다이어리 저장 완료")
                         findNavController().popBackStack()
                     }
 
                     is UiState.Error -> {
-                        Toast.makeText(context, "다이어리 저장 실패", Toast.LENGTH_SHORT).show()
+                        requireContext().showToast("다이어리 저장 실패")
                     }
 
                     else -> {}

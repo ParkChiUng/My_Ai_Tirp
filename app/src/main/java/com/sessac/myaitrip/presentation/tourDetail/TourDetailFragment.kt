@@ -21,6 +21,7 @@ import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.tourDetail.adapter.ImageSliderAdapter
+import com.sessac.myaitrip.util.repeatOnCreated
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -150,6 +151,11 @@ class TourDetailFragment :
                                 val images = listOf(it.firstImage as String)
                                 val adapter = ImageSliderAdapter(images)
                                 binding.vpTour.adapter = adapter
+
+                                bundle = Bundle().apply {
+                                    putStringArrayList(TOUR_IMAGE_LIST, ArrayList(images))
+                                    putParcelable(TOUR_ITEM, it)
+                                }
                             }
                         } else
                             getTourApi()
@@ -183,19 +189,17 @@ class TourDetailFragment :
     }
 
     private fun getTourApi() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                launch {
-                    tourDetailViewModel.getTourFromRoom(tourContentId)
-                }
+        repeatOnCreated{
+            launch {
+                tourDetailViewModel.getTourFromRoom(tourContentId)
+            }
 
-                launch {
-                    tourDetailViewModel.getTourDetailFromAPI(tourContentId)
-                }
+            launch {
+                tourDetailViewModel.getTourDetailFromAPI(tourContentId)
+            }
 
-                launch {
-                    tourDetailViewModel.getTourImageFromAPI(tourContentId)
-                }
+            launch {
+                tourDetailViewModel.getTourImageFromAPI(tourContentId)
             }
         }
     }

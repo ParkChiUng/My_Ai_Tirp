@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.sessac.myaitrip.R
@@ -17,6 +15,7 @@ import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.home.adapter.FullCardAdapter
 import com.sessac.myaitrip.presentation.home.adapter.SmallCardAdapter
+import com.sessac.myaitrip.util.repeatOnCreated
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -97,98 +96,95 @@ class HomeFragment :
     }
 
     private fun setupCollect() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                launch {
-                    homeViewModel.popularTourList.collectLatest { state ->
-                        when (state) {
-                            is UiState.Success -> {
-                                popularAdapter.setTourList(state.data)
-                                popularRecyclerView.scrollToPosition(0)
-                            }
+        repeatOnCreated {
+            launch {
+                homeViewModel.popularTourList.collectLatest { state ->
+                    when (state) {
+                        is UiState.Success -> {
+                            popularAdapter.setTourList(state.data)
+                            popularRecyclerView.scrollToPosition(0)
+                        }
 
-                            is UiState.Error -> {
-                                Log.e("TourAPI HandleState", "${state.errorMessage}")
-                            }
+                        is UiState.Error -> {
+                            Log.e("TourAPI HandleState", "${state.errorMessage}")
+                        }
 
-                            is UiState.Loading -> {
-                                Log.e("TourAPI HandleState", " loading : $$state")
-                            }
+                        is UiState.Loading -> {
+                            Log.e("TourAPI HandleState", " loading : $$state")
+                        }
 
-                            else -> {
-                                Log.e("TourAPI HandleState", " else : $state")
-                            }
+                        else -> {
+                            Log.e("TourAPI HandleState", " else : $state")
                         }
                     }
                 }
+            }
 
-                launch {
-                    homeViewModel.areaRecommendTourList.collectLatest { state ->
-                        when (state) {
-                            is UiState.Success -> {
-                                recommendAdapter.setTourList(state.data)
-                                recommendRecyclerView.scrollToPosition(0)
-                            }
-
-                            is UiState.Error -> {
-
-                            }
-
-                            is UiState.Loading -> {
-
-                            }
-
-                            else -> {}
+            launch {
+                homeViewModel.areaRecommendTourList.collectLatest { state ->
+                    when (state) {
+                        is UiState.Success -> {
+                            recommendAdapter.setTourList(state.data)
+                            recommendRecyclerView.scrollToPosition(0)
                         }
+
+                        is UiState.Error -> {
+
+                        }
+
+                        is UiState.Loading -> {
+
+                        }
+
+                        else -> {}
                     }
                 }
+            }
 
-                launch {
-                    homeViewModel.nearbyTourList.collectLatest { state ->
-                        when (state) {
-                            is UiState.Success -> {
-                                nearbyAdapter.setTourList(state.data)
-                                nearbyRecyclerView.scrollToPosition(0)
-                            }
-
-                            is UiState.Error -> {
-
-                            }
-
-                            is UiState.Loading -> {
-
-                            }
-
-                            else -> {}
+            launch {
+                homeViewModel.nearbyTourList.collectLatest { state ->
+                    when (state) {
+                        is UiState.Success -> {
+                            nearbyAdapter.setTourList(state.data)
+                            nearbyRecyclerView.scrollToPosition(0)
                         }
+
+                        is UiState.Error -> {
+
+                        }
+
+                        is UiState.Loading -> {
+
+                        }
+
+                        else -> {}
                     }
                 }
+            }
 
-                launch {
-                    homeViewModel.fireBaseResult.collectLatest { state ->
-                        when (state) {
-                            is UiState.Success -> {
-                                contentIdList = state.data["contentIdList"] as List<String>
-                                listType = HomeViewModel.ListType.valueOf(state.data["listType"] as String)
+            launch {
+                homeViewModel.fireBaseResult.collectLatest { state ->
+                    when (state) {
+                        is UiState.Success -> {
+                            contentIdList = state.data["contentIdList"] as List<String>
+                            listType =
+                                HomeViewModel.ListType.valueOf(state.data["listType"] as String)
 
-                                viewLifecycleOwner.lifecycleScope.launch {
-                                    repeatOnLifecycle(Lifecycle.State.CREATED) {
-                                        homeViewModel.getTourListByContentId(contentIdList, listType)
-                                    }
-                                }
+                            repeatOnCreated {
+                                homeViewModel.getTourListByContentId(contentIdList, listType)
                             }
+                        }
 
-                            is UiState.Loading -> {
+                        is UiState.Loading -> {
 
-                            }
+                        }
 
-                            is UiState.Error -> {
-                                Log.e("TourAPI HandleState", "${state.errorMessage}")
-                            }
+                        is UiState.Error -> {
+                            Log.e("TourAPI HandleState", "${state.errorMessage}")
+                        }
 
-                            else -> {
-                                Log.e("TourAPI HandleState", "$state")
-                            }
+                        else -> {
+                            Log.e("TourAPI HandleState", "$state")
                         }
                     }
                 }

@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@null"
-            android:hint="검색할 관광지 이름을 입력해주세요."
+            android:hint="@string/view_search_default"
             android:imeOptions="actionSearch"
             android:inputType="text" />
     </LinearLayout>
