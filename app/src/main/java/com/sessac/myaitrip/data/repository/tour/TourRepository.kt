@@ -17,6 +17,7 @@ import com.sessac.myaitrip.presentation.tours.source.TourPagingSource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
 class TourRepository(
@@ -39,8 +40,10 @@ class TourRepository(
     /**
      * [Preference] 관광지 저장한 개수 조회
      */
-    suspend fun getTourPreferences(): Flow<TourPreferencesData> =
-        tourLocalDataSource.getTourPreferences()
+    fun getTourPreferences() = flow {
+        emit(UiState.Loading)
+        emit(UiState.Success(tourLocalDataSource.getTourPreferences().first()))
+    }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
 
     /**
      * [Preference] 관광지 저장한 개수 저장
