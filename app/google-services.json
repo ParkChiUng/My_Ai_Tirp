@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "918621484458",
+    "project_id": "myaitrip-40a79",
+    "storage_bucket": "myaitrip-40a79.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918621484458:android:58b425c0c2806d2a62a7d3",
+        "android_client_info": {
+          "package_name": "com.sessac.myaitrip"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgRLYHBxGt-tnJOVsClklISinx3rk-1gA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
