@@ -1,76 +1,127 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tour_detail_bottom_sheet_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
     android:background="@drawable/rectangle_fill_white_border_r20">
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/indicator_tour_detail_bottom_sheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_bottom_sheet_indicator"
+        app:layout_constraintBottom_toTopOf="@id/tv_tour_detail_bottom_sheet_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_tour_detail_bottom_sheet_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/indicator_tour_detail_bottom_sheet"
+        tools:text="새싹 동대문캠퍼스" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_tour_detail_bottom_sheet_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/gray_500"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_tour_detail_bottom_sheet_title"
+        app:layout_constraintStart_toEndOf="@+id/tv_tour_detail_bottom_sheet_title"
+        tools:text="문화시설" />
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/iv_tour_detail_bottom_sheet_img"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tv_tour_detail_bottom_sheet_address"
+        app:layout_constraintStart_toStartOf="@id/tv_tour_detail_bottom_sheet_title"
+        app:layout_constraintTop_toTopOf="@id/tv_tour_detail_bottom_sheet_address"
         app:shapeAppearanceOverlay="@style/tourImgRound"
         tools:src="@drawable/ic_app" />
 
-    <TextView
-        android:id="@+id/tv_tour_detail_bottom_sheet_name"
-        android:layout_width="0dp"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_tour_detail_bottom_sheet_address"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="120dp"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="16dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tour_detail_bottom_sheet_type"
+        tools:text="서울시 종로구 123 123" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_tour_detail_bottom_sheet_sub_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
         android:ellipsize="end"
         android:maxLines="1"
-        android:text="@{place.placeName}"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/iv_tour_detail_bottom_sheet_img"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="일이삼사오육칠팔구십" />
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/tv_tour_detail_bottom_sheet_address"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tour_detail_bottom_sheet_address"
+        tools:text="상세 주소" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_tour_detail_bottom_sheet_distance"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/main_blue"
+        app:layout_constraintStart_toStartOf="@+id/tv_tour_detail_bottom_sheet_sub_address"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tour_detail_bottom_sheet_sub_address"
+        tools:text="내 위치와 0.4km 떨어져 있어요!" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_tour_detail_bottom_sheet_like"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="12dp"
         android:layout_marginEnd="4dp"
         android:tint="@color/gray_500"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@id/tv_tour_detail_bottom_sheet_like_count"
-        app:layout_constraintStart_toStartOf="@id/tv_tour_detail_bottom_sheet_address"
-        app:layout_constraintTop_toBottomOf="@+id/tv_tour_detail_bottom_sheet_address"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="4dp"
+        app:layout_constraintEnd_toStartOf="@+id/tv_tour_detail_bottom_sheet_like_count"
+        app:layout_constraintBottom_toBottomOf="@id/iv_tour_detail_bottom_sheet_img"
+        app:layout_constraintStart_toStartOf="@id/tv_tour_detail_bottom_sheet_distance"
         app:srcCompat="@drawable/ic_like" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_tour_detail_bottom_sheet_like_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="28dp"
         android:textColor="@color/gray_500"
         app:layout_constraintBottom_toBottomOf="@+id/iv_tour_detail_bottom_sheet_like"
-        app:layout_constraintStart_toStartOf="@+id/tv_tour_detail_bottom_sheet_address"
-        app:layout_constraintTop_toTopOf="@+id/iv_tour_detail_bottom_sheet_like"
+        app:layout_constraintStart_toStartOf="@+id/tv_tour_detail_bottom_sheet_distance"
         tools:text="3" />
-
-    <TextView
-        android:id="@+id/tv_tour_detail_bottom_sheet_address"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        app:layout_constraintStart_toStartOf="@+id/tv_tour_detail_bottom_sheet_name"
-        app:layout_constraintTop_toBottomOf="@+id/tv_tour_detail_bottom_sheet_name"
-        tools:text="서울시 종로구 123 123" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

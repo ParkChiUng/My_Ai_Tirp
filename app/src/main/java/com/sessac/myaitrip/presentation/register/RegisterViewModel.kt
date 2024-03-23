@@ -8,6 +8,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.sessac.myaitrip.data.repository.user.UserRepository
 import com.sessac.myaitrip.presentation.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -15,7 +16,7 @@ class RegisterViewModel(
     private val userRepository: UserRepository
 ): ViewModel() {
     private val _registerStatus = MutableStateFlow<UiState<AuthResult>>(UiState.Empty)
-    val registerStatus get() = _registerStatus
+    val registerStatus get() = _registerStatus.asStateFlow()
 
 //    private val _checkNickStatus = MutableStateFlow<UiState<QuerySnapshot>>(UiState.Empty)
 //    val checkNickStatus get() = _checkNickStatus

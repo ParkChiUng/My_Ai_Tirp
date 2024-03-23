@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-<!-- tour item 이미지 둥글게 -->
+    <!-- tour item 이미지 둥글게 -->
     <style name="tourImgRound" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">10dp</item>
@@ -33,17 +33,17 @@
 
         <item name="chipStrokeWidth">0.5dp</item>
         <item name="chipStrokeColor">@color/stroke_color_custom_chip</item>
+        <item name="chipBackgroundColor">@color/background_color_custom_chip</item>
 
         <item name="android:textColor">@color/text_color_custom_chip</item>
         <item name="android:textAppearance">@style/CustomChipTextAppearance</item>
 
-        <item name="chipIconTint">@color/text_color_custom_chip</item>
         <item name="rippleColor">@null</item>
-        <item name="chipBackgroundColor">@color/white</item>
     </style>
 
     <style name="CustomChipTextAppearance" parent="TextAppearance.MaterialComponents.Chip">
         <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>

@@ -5,7 +5,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.presentation.common.UiState
-import com.sessac.myaitrip.data.entities.remote.UserData
+import com.sessac.myaitrip.data.entities.remote.firebase.UserData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

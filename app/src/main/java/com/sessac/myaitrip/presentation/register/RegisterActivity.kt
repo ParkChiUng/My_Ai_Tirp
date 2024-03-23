@@ -1,9 +1,12 @@
 package com.sessac.myaitrip.presentation.register
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -17,6 +20,7 @@ import com.sessac.myaitrip.presentation.common.ViewBindingBaseActivity
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.progress.ProgressActivity
 import com.sessac.myaitrip.util.GlideUtil
+import com.sessac.myaitrip.util.PermissionUtil
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -88,21 +92,25 @@ class RegisterActivity : ViewBindingBaseActivity<ActivityRegisterBinding>(
     private fun registerStatusCollectionSetup() {
         lifecycleScope.launch {
             registerViewModel.registerStatus.collectLatest { uiState ->
-                when(uiState) {
+                when (uiState) {
                     is UiState.Loading -> {
                         // TODO. 프로그레스 바
                     }
+
                     is UiState.Success -> {
-                        val currentUser = MyAiTripApplication.getInstance().getFirebaseAuth().currentUser
+                        val currentUser =
+                            MyAiTripApplication.getInstance().getFirebaseAuth().currentUser
                         // currentUser가 Null값 이면, 현재 디바이스는 계정 정보가 없는 것, 로그인 실패 or 회원가입 실패
-                        currentUser?.let {user ->
+                        currentUser?.let { user ->
                             saveUserPreferenceData(user)
                             Intent(this@RegisterActivity, ProgressActivity::class.java).also {
-                                it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                it.flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                                 startActivity(it)
                             }
                         } ?: showToast("회원가입 실패")
                     }
+
                     is UiState.Error -> {}
                     else -> {}
                 }
@@ -126,12 +134,12 @@ class RegisterActivity : ViewBindingBaseActivity<ActivityRegisterBinding>(
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             // 뒤로가기 클릭 시 실행시킬 코드 입력
-            if(!isBackPressed) {
+            if (!isBackPressed) {
                 showToast("뒤로가기를 한 번 더 누르면 회원가입이 취소됩니다.")
                 isBackPressed = true
             } else {
                 UserApiClient.instance.unlink { error ->
-                    error?.let{
+                    error?.let {
 
                     }
                 }
@@ -167,9 +175,16 @@ class RegisterActivity : ViewBindingBaseActivity<ActivityRegisterBinding>(
             btnRegisterSubmit.throttleClick().bind {
                 val nickname = etRegisterNickName.text.toString()
                 // Defaul profile image
-                if(userProfileImageURL == null && userProfileImageURI == null) userProfileImageURL = resources.getString(R.string.default_img_url)
+                if (userProfileImageURL == null && userProfileImageURI == null)
+                    userProfileImageURL = resources.getString(R.string.default_img_url)
 
-                registerViewModel.register(userEmail, userPassword, nickname, userProfileImageURL, userProfileImageURI) // 회원 가입 진행
+                registerViewModel.register(
+                    userEmail,
+                    userPassword,
+                    nickname,
+                    userProfileImageURL,
+                    userProfileImageURI
+                ) // 회원 가입 진행
 
 //                registerViewModel.checkExistNickname(nickname) // 닉네임 중복 확인
 
@@ -183,27 +198,49 @@ class RegisterActivity : ViewBindingBaseActivity<ActivityRegisterBinding>(
         }
     }
 
-    private val imageResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val imageUri = result.data?.data
+    private val imageResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val imageUri = result.data?.data
+                imageUri?.let { loadSelectedImage(it) }
+            }
+        }
 
-            applicationContext?.let { context ->
-                imageUri?.let { imageUri ->
-                    // 갤러리에서 사진을 가져왔다면, 기존 프로필 이미지 URL은 사용하지 않는다.
-                    userProfileImageURL = null
-                    userProfileImageURI = imageUri
+    /**
+     * Photo picker launcher
+     * Android 13이상부터 사용가능한 PhotoPicker 실행
+     */
+    private val photoPickerLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { imageUri ->
+            imageUri?.let { loadSelectedImage(it) }
+        }
 
-                    GlideUtil.loadProfileImage(context, imageUri, binding.ivRegisterProfile)
+    private fun loadSelectedImage(imageUri: Uri) {
+        userProfileImageURL = null // 갤러리에서 사진을 가져왔다면, 기존 프로필 이미지 URL은 사용하지 않는다.
+        userProfileImageURI = imageUri
+
+        GlideUtil.loadProfileImage(this@RegisterActivity, imageUri, binding.ivRegisterProfile)
+    }
+
+    private fun navigateGallery() {
+        lifecycleScope.launch {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // Android 13부터는 이미지 권한 없이도 PhotoPicker를 사용가능
+                photoPickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            } else {
+                val permissionResult =
+                    PermissionUtil.requestPermissionResultByCoroutine(Manifest.permission.READ_EXTERNAL_STORAGE)
+                if (permissionResult.isGranted) {
+                    val intent = Intent(Intent.ACTION_GET_CONTENT)
+                    intent.type = "image/*"
+                    imageResultLauncher.launch(intent)
+                } else {
+                    showToast("사진 권한을 허용해주세요.")
                 }
             }
         }
-    }
-    private fun navigateGallery() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
-        imageResult.launch(intent)
     }
 
     private fun initImageOnClick() {

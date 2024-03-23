@@ -2,103 +2,190 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/location_bottom_sheet"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/rectangle_fill_white_border_r20"
-    android:maxHeight="300dp"
-    android:paddingBottom="16dp"
-    app:behavior_draggable="true"
-    app:behavior_hideable="true"
-    app:behavior_peekHeight="124dp"
-    app:layout_behavior="@string/bottom_sheet_behavior">
+    android:layout_height="match_parent"
+    android:background="@drawable/rectangle_fill_white_border_r20">
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/indicator_bottom_sheet"
+        android:id="@+id/indicator_location_bottom_sheet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
         android:src="@drawable/ic_bottom_sheet_indicator"
-        app:layout_constraintBottom_toTopOf="@id/tv_tour_map_bottom_sheet_loc_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_tour_map_bottom_sheet_loc_name"
+        android:id="@+id/tv_location_bottom_sheet_location_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"
-        android:textColor="@color/black"
         android:maxLines="1"
+        android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/indicator_bottom_sheet"
+        app:layout_constraintTop_toBottomOf="@id/indicator_location_bottom_sheet"
         tools:text="서울시 동대문구" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/iv_tour_map_bottom_sheet_weather"
+        android:id="@+id/iv_location_bottom_sheet_weather"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="6dp"
+        android:layout_marginStart="180dp"
+        android:layout_marginEnd="16dp"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@id/tv_tour_map_bottom_sheet_loc_name"
+        android:visibility="gone"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@id/tv_tour_map_bottom_sheet_loc_temperature"
-        app:layout_constraintTop_toTopOf="@id/tv_tour_map_bottom_sheet_loc_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_location_bottom_sheet_location_name"
+        app:layout_constraintTop_toTopOf="@id/tv_location_bottom_sheet_location_name"
         tools:src="@drawable/ic_weather_snowing" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_tour_map_bottom_sheet_loc_temperature"
+        android:id="@+id/tv_location_bottom_sheet_current_temperature"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:textColor="@color/black"
-        android:textSize="14sp"
+        android:layout_marginEnd="8dp"
+        android:gravity="bottom|center_horizontal"
         android:maxLines="1"
-        app:layout_constraintBottom_toBottomOf="@id/tv_tour_map_bottom_sheet_loc_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="온도 4°C" />
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_location_bottom_sheet_weather"
+        app:layout_constraintEnd_toStartOf="@id/iv_location_bottom_sheet_weather"
+        tools:text="4°" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_tour_map_bottom_sheet_loc_dust"
+        android:id="@+id/tv_location_bottom_sheet_high_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="10dp"
+        android:maxLines="1"
+        android:textColor="@color/gray_500"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/tv_location_bottom_sheet_separator"
+        app:layout_constraintTop_toBottomOf="@id/tv_location_bottom_sheet_current_temperature"
+        tools:text="최고 12°" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_location_bottom_sheet_separator"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="10dp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="@string/text_separate"
+        android:textColor="@color/gray_500"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_location_bottom_sheet_high_temperature"
+        app:layout_constraintEnd_toStartOf="@+id/tv_location_bottom_sheet_low_temperature"
+        app:layout_constraintTop_toTopOf="@id/tv_location_bottom_sheet_high_temperature" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_location_bottom_sheet_low_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="20dp"
+        android:maxLines="1"
+        android:textColor="@color/gray_500"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_location_bottom_sheet_high_temperature"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_location_bottom_sheet_high_temperature"
+        tools:text="최저 1°" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:visibility="gone"
+        android:id="@+id/iv_location_bottom_sheet_water"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="12dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_water_drop"
+        app:layout_constraintBottom_toBottomOf="@id/tv_location_bottom_sheet_humidity"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_location_bottom_sheet_humidity"
+        app:layout_constraintTop_toBottomOf="@id/tv_location_bottom_sheet_location_name" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_location_bottom_sheet_humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@id/tv_location_bottom_sheet_rain_probability"
+        app:layout_constraintTop_toTopOf="@id/tv_location_bottom_sheet_rain_probability"
+        tools:text="습도 7%" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_location_bottom_sheet_rain_probability"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="6dp"
+        android:maxLines="1"
+        android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="14sp"
-        android:maxLines="1"
-        app:layout_constraintEnd_toEndOf="@id/tv_tour_map_bottom_sheet_loc_temperature"
-        app:layout_constraintTop_toBottomOf="@id/tv_tour_map_bottom_sheet_loc_temperature"
-        tools:text="미세먼지 좋음" />
+        app:layout_constraintEnd_toEndOf="@id/tv_location_bottom_sheet_low_temperature"
+        app:layout_constraintTop_toBottomOf="@id/tv_location_bottom_sheet_low_temperature"
+        tools:text="강수확률 30%" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_tour_map_bottom_sheet_tag"
+    <View
+        android:id="@+id/view_location_bottom_sheet_separate"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/gray_200"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_location_bottom_sheet_rain_probability" />
+
+    <HorizontalScrollView
+        android:id="@+id/hsv_location_bottom_sheet_tag"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        tools:listitem="@layout/item_tour_map_bottom_sheet_tag"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintEnd_toEndOf="@id/tv_tour_map_bottom_sheet_loc_temperature"
-        app:layout_constraintStart_toStartOf="@id/tv_tour_map_bottom_sheet_loc_name"
-        app:layout_constraintTop_toBottomOf="@id/tv_tour_map_bottom_sheet_loc_dust" />
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="14dp"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view_location_bottom_sheet_separate">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipgroup_location_bottom_sheet_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_tour_map_bottom_sheet_tour"
+        android:id="@+id/rv_location_bottom_sheet_tour"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:orientation="horizontal"
-        tools:listitem="@layout/item_tour_map_bottom_sheet_tour"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        android:paddingBottom="280dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintEnd_toEndOf="@+id/rv_tour_map_bottom_sheet_tag"
-        app:layout_constraintStart_toStartOf="@id/rv_tour_map_bottom_sheet_tag"
-        app:layout_constraintTop_toBottomOf="@+id/rv_tour_map_bottom_sheet_tag" />
+        app:layout_constraintEnd_toEndOf="@+id/hsv_location_bottom_sheet_tag"
+        app:layout_constraintStart_toStartOf="@id/hsv_location_bottom_sheet_tag"
+        app:layout_constraintTop_toBottomOf="@+id/hsv_location_bottom_sheet_tag"
+        tools:listitem="@layout/item_tour_map_bottom_sheet_tour" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
