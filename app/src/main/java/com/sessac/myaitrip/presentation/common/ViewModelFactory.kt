@@ -1,6 +1,5 @@
 package com.sessac.myaitrip.presentation.common
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.sessac.myaitrip.common.MyAiTripApplication
@@ -14,6 +13,7 @@ import com.sessac.myaitrip.data.repository.user.local.UserLocalDataSource
 import com.sessac.myaitrip.data.repository.user.remote.UserRemoteDataSource
 import com.sessac.myaitrip.data.repository.weather.WeatherRepository
 import com.sessac.myaitrip.network.RetrofitServiceInstance
+import com.sessac.myaitrip.presentation.airecommend.AIRecommendViewModel
 import com.sessac.myaitrip.presentation.diary.DiaryViewModel
 import com.sessac.myaitrip.presentation.home.HomeViewModel
 import com.sessac.myaitrip.presentation.login.LoginViewModel
@@ -23,7 +23,7 @@ import com.sessac.myaitrip.presentation.tourDetail.TourDetailViewModel
 import com.sessac.myaitrip.presentation.tourmap.TourMapViewModel
 import com.sessac.myaitrip.presentation.tours.ToursViewModel
 
-class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+class ViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val dataStore = MyAiTripApplication.getInstance().getDataStore()
         val tourDao = MyAiTripApplication.getRoomDatabase().tourDao()
@@ -49,7 +49,7 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
             modelClass.isAssignableFrom(TourMapViewModel::class.java) -> {
                 val weatherApiService = RetrofitServiceInstance.getWeatherApiService()
                 val weatherRepository = WeatherRepository(weatherApiService)
-                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore)
+                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore, tourDao)
                 val tourRemoteDataSource = TourRemoteDataSource()
                 val tourRepository = TourRepository(
                     tourDao,
@@ -63,7 +63,7 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
 
             modelClass.isAssignableFrom(ProgressViewModel::class.java) -> {
 
-                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore)
+                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore, tourDao)
                 val tourRemoteDataSource = TourRemoteDataSource()
                 val tourRepository = TourRepository(
                     tourDao,
@@ -75,7 +75,7 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
             }
 
             modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
-                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore)
+                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore, tourDao)
                 val tourRemoteDataSource = TourRemoteDataSource()
                 val tourRepository = TourRepository(
                     tourDao,
@@ -88,7 +88,7 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
             }
 
             modelClass.isAssignableFrom(TourDetailViewModel::class.java) -> {
-                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore)
+                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore, tourDao)
                 val tourRemoteDataSource = TourRemoteDataSource()
                 val tourRepository = TourRepository(
                     tourDao,
@@ -100,7 +100,7 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
             }
 
             modelClass.isAssignableFrom(ToursViewModel::class.java) -> {
-                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore)
+                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore, tourDao)
                 val tourRemoteDataSource = TourRemoteDataSource()
                 val tourRepository = TourRepository(
                     tourDao,
@@ -119,6 +119,18 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
                     diaryRemoteDataSource
                 )
                 DiaryViewModel(diaryRepository) as T
+            }
+
+            modelClass.isAssignableFrom(AIRecommendViewModel::class.java) -> {
+                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore, tourDao)
+                val tourRemoteDataSource = TourRemoteDataSource()
+                val tourRepository = TourRepository(
+                    tourDao,
+                    tourApiService,
+                    tourLocalDataSource,
+                    tourRemoteDataSource
+                )
+                AIRecommendViewModel(tourRepository) as T
             }
 
             else -> {

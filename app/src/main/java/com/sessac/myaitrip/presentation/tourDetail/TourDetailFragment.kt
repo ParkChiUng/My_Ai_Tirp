@@ -31,9 +31,7 @@ class TourDetailFragment :
     ViewBindingBaseFragment<FragmentTourDetailBinding>(FragmentTourDetailBinding::inflate) {
 
     private val tourDetailViewModel: TourDetailViewModel by viewModels {
-        ViewModelFactory(
-            requireContext()
-        )
+        ViewModelFactory()
     }
 
     private var tourItem: TourItem? = null

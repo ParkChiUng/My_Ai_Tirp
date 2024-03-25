@@ -38,7 +38,7 @@ class HomeFragment :
     private lateinit var cityName: String
     private lateinit var listType: HomeViewModel.ListType
 
-    private val homeViewModel: HomeViewModel by viewModels() { ViewModelFactory(requireContext()) }
+    private val homeViewModel: HomeViewModel by viewModels() { ViewModelFactory() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

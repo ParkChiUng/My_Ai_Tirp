@@ -35,7 +35,7 @@ class ToursFragment :
     private lateinit var toursAdapter: ToursPagingAdapter
     private lateinit var toursRecyclerView: RecyclerView
 
-    private val toursViewModel: ToursViewModel by viewModels() { ViewModelFactory(requireContext()) }
+    private val toursViewModel: ToursViewModel by viewModels() { ViewModelFactory() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

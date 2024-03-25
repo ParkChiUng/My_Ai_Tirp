@@ -2,6 +2,7 @@ package com.sessac.myaitrip.presentation.tourmap
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
@@ -53,7 +54,8 @@ import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.util.DateUtil
 import com.sessac.myaitrip.util.PermissionUtil
-import com.sessac.myaitrip.util.repeatOnCreated
+import com.sessac.myaitrip.util.repeatOnResumed
+import com.sessac.myaitrip.util.repeatOnStarted
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,7 +72,7 @@ class TourMapFragment
     : ViewBindingBaseFragment<FragmentTourMapBinding>(FragmentTourMapBinding::inflate),
     OnMapReadyCallback {
 
-    private val tourMapViewModel: TourMapViewModel by viewModels { ViewModelFactory(requireContext()) }
+    private val tourMapViewModel: TourMapViewModel by viewModels { ViewModelFactory() }
 
     private lateinit var locationBottomSheetTourAdapter: LocationBottomSheetTourAdapter
 
@@ -84,6 +86,8 @@ class TourMapFragment
     private var locationBottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>? = null
 
     private var clusterer: Clusterer<TourClusterItemKey>? = null
+
+    private lateinit var mContext: Context
 
     companion object {
         private const val TAG = "NaverMap"
@@ -116,6 +120,11 @@ class TourMapFragment
         private const val WEATHER_INFO_CATEGORY_HUMIDITY = "REH" // 습도
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -127,10 +136,12 @@ class TourMapFragment
         setupWeatherStatusCollection()
         setUpLocationPlaceStatusCollection()
         setupAroundPlaceStatusCollection()
+
+        initMyLocationBottomSheet()
     }
 
     private fun setupAroundPlaceStatusCollection() {
-        repeatOnCreated {
+        repeatOnResumed {
             tourMapViewModel.aroundPlaceStatus.collectLatest { state ->
                 when(state) {
                     is UiState.Loading -> {}
@@ -177,7 +188,7 @@ class TourMapFragment
     }
 
     private fun setUpLocationPlaceStatusCollection() {
-        repeatOnCreated {
+        repeatOnResumed {
             tourMapViewModel.locationTourStatus.collectLatest { state ->
                 when(state) {
                     is UiState.Loading -> {}
@@ -377,7 +388,7 @@ class TourMapFragment
     }
 
     private fun setupWeatherStatusCollection() {
-        repeatOnCreated {
+        repeatOnResumed {
             tourMapViewModel.weatherStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Loading -> {
@@ -425,6 +436,8 @@ class TourMapFragment
 
                                 tvLocationBottomSheetLowTemperature.text = getString(R.string.temperature_low_format, lowTemperature)
                                 tvLocationBottomSheetHighTemperature.text = getString(R.string.temperature_high_format, highTemperature)
+
+                                tvLocationBottomSheetSeparator.visibility = View.VISIBLE
                             }
 
                             var isRainOrSnow = true // 눈이나 비가 오는가?
@@ -531,14 +544,24 @@ class TourMapFragment
 
     override fun onMapReady(map: NaverMap) {
         naverMap = map
-        clusterer = initClusterBuilder()
 
+        clusterer = initClusterBuilder() // 마커 클러스터러
         initMapUi()
-        updateMyLocation()  // 현재 위치 기능
+
+        updateMyLocation()
+        fusedLocationSource = FusedLocationSource(requireActivity(), LOCATION_PERMISSION_REQUEST_CODE)
 
         with(naverMap) {
+            locationSource = fusedLocationSource        // 현재 위치
+            locationTrackingMode = LocationTrackingMode.Follow // 위치를 추적하면서 카메라도 따라 움직인다.
+
             minZoom = 6.0
             maxZoom = 18.0
+
+            setOnSymbolClickListener { symbol ->
+                mContext.showToast(symbol.caption)
+                true
+            }
 
             // 카메라가 움직일 때 이벤트 처리 리스너
             addOnCameraChangeListener { reason, animated ->
@@ -549,11 +572,6 @@ class TourMapFragment
                     public static final int REASON_CONTROL = -2;    (사용자의 버튼 선택)
                     public static final int REASON_LOCATION = -3;  (위치 정보 갱신)
                  */
-
-                // 사용자 제스처가 있을 때, 현재 위치 버튼이 선택되어 있다면 선택 해제
-                if(reason == -1) {
-                    binding.btnTourMapMyLocation.isSelected = false
-                }
             }
 
             // 카메라가 멈췄을 때, 리스너
@@ -658,8 +676,16 @@ class TourMapFragment
         with(naverMap.uiSettings) {
             isCompassEnabled = false    // 나침반
             isZoomControlEnabled = false    // +, - 줌 버튼
+            isLocationButtonEnabled = true
             logoGravity = Gravity.TOP or Gravity.END
-            setLogoMargin(0, 24, 24, 0) // 로고 마진
+            setLogoMargin(0, 16, 40, 0) // 로고 마진
+        }
+
+        with(binding) {
+            btnTourMapMyLocation.map = naverMap
+            btnTourMapMyLocation.throttleClick().bind {
+                updateMyLocation()
+            }
         }
     }
 
@@ -669,17 +695,12 @@ class TourMapFragment
      */
     @SuppressLint("MissingPermission")
     private fun updateMyLocation() {
-        PermissionUtil.requestPermissionResultByNormal(
-            *LOCATION_PERMISSIONS,
-            onPermissionGranted = {
-                fusedLocationSource = FusedLocationSource(requireActivity(), LOCATION_PERMISSION_REQUEST_CODE)
+        repeatOnStarted {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
 
-                with(naverMap) {
-                    locationSource = fusedLocationSource        // 현재 위치
-                    locationTrackingMode = LocationTrackingMode.Follow // 위치를 추적하면서 카메라도 따라 움직인다.
-                }
+            val grantedResult = PermissionUtil.requestPermissionResultByCoroutine(*LOCATION_PERMISSIONS)
 
-                fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+            if( grantedResult.isGranted ) {
                 val locationRequest = LocationRequest
                     .Builder(Priority.PRIORITY_HIGH_ACCURACY, LOCATION_REQUEST_INTERVAL.toLong())
                     .setWaitForAccurateLocation(false)
@@ -689,9 +710,7 @@ class TourMapFragment
                     override fun onLocationResult(locationResult: LocationResult) {
                         super.onLocationResult(locationResult)
 
-                        initMyLocationBottomSheet()
-
-                        locationResult.locations.forEachIndexed { index, location ->
+                        locationResult.locations.forEachIndexed { _, location ->
                             val cameraUpdate = CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
                                 .animate(CameraAnimation.Easing, 2000)
                                 .reason(1000)   // 현재 위치 이동 reason = 1000
@@ -738,6 +757,8 @@ class TourMapFragment
                                 getPlaceListByLocation(location.latitude.toString(), location.longitude.toString())
                             }
                         }
+
+                        binding.btnTourMapMyLocation.isSelected = true
                     }
                 }
 
@@ -746,20 +767,16 @@ class TourMapFragment
                     locationCallback,
                     Looper.myLooper()
                 )
-
-                with(binding) {
-                    btnTourMapMyLocation.isSelected = true
-                }
-            },
-            onPermissionDenied = {
-                requireContext().showToast("현재 위치 기능을 사용하려면, 위치 권한을 허용해주세요.")
+            } else {
+                mContext.showToast("현재 위치 기능을 사용하려면, 위치 권한을 허용해주세요.")
+                binding.locationBottomSheetLayout.tvLocationBottomSheetLocationName.text = "위치 권한을 허용해주세요."
             }
-        )
+        }
     }
 
     // 좌표 -> 주소 변환
     private fun getAddress(latitude: Double, longitude: Double) {
-        val geoCoder = Geocoder(requireContext(), Locale.KOREA)
+        val geoCoder = Geocoder(mContext, Locale.KOREA)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 
@@ -787,7 +804,7 @@ class TourMapFragment
                     }
                 }
                 override fun onError(errorMessage: String?) {
-                    requireContext().showToast("주소가 발견되지 않았습니다 $errorMessage")
+                    mContext.showToast("주소가 발견되지 않았습니다 $errorMessage")
                 }
             }
 
@@ -796,7 +813,7 @@ class TourMapFragment
         } else { // API 레벨이 33 미만인 경우
             val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
             addresses?.let{
-                requireContext().showToast(addresses[0].getAddressLine(0))
+                mContext.showToast(addresses[0].getAddressLine(0))
             }
         }
     }

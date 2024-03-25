@@ -29,7 +29,7 @@ import reactivecircus.flowbinding.android.widget.textChanges
 class RegisterActivity : ViewBindingBaseActivity<ActivityRegisterBinding>(
     { layoutInflater -> ActivityRegisterBinding.inflate(layoutInflater) }
 ) {
-    private val registerViewModel: RegisterViewModel by viewModels { ViewModelFactory(this) }
+    private val registerViewModel: RegisterViewModel by viewModels { ViewModelFactory() }
     private lateinit var userEmail: String
     private lateinit var userPassword: String
 
