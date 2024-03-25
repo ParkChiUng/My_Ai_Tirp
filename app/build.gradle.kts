@@ -134,7 +134,7 @@ dependencies {
     implementation("com.github.bumptech.glide:okhttp3-integration:4.16.0@aar") // Glide와 OkHttp를 통합하는 라이브러리
 
     // Gemini
-    implementation("com.google.ai.client.generativeai:generativeai:0.2.1")
+    implementation("com.google.ai.client.generativeai:generativeai:0.2.2")
 
     // 네이버 지도 SDK
     implementation("com.naver.maps:map-sdk:3.18.0")
