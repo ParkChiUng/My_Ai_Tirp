@@ -101,7 +101,7 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
                     tourLocalDataSource,
                     tourRemoteDataSource
                 )
-                ToursViewModel(tourRepository) as T
+                ToursViewModel(tourRepository, userRepository) as T
             }
 
             modelClass.isAssignableFrom(DiaryViewModel::class.java) -> {

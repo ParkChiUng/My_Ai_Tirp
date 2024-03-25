@@ -111,10 +111,16 @@ class HomeFragment :
         homeViewModel.getAreaRecommendTourListFromFireBase(listType.toString(), cityName)
     }
 
+    /**
+     * 유저 Id 조회
+     */
     private fun getUserId() {
         homeViewModel.getUserPreferences()
     }
 
+    /**
+     * 유저 좋아요 조회
+     */
     private fun getUserLikeList() {
         homeViewModel.getUserLikeListFromFireBase(userId)
     }
