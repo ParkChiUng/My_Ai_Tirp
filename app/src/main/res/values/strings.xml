@@ -123,4 +123,6 @@
 
     <string name="distance_format">내 위치와 %1$.1fkm 떨어져 있어요!</string>
     <string name="title_tour_detail_by_map">지도로 보기</string>
+
+    <string name="view_search_default">검색할 관광지 이름을 입력해주세요.</string>
 </resources>

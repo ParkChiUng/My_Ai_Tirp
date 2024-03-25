@@ -60,9 +60,9 @@
         android:layout_width="@dimen/f_diary_view_pager_width"
         android:layout_height="@dimen/f_diary_view_pager_height"
         android:scaleType="centerCrop"
-        android:layout_marginTop="@dimen/f_diary_view_pager_marginTop"
         app:layout_constraintLeft_toRightOf="@id/gl_left"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintBottom_toTopOf="@+id/line"/>
 
     <me.relex.circleindicator.CircleIndicator3
         android:id="@+id/layout_Indicators"
@@ -108,7 +108,8 @@
         android:background="@android:color/darker_gray"
         app:layout_constraintLeft_toLeftOf="@id/gl_left"
         app:layout_constraintRight_toRightOf="@+id/gl_right"
-        app:layout_constraintTop_toBottomOf="@+id/vp_tour" />
+        app:layout_constraintTop_toBottomOf="@+id/vp_tour"
+        app:layout_constraintBottom_toTopOf="@+id/et_diary_title"/>
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_diary_title"
@@ -119,11 +120,11 @@
         android:padding="@dimen/f_diary_edit_padding"
         android:imeOptions="actionSearch"
         android:inputType="text"
-        android:layout_marginTop="@dimen/f_diary_edit_text_margin_top"
         android:backgroundTint="@color/gray_white"
         app:layout_constraintStart_toStartOf="@+id/gl_left"
         app:layout_constraintEnd_toEndOf="@+id/gl_right"
-        app:layout_constraintTop_toBottomOf="@id/line" />
+        app:layout_constraintTop_toBottomOf="@id/line"
+        app:layout_constraintBottom_toTopOf="@+id/et_diary_review"/>
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_diary_review"
@@ -135,10 +136,10 @@
         android:imeOptions="actionSearch"
         android:inputType="textMultiLine"
         android:gravity="top|start"
-        android:layout_marginTop="@dimen/f_diary_edit_text_margin_top"
         app:layout_constraintStart_toStartOf="@+id/gl_left"
         app:layout_constraintEnd_toEndOf="@+id/gl_right"
-        app:layout_constraintTop_toBottomOf="@id/et_diary_title"/>
+        app:layout_constraintTop_toBottomOf="@id/et_diary_title"
+        app:layout_constraintBottom_toTopOf="@+id/btn_add_img"/>
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btn_add_img"
@@ -146,10 +147,10 @@
         android:layout_height="@dimen/f_diary_btn_add_img_layout"
         android:background="@drawable/search_layout_background"
         android:src="@drawable/ic_add"
-        android:layout_marginTop="@dimen/f_diary_edit_text_margin_top"
         android:layout_marginEnd="@dimen/f_diary_edit_padding"
         app:layout_constraintStart_toStartOf="@+id/gl_left"
-        app:layout_constraintTop_toBottomOf="@id/et_diary_review"/>
+        app:layout_constraintTop_toBottomOf="@id/et_diary_review"
+        app:layout_constraintBottom_toTopOf="@+id/btn_submit"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv_img"
@@ -157,12 +158,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:layout_marginTop="@dimen/f_diary_rcv_img_margin_top"
         android:layout_marginStart="@dimen/f_diary_rcv_img_margin_start"
         tools:listitem="@layout/item_diary_img_card"
         app:layout_constraintStart_toEndOf="@+id/btn_add_img"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_diary_review" />
+        app:layout_constraintTop_toBottomOf="@id/et_diary_review"
+        app:layout_constraintBottom_toTopOf="@+id/btn_submit"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_submit"
@@ -176,5 +177,6 @@
         android:background="@drawable/selector_btn_blue"
         app:layout_constraintStart_toStartOf="@+id/gl_left"
         app:layout_constraintEnd_toEndOf="@+id/gl_right"
-        app:layout_constraintTop_toBottomOf="@id/btn_add_img" />
+        app:layout_constraintTop_toBottomOf="@id/btn_add_img"
+        app:layout_constraintBottom_toBottomOf="@id/gl_bottom"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

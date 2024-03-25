@@ -9,7 +9,6 @@ import com.sessac.myaitrip.common.DEFAULT_PREFETCH_DISTANCE
 import com.sessac.myaitrip.data.api.TourApiService
 import com.sessac.myaitrip.data.database.TourDao
 import com.sessac.myaitrip.data.entities.TourItem
-import com.sessac.myaitrip.data.entities.local.TourPreferencesData
 import com.sessac.myaitrip.data.repository.tour.local.TourLocalDataSource
 import com.sessac.myaitrip.data.repository.tour.remote.TourRemoteDataSource
 import com.sessac.myaitrip.presentation.common.UiState
@@ -17,6 +16,7 @@ import com.sessac.myaitrip.presentation.tours.source.TourPagingSource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
 class TourRepository(
@@ -39,8 +39,10 @@ class TourRepository(
     /**
      * [Preference] 관광지 저장한 개수 조회
      */
-    suspend fun getTourPreferences(): Flow<TourPreferencesData> =
-        tourLocalDataSource.getTourPreferences()
+    fun getTourPreferences() = flow {
+        emit(UiState.Loading)
+        emit(UiState.Success(tourLocalDataSource.getTourPreferences().first()))
+    }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
 
     /**
      * [Preference] 관광지 저장한 개수 저장
@@ -60,7 +62,7 @@ class TourRepository(
      * [Room DB] contentId List로 관광지 리스트 조회
      */
     fun getTourList(contentIdList: List<String>) = flow {
-        emit(UiState.Loading)
+//        emit(UiState.Loading)
         emit(UiState.Success(tourDao.getTourList(contentIdList)))
     }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
 
@@ -121,7 +123,7 @@ class TourRepository(
      * [FireBase] 인기 관광지 리스트 조회
      */
     fun getPopularTourListFromFireBase(listType: String) = flow {
-        emit(UiState.Loading)
+//        emit(UiState.Loading)
         delay(300)
         emit(tourRemoteDataSource.getPopularTourListFromFireBase(listType))
     }.catch { exception ->
@@ -146,8 +148,26 @@ class TourRepository(
         tourRemoteDataSource.addCountingFromFireBase(contentId)
     }
 
+    /**
+     * [FireBase] 유저 좋아요한 관광지 추가
+     */
+    suspend fun updateUserLikeListFromFireBase(userId: String, contentId: String) {
+        tourRemoteDataSource.updateUserLikeFromFireBase(userId, contentId)
+    }
 
-    //    suspend fun getTourListByTitle(titles: List<String>): Flow<List<TourItem>> {
+    /**
+     * [FireBase] 유저 좋아요 관광지 리스트 조회
+     */
+    fun getUserLikeListFromFireBase(userId: String) = flow {
+        emit(UiState.Loading)
+        delay(300)
+        emit(tourRemoteDataSource.getUserLikeFromFireBase(userId))
+    }.catch { exception ->
+        if (exception is FirebaseException) emit(UiState.FirebaseApiError(exception))
+    }
+
+
+//    suspend fun getTourListByTitle(titles: List<String>): Flow<List<TourItem>> {
 //        val result = mutableListOf<String>()
 //        for (title in titles) {
 //            val tourList = tourDao.getContentIdByTitle(title).first()

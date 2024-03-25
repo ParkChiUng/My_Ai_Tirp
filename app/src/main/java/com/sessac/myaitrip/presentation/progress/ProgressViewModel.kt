@@ -10,6 +10,7 @@ import com.sessac.myaitrip.data.repository.tour.TourRepository
 import com.sessac.myaitrip.presentation.common.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -29,15 +30,17 @@ class ProgressViewModel(
 
     private val dispatchers = CoroutineScope(Dispatchers.IO)
 
-    init {
+    init{
         getTourPreferences()
     }
 
     private fun getTourPreferences() {
         viewModelScope.launch {
-            tourRepository.getTourPreferences().collectLatest { tourPreference ->
-                _tourPreferenceStatus.value = UiState.Success(tourPreference)
-            }
+            async(dispatchers.coroutineContext) {
+                tourRepository.getTourPreferences().collectLatest { tourPreference ->
+                    _tourPreferenceStatus.value = tourPreference
+                }
+            }.await()
         }
     }
 
