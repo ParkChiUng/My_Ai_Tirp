@@ -225,13 +225,8 @@ class ToursFragment :
          * 파이어 베이스에 업데이트 후 리스트 다시 가져온다
          */
         val likeOnClick: (AppCompatImageView, String) -> Unit = { likeImage, contentId ->
-            if (likeImage.tag == "false") {
-                likeImage.tag = "true"
-                likeImage.setImageResource(R.drawable.ic_like_selected)
-            } else {
-                likeImage.tag = "false"
-                likeImage.setImageResource(R.drawable.ic_like_white)
-            }
+            likeImage.tag = if (likeImage.tag == "false") "true" else "false"
+            likeImage.setImageResource(if (likeImage.tag == "true") R.drawable.ic_like_selected else R.drawable.ic_like_white)
             toursViewModel.updateUserLikeListFromFireBase(userId, contentId)
             getUserLikeList()
         }

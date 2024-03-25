@@ -31,21 +31,20 @@ import kotlinx.coroutines.launch
 class TourDetailFragment :
     ViewBindingBaseFragment<FragmentTourDetailBinding>(FragmentTourDetailBinding::inflate) {
 
-    private val tourDetailViewModel: TourDetailViewModel by viewModels {
-        ViewModelFactory(
-            requireContext()
-        )
-    }
+    private val tourDetailViewModel: TourDetailViewModel by viewModels { ViewModelFactory(requireContext())}
 
     private var tourItem: TourItem? = null
     private lateinit var bottomNav: BottomNavigationView
     private lateinit var tourContentId: String
     private lateinit var bundle: Bundle
+    private lateinit var userId: String
+    private lateinit var tourLikeList: MutableList<String>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         tourContentId = arguments?.getString(TOUR_CONTENT_ID).toString()
+        tourLikeList = mutableListOf()
 
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
@@ -60,6 +59,69 @@ class TourDetailFragment :
         getTourApi()
         addCountingFromFireBase()
         clickEventHandler()
+        getUserId()
+        setupUserCollect()
+    }
+
+    /**
+     * 유저 Id 조회
+     */
+    private fun getUserId() {
+        tourDetailViewModel.getUserPreferences()
+    }
+
+    /**
+     * 유저 좋아요 조회
+     */
+    private fun getUserLikeList() {
+        tourDetailViewModel.getUserLikeListFromFireBase(userId)
+    }
+
+    private fun setupUserCollect() {
+        /**
+         * 유저 정보 조회
+         */
+        repeatOnCreated {
+            tourDetailViewModel.userPreferenceStatus.collectLatest { state ->
+                when (state) {
+                    is UiState.Success -> {
+                        userId = state.data.userId
+                        getUserLikeList()
+                        setUpFireBaseCollect()
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun setUpFireBaseCollect() {
+        /**
+         * FireBase 유저 좋아요 관광지 리스트 조회
+         */
+        viewLifecycleOwner.lifecycleScope.launch {
+            tourDetailViewModel.userLikeResult.collectLatest { state ->
+                when (state) {
+                    is UiState.Success -> {
+                        tourLikeList = state.data
+
+                        if(tourLikeList.contains(tourContentId)){
+                            with(binding){
+                                ivLike.tag = "true"
+                                ivLike.setImageResource(R.drawable.ic_like_selected)
+                            }
+                        }
+                    }
+
+                    is UiState.Error -> {
+                        tourDetailViewModel.getUserLikeListFromFireBase(userId)
+                    }
+
+                    else -> {}
+                }
+            }
+        }
     }
 
     private fun clickEventHandler(){
@@ -71,6 +133,12 @@ class TourDetailFragment :
             // 지도로 보기 버튼
             btnMap.throttleClick().bind {
                 moveToMap()
+            }
+
+            ivLike.throttleClick().bind {
+                ivLike.tag = if (ivLike.tag == "false") "true" else "false"
+                ivLike.setImageResource(if (ivLike.tag == "true") R.drawable.ic_like_selected else R.drawable.ic_like_white)
+                tourDetailViewModel.updateUserLikeListFromFireBase(userId, tourContentId)
             }
         }
     }

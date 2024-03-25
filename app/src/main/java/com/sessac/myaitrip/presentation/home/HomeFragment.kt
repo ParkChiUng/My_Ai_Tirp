@@ -325,13 +325,8 @@ class HomeFragment :
          * 관광지 좋아요 클릭 시
          */
         val likeOnClick: (AppCompatImageView, String) -> Unit = { likeImage, contentId ->
-            if (likeImage.tag == "false") {
-                likeImage.tag = "true"
-                likeImage.setImageResource(R.drawable.ic_like_selected)
-            } else {
-                likeImage.tag = "false"
-                likeImage.setImageResource(R.drawable.ic_like_white)
-            }
+            likeImage.tag = if (likeImage.tag == "false") "true" else "false"
+            likeImage.setImageResource(if (likeImage.tag == "true") R.drawable.ic_like_selected else R.drawable.ic_like_white)
             homeViewModel.updateUserLikeListFromFireBase(userId, contentId)
         }
 
