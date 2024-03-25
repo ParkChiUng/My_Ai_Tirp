@@ -1,7 +1,10 @@
 package com.sessac.myaitrip.presentation.home.adapter
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +19,9 @@ import reactivecircus.flowbinding.android.view.clicks
 
 class SmallCardAdapter(
     val itemOnClick: (TourItem) -> (Unit),
+    val likeOnClick: (AppCompatImageView, String) -> Unit,
+    val liked: (AppCompatImageView) -> Unit,
+    private val tourLikeList: MutableList<String>,
     private val scope: CoroutineScope
 ) :
     ListAdapter<TourItem, SmallCardAdapter.HomeViewHolder>(diffUtil) {
@@ -38,13 +44,27 @@ class SmallCardAdapter(
             tourItem.let { tour ->
                 with(binding) {
 
-                    GlideUtil.loadImage(ivTour.context, tour.firstImage!!, ivTour)
+                    if(tourLikeList.contains(tour.contentId)) liked(ivLike)
+
+                    GlideUtil.loadImage(ivTour.context, tour.firstImage, ivTour)
 
                     tvTourName.text = tour.title
+
+                    val gradient = GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        intArrayOf(Color.TRANSPARENT, Color.BLACK)
+                    )
+                    layoutText.background = gradient
 
                     root.clicks()
                         .onEach {
                             itemOnClick(tour)
+                        }
+                        .launchIn(scope)
+
+                    ivLike.clicks()
+                        .onEach {
+                            likeOnClick(ivLike, tour.contentId)
                         }
                         .launchIn(scope)
                 }

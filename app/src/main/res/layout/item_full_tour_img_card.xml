@@ -24,32 +24,42 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/layout_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:padding="@dimen/card_margin_text_layout"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_tour_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textSize="@dimen/card_text_size_description"
                 android:textStyle="bold"
-                tools:text="여행사 이름" />
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
 
-            <TextView
-                android:id="@+id/tv_tour_description"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_tour_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="@dimen/card_text_size_description"
-                tools:text="여행사 설명" />
-        </LinearLayout>
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/tv_tour_name"
+                android:layout_alignParentStart="true" />
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_like"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:tag="false"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_like_white"/>
+        </RelativeLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

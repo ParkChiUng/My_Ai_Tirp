@@ -8,6 +8,9 @@ const val DEFAULT_PREFETCH_DISTANCE = 3
 const val TOUR_CONTENT_ID = "tourContentId"
 const val TOUR_IMAGE_LIST = "tourImageList"
 const val TOUR_ITEM = "tourItem"
+const val CONTENT_ID_LIST = "contentIdList"
+const val LIST_TYPE = "listType"
+
 const val API_ERROR_MASSAGE = "네트워크 연결에 실패하였습니다. 오프라인 모드로 동작합니다."
 val CONTENT_TYPE_ID_CATEGORY  = mapOf(
     "관광지" to "12",
