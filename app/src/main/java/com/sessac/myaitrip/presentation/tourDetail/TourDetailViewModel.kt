@@ -7,7 +7,6 @@ import com.sessac.myaitrip.data.entities.local.UserPreferencesData
 import com.sessac.myaitrip.data.entities.remote.ApiResponse
 import com.sessac.myaitrip.data.entities.remote.TourDetailItems
 import com.sessac.myaitrip.data.entities.remote.TourImageItems
-import com.sessac.myaitrip.data.entities.remote.TourItems
 import com.sessac.myaitrip.data.repository.tour.TourRepository
 import com.sessac.myaitrip.data.repository.user.UserRepository
 import com.sessac.myaitrip.presentation.common.UiState
@@ -78,7 +77,7 @@ class TourDetailViewModel(
     /**
      * 유저 정보 조회
      */
-    fun getUserPreferences(){
+    fun getUserPreferences() {
         viewModelScope.launch {
             userRepository.getUserPreferences().collectLatest { userPreference ->
                 _userPreferenceStatus.value = UiState.Success(userPreference)

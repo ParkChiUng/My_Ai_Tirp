@@ -1,9 +1,5 @@
 package com.sessac.myaitrip.data.repository.tour.remote
 
-import com.sessac.myaitrip.data.entities.remote.Body
-import com.sessac.myaitrip.data.entities.remote.TourDetailItems
-import com.sessac.myaitrip.data.entities.remote.TourImageItems
-import com.sessac.myaitrip.data.entities.remote.TourItems
 import com.sessac.myaitrip.presentation.common.UiState
 
 interface ITourRemoteDataSource {

@@ -6,9 +6,7 @@ import android.text.Html
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sessac.myaitrip.R
@@ -106,8 +104,8 @@ class TourDetailFragment :
                     is UiState.Success -> {
                         tourLikeList = state.data
 
-                        if(tourLikeList.contains(tourContentId)){
-                            with(binding){
+                        if (tourLikeList.contains(tourContentId)) {
+                            with(binding) {
                                 ivLike.tag = "true"
                                 ivLike.setImageResource(R.drawable.ic_like_selected)
                             }
@@ -124,8 +122,8 @@ class TourDetailFragment :
         }
     }
 
-    private fun clickEventHandler(){
-        with(binding){
+    private fun clickEventHandler() {
+        with(binding) {
             btnDiary.throttleClick().bind {
                 findNavController().navigate(R.id.action_TourDetailFragment_to_DiaryFragment, bundle)
             }
@@ -199,7 +197,7 @@ class TourDetailFragment :
                 when (state) {
                     is UiState.Success -> {
                         val response = state.data.response.body
-                        val images = response.items?.item?.mapNotNull { it.originImgUrl}
+                        val images = response.items?.item?.mapNotNull { it.originImgUrl }
                         images?.let {
                             val adapter = ImageSliderAdapter(it)
                             binding.vpTour.adapter = adapter
@@ -216,7 +214,7 @@ class TourDetailFragment :
                         Log.d("TourAPI tourImgStatus error", "${state.errorMessage}")
                         if (state.errorMessage == null) {
                             tourItem?.let {
-                                val images = listOf(it.firstImage as String)
+                                val images = listOf(it.firstImage)
                                 val adapter = ImageSliderAdapter(images)
                                 binding.vpTour.adapter = adapter
 
@@ -257,7 +255,7 @@ class TourDetailFragment :
     }
 
     private fun getTourApi() {
-        repeatOnCreated{
+        repeatOnCreated {
             launch {
                 tourDetailViewModel.getTourFromRoom(tourContentId)
             }

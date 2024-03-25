@@ -8,7 +8,6 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.databinding.ItemSmallTourImgCardBinding
 import com.sessac.myaitrip.util.GlideUtil
@@ -44,7 +43,7 @@ class SmallCardAdapter(
             tourItem.let { tour ->
                 with(binding) {
 
-                    if(tourLikeList.contains(tour.contentId)) liked(ivLike)
+                    if (tourLikeList.contains(tour.contentId)) liked(ivLike)
 
                     GlideUtil.loadImage(ivTour.context, tour.firstImage, ivTour)
 
