@@ -105,16 +105,18 @@ class AIRecommendFragment :
     private fun setupCheckedChipStateListener() {
         with(binding) {
             chipgroupAiRecommend.setOnCheckedStateChangeListener { chipGroup, _ ->
-                val selectedText = chipGroup.findViewById<Chip>(chipGroup.checkedChipId).text.toString()
+                chipGroup.findViewById<Chip>(chipGroup.checkedChipId)?.let { selectedChip ->
+                    val selectedText = selectedChip.text.toString()
 
-                when (selectedText) {
-                    resources.getString(R.string.sunny) -> getTourByGeminiWithPrompt(RECOMMEND_SUNNY_DAY)
-                    resources.getString(R.string.rainy) -> getTourByGeminiWithPrompt(RECOMMEND_RAINY_DAY)
-                    resources.getString(R.string.spring) -> getTourByGeminiWithPrompt(RECOMMEND_WEATHER_SPRING)
-                    resources.getString(R.string.summer) -> getTourByGeminiWithPrompt(RECOMMEND_WEATHER_SUMMER)
-                    resources.getString(R.string.fall) -> getTourByGeminiWithPrompt(RECOMMEND_WEATHER_FALL)
-                    resources.getString(R.string.winter) -> getTourByGeminiWithPrompt(RECOMMEND_WEATHER_WINTER)
-                    else -> {}
+                    when (selectedText) {
+                        resources.getString(R.string.sunny) -> getTourByGeminiWithPrompt(RECOMMEND_SUNNY_DAY)
+                        resources.getString(R.string.rainy) -> getTourByGeminiWithPrompt(RECOMMEND_RAINY_DAY)
+                        resources.getString(R.string.spring) -> getTourByGeminiWithPrompt(RECOMMEND_WEATHER_SPRING)
+                        resources.getString(R.string.summer) -> getTourByGeminiWithPrompt(RECOMMEND_WEATHER_SUMMER)
+                        resources.getString(R.string.fall) -> getTourByGeminiWithPrompt(RECOMMEND_WEATHER_FALL)
+                        resources.getString(R.string.winter) -> getTourByGeminiWithPrompt(RECOMMEND_WEATHER_WINTER)
+                        else -> {}
+                    }
                 }
             }
         }
