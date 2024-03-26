@@ -49,12 +49,12 @@ import com.sessac.myaitrip.R
 import com.sessac.myaitrip.data.entities.TourClusterItemData
 import com.sessac.myaitrip.data.entities.TourClusterItemKey
 import com.sessac.myaitrip.databinding.FragmentTourMapBinding
+import com.sessac.myaitrip.presentation.common.CustomProgressLoadingDialog
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.util.DateUtil
 import com.sessac.myaitrip.util.PermissionUtil
-import com.sessac.myaitrip.util.repeatOnResumed
 import com.sessac.myaitrip.util.repeatOnStarted
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.CoroutineScope
@@ -74,18 +74,18 @@ class TourMapFragment
 
     private val tourMapViewModel: TourMapViewModel by viewModels { ViewModelFactory() }
 
+    private var locationBottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>? = null
     private lateinit var locationBottomSheetTourAdapter: LocationBottomSheetTourAdapter
+    private lateinit var progressLoadingDialog: CustomProgressLoadingDialog
 
     private lateinit var mapView: MapView
     private lateinit var naverMap: NaverMap
-
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var locationCallback: LocationCallback
-    private lateinit var fusedLocationSource: FusedLocationSource
-
-    private var locationBottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>? = null
-
     private var clusterer: Clusterer<TourClusterItemKey>? = null
+
+    private lateinit var fusedLocationSource: FusedLocationSource
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private lateinit var locationCallback: LocationCallback
 
     private lateinit var mContext: Context
 
@@ -133,18 +133,23 @@ class TourMapFragment
             it.getMapAsync(this)
         }
 
+        progressLoadingDialog = CustomProgressLoadingDialog(mContext)
+
         setupWeatherStatusCollection()
         setUpLocationPlaceStatusCollection()
         setupAroundPlaceStatusCollection()
 
+        updateMyLocation()
         initMyLocationBottomSheet()
     }
 
     private fun setupAroundPlaceStatusCollection() {
-        repeatOnResumed {
+        viewLifecycleOwner.lifecycleScope.launch {
             tourMapViewModel.aroundPlaceStatus.collectLatest { state ->
                 when(state) {
-                    is UiState.Loading -> {}
+                    is UiState.Loading -> {
+                        progressLoadingDialog.showDialog()
+                    }
                     is UiState.Success -> {
                         val response = state.data.response
                         val header = response.header
@@ -178,6 +183,7 @@ class TourMapFragment
 
                            }
                         }
+                        progressLoadingDialog.dismissDialog()
                     }
                     is UiState.Error -> {}
                     else -> {}
@@ -188,10 +194,12 @@ class TourMapFragment
     }
 
     private fun setUpLocationPlaceStatusCollection() {
-        repeatOnResumed {
+        viewLifecycleOwner.lifecycleScope.launch {
             tourMapViewModel.locationTourStatus.collectLatest { state ->
                 when(state) {
-                    is UiState.Loading -> {}
+                    is UiState.Loading -> {
+                        progressLoadingDialog.showDialog()
+                    }
                     is UiState.Success -> {
                         val response = state.data.response
                         val header = response.header
@@ -253,9 +261,10 @@ class TourMapFragment
                                     }
                                 }
 
-
                             }
                         }
+
+                        progressLoadingDialog.dismissDialog()
                     }
                     is UiState.Error -> {}
                     else -> {}
@@ -389,11 +398,11 @@ class TourMapFragment
     }
 
     private fun setupWeatherStatusCollection() {
-        repeatOnResumed {
+        viewLifecycleOwner.lifecycleScope.launch {
             tourMapViewModel.weatherStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Loading -> {
-
+                        progressLoadingDialog.showDialog()
                     }
 
                     is UiState.Success -> {
@@ -531,6 +540,8 @@ class TourMapFragment
                                 }
                             }
                         }
+
+                        progressLoadingDialog.dismissDialog()
                     }
 
                     is UiState.Error -> {
@@ -549,7 +560,6 @@ class TourMapFragment
         clusterer = initClusterBuilder() // 마커 클러스터러
         initMapUi()
 
-        updateMyLocation()
         fusedLocationSource = FusedLocationSource(requireActivity(), LOCATION_PERMISSION_REQUEST_CODE)
 
         with(naverMap) {
@@ -590,11 +600,6 @@ class TourMapFragment
 
             // 사용자 위치 추적
 //                addOnLocationChangeListener {}
-        }
-
-        // 현재 위치 버튼 클릭
-        binding.btnTourMapMyLocation.throttleClick().bind {
-            updateMyLocation()
         }
     }
 
@@ -647,7 +652,7 @@ class TourMapFragment
         .leafMarkerUpdater { info, marker ->
             with(marker) {
                 icon = MarkerIcons.BLUE
-                width = 60
+                width = 76
                 width = 86
                 anchor = Marker.DEFAULT_ANCHOR
                 captionText = (info.tag as TourClusterItemData).title
@@ -684,9 +689,6 @@ class TourMapFragment
 
         with(binding) {
             btnTourMapMyLocation.map = naverMap
-            btnTourMapMyLocation.throttleClick().bind {
-                updateMyLocation()
-            }
         }
     }
 
@@ -712,28 +714,20 @@ class TourMapFragment
                         super.onLocationResult(locationResult)
 
                         locationResult.locations.forEachIndexed { _, location ->
-                            val cameraUpdate = CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
-                                .animate(CameraAnimation.Easing, 2000)
-                                .reason(1000)   // 현재 위치 이동 reason = 1000
-
-                            naverMap.moveCamera(cameraUpdate) // 현재 위치로 카메라 이동
-
                             Log.e(TAG, "현재 위도 = ${location.latitude}, 경도 = ${location.longitude}")
-                            // 현재 날짜 (yyyyMMdd) 형식 필요
-//                            Log.e(TAG, "현재 날짜(yyyyMMdd) = ${DateUtil.getCurrentDate()}")
-//                            Log.e(TAG, "현재 시간 = ${DateUtil.getCurrentHour()}")
+                            getAddress(location.latitude, location.longitude)   // 현재 위치 주소 가져오기
 
                             val (nx, ny) = latLonToGrid(location.latitude, location.longitude)
                             Log.e(TAG,"X 좌표 = $nx, Y 좌표 = $ny")
-
-                            getAddress(location.latitude, location.longitude)   // 현재 위치 주소 가져오기
 
                             with(tourMapViewModel) {
                                 getAroundTourList(location.latitude.toString(), location.longitude.toString()) // 현재 위치 근처 관광지 가져오기
 
                                 // 날씨 정보 가져오기
                                 // 위도, 경도 정수 값 필요
-                                // 05시 기상청 발표 값 가져오기
+                                // 현재 날짜 (yyyyMMdd) 형식 필요
+//                            Log.e(TAG, "현재 날짜(yyyyMMdd) = ${DateUtil.getCurrentDate()}")
+//                            Log.e(TAG, "현재 시간 = ${DateUtil.getCurrentHour()}")
                                 when(DateUtil.getCurrentHour()) {
                                     in 6..23 -> {
                                         // if 현재시간 in 06 ~ 23 (오늘 날씨 정보 가져오기)
