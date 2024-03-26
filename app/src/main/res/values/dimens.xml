@@ -31,7 +31,7 @@
     <!-- fragmentHome.xml -->
     <dimen name="f_home_tv_margin_top">30dp</dimen>
     <dimen name="f_home_rcv_margin_top">10dp</dimen>
-    <dimen name="f_home_tv_text_size">25sp</dimen>
+    <dimen name="f_home_tv_text_size">18sp</dimen>
     <dimen name="f_home_rcv_layout">0dp</dimen>
     <dimen name="f_ai_tag_tv_text_size">15sp</dimen>
 
@@ -48,14 +48,14 @@
     <dimen name="f_diary_view_pager_height">150dp</dimen>
     <dimen name="f_diary_view_pager_marginTop">30dp</dimen>
     <dimen name="f_diary_padding_bottom">10dp</dimen>
-    <dimen name="f_diary_margin_left">10dp</dimen>
+    <dimen name="f_diary_margin_left">16dp</dimen>
     <dimen name="f_diary_margin_top10">10dp</dimen>
     <dimen name="f_diary_margin_top50">50dp</dimen>
     <dimen name="f_diary_line">2dp</dimen>
     <dimen name="f_diary_edit_text_height80">80dp</dimen>
     <dimen name="f_diary_edit_text_height200">200dp</dimen>
-    <dimen name="f_diary_edit_text_margin_top">10dp</dimen>
-    <dimen name="f_diary_edit_padding">10dp</dimen>
+    <dimen name="f_diary_edit_text_margin_top">16dp</dimen>
+    <dimen name="f_diary_edit_padding">12dp</dimen>
     <dimen name="f_diary_btn_add_img_layout">80dp</dimen>
     <dimen name="f_diary_rcv_img_margin_top">20dp</dimen>
     <dimen name="f_diary_rcv_img_margin_start">10dp</dimen>
