@@ -752,8 +752,6 @@ class TourMapFragment
                                 getPlaceListByLocation(location.latitude.toString(), location.longitude.toString())
                             }
                         }
-
-                        binding.btnTourMapMyLocation.isSelected = true
                     }
                 }
 
