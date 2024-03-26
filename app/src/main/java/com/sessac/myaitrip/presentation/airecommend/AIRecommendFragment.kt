@@ -7,8 +7,10 @@ import androidx.core.view.children
 import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.sessac.myaitrip.R
+import com.sessac.myaitrip.common.TOUR_CONTENT_ID
 import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.databinding.FragmentAiRecommendBinding
 import com.sessac.myaitrip.presentation.common.CustomProgressLoadingDialog
@@ -32,20 +34,15 @@ private const val ANSWER_FORMAT = """
             지역 이름은 (서울, 인천, 대전, 대구, 광주, 부산, 울산, 세종, 경기도, 강원도, 충청북도, 충청남도, 경상북도, 경상남도, 전라북도, 전라남도, 제주도)로 제한할게.
             답변은 지역 이름: 관광지 이름1, 관광지 이름 2, 관광지 이름3 ... 이런 형식으로 지켜서 답변해줘.
             
-            예를 들면 다음과 같아.
-            ex)
-            서울: 경복궁, 창덕궁, 롯데월드
-            
-            다음과 같은 리스트 형식의 답변은 지양해줘.
-            **서울**
-            - 경복궁
-            - 창덕궁
-            - 남산타워
-            
-            **서울**
-            * 경복궁
-            * 창덕궁
-            * 남산타워
+            다음과 같은 json 형식을 지켜서 답변해줘
+            {
+              "지역명": "관광지1, 관광지2, 관광지3",
+              "지역명": "관광지1, 관광지2, 관광지3",
+              "지역명": "관광지1, 관광지2, 관광지3",
+              "지역명": "관광지1, 관광지2, 관광지3",
+              "지역명": "관광지1, 관광지2, 관광지3",
+              ...
+            }
         """
 
 class AIRecommendFragment :
@@ -154,9 +151,12 @@ class AIRecommendFragment :
         with(binding) {
             tourAdapter = AIRecommendTourAdapter(
                 scope = viewLifecycleOwner.lifecycleScope,
-                onItemClick = {
+                onItemClick = { tourItem ->
                     // 관광지 상세로 이동
-
+                    Bundle().apply {
+                        putString(TOUR_CONTENT_ID, tourItem.contentId)
+                        findNavController().navigate(R.id.action_AIRecommend_to_TourDetail, this)
+                    }
                 }
             ).also {
                 rvAiRecommendTour.adapter = it

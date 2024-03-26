@@ -41,18 +41,19 @@ class GlideModule: AppGlideModule() {
             setDefaultRequestOptions(RequestOptions().format(DecodeFormat.PREFER_RGB_565).disallowHardwareConfig())
 
             // 로그 레벨
-            setLogLevel(Log.DEBUG)
-//            setLogLevel(Log.ERROR) // 릴리즈 단계
+//            setLogLevel(Log.DEBUG)
+            setLogLevel(Log.ERROR) // 릴리즈 단계
         }
     }
 
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-        val builder = OkHttpClient.Builder()
+        val client = OkHttpClient.Builder()
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
+            .build()
 
         // 커스터마이즈된 OkHttp 클라이언트로 Glide 설정
-        registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(builder.build()))
+        registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(client))
     }
 
     override fun isManifestParsingEnabled(): Boolean {
