@@ -297,7 +297,7 @@ class TourMapFragment
                         // 상세 바텀 시트 Show
                         val tourKey = toMarkerKey()
                         val tourData = toMarkerData()
-                        val tourDetailBottomSheet = TourDetailBottomSheetFragment(tourData, positionMarker,
+                        val tourDetailBottomSheet = TourDetailBottomSheetFragment(tourKey, tourData, positionMarker,
                             itemClick =  {
                                 // 상세 바텀 시트 클릭
                                 Log.e("selectedTourId", tourKey.contentId)
@@ -657,12 +657,12 @@ class TourMapFragment
                 subCaptionText = ""
                 onClickListener = Overlay.OnClickListener {
                     //  지도 마커 클릭 시, 리스너, 상세 바텀 시트
-                    val selectedTourKey = (info.key as TourClusterItemKey)
-                    val selectedTourItem = (info.tag as TourClusterItemData)
+                    val tourKey = (info.key as TourClusterItemKey)
+                    val tourData = (info.tag as TourClusterItemData)
 
-                    val tourDetailBottomSheet = TourDetailBottomSheetFragment(selectedTourItem,
+                    val tourDetailBottomSheet = TourDetailBottomSheetFragment(tourKey, tourData,
                         itemClick = {
-                            moveToDetail(selectedTourKey)
+                            moveToDetail(tourKey)
                         }
                     )
                     tourDetailBottomSheet.show(parentFragmentManager, tourDetailBottomSheet.tag)

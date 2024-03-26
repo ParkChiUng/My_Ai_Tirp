@@ -106,7 +106,7 @@
         tools:text="내 위치와 0.4km 떨어져 있어요!" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/iv_tour_detail_bottom_sheet_like"
+        android:id="@+id/iv_tour_detail_bottom_sheet_view_count"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
@@ -115,17 +115,18 @@
         android:tint="@color/gray_500"
         app:layout_constraintBottom_toBottomOf="@id/iv_tour_detail_bottom_sheet_img"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@+id/tv_tour_detail_bottom_sheet_like_count"
+        app:layout_constraintEnd_toStartOf="@+id/tv_tour_detail_bottom_sheet_view_count"
         app:layout_constraintStart_toStartOf="@id/tv_tour_detail_bottom_sheet_distance"
-        app:srcCompat="@drawable/ic_like" />
+        app:srcCompat="@drawable/ic_viewcount" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_tour_detail_bottom_sheet_like_count"
+        android:id="@+id/tv_tour_detail_bottom_sheet_view_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
         android:textColor="@color/gray_500"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_tour_detail_bottom_sheet_like"
+        app:layout_constraintTop_toTopOf="@id/iv_tour_detail_bottom_sheet_view_count"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_tour_detail_bottom_sheet_view_count"
         app:layout_constraintStart_toStartOf="@+id/tv_tour_detail_bottom_sheet_distance"
         tools:text="3" />
 

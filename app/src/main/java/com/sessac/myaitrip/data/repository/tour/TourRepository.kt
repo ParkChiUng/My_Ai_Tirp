@@ -169,6 +169,15 @@ class TourRepository(
     }
 
     /**
+     * [FireBase] 관광지 조회수
+     * @param contentId
+     */
+    suspend fun getTourViewCount(contentId: String) = flow {
+        emit(UiState.Loading)
+        emit(UiState.Success(tourRemoteDataSource.getTourViewCount(contentId)))
+    }.catch { exception -> emit(UiState.Error(exception, errorMessage = exception.localizedMessage)) }
+
+    /**
      * [FireBase] 유저 좋아요한 관광지 추가
      */
     suspend fun updateUserLikeListFromFireBase(userId: String, contentId: String) {

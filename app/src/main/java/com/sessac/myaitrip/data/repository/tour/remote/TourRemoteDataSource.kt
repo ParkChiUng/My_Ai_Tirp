@@ -142,6 +142,12 @@ class TourRemoteDataSource : ITourRemoteDataSource {
         }
     }
 
+    override suspend fun getTourViewCount(contentId: String): Long {
+        return fireStore.collection("tour").document("data").collection("popular")
+            .document(contentId)
+            .get().await().getLong("counting") ?: 0L
+    }
+
     override suspend fun getRecommendAroundTourList(latitude: String, longitude: String): List<LocationBasedTourItem>? {
 
         val locationBasedData = tourApiService.getLocationBasedData(latitude = latitude, longitude = longitude, radius = "3000")
