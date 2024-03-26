@@ -83,10 +83,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:ellipsize="end"
-        app:layout_constraintEnd_toEndOf="@id/tv_tour_detail_bottom_sheet_address"
         android:maxLines="1"
         android:textSize="14sp"
         android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/tv_tour_detail_bottom_sheet_address"
         app:layout_constraintStart_toStartOf="@id/tv_tour_detail_bottom_sheet_address"
         app:layout_constraintTop_toBottomOf="@+id/tv_tour_detail_bottom_sheet_address"
         tools:text="상세 주소"
@@ -101,7 +101,7 @@
         android:maxLines="1"
         android:textColor="@color/main_blue"
         app:layout_constraintEnd_toEndOf="@id/tv_tour_detail_bottom_sheet_address"
-        app:layout_constraintStart_toStartOf="@+id/tv_tour_detail_bottom_sheet_sub_address"
+        app:layout_constraintStart_toStartOf="@+id/tv_tour_detail_bottom_sheet_address"
         app:layout_constraintTop_toBottomOf="@+id/tv_tour_detail_bottom_sheet_sub_address"
         tools:text="내 위치와 0.4km 떨어져 있어요!" />
 
