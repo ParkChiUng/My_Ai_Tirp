@@ -136,16 +136,16 @@ class TourMapFragment
         progressLoadingDialog = CustomProgressLoadingDialog(mContext)
 
         setupWeatherStatusCollection()
-        setUpLocationPlaceStatusCollection()
-        setupAroundPlaceStatusCollection()
+        setUpNearbyTourCollection()
+        setUpAreaTourCollection()
 
         updateMyLocation()
         initMyLocationBottomSheet()
     }
 
-    private fun setupAroundPlaceStatusCollection() {
+    private fun setUpAreaTourCollection() {
         viewLifecycleOwner.lifecycleScope.launch {
-            tourMapViewModel.aroundPlaceStatus.collectLatest { state ->
+            tourMapViewModel.areaTourStatus.collectLatest { state ->
                 when(state) {
                     is UiState.Loading -> {
                         progressLoadingDialog.showDialog()
@@ -193,9 +193,9 @@ class TourMapFragment
         }
     }
 
-    private fun setUpLocationPlaceStatusCollection() {
+    private fun setUpNearbyTourCollection() {
         viewLifecycleOwner.lifecycleScope.launch {
-            tourMapViewModel.locationTourStatus.collectLatest { state ->
+            tourMapViewModel.nearbyTourStatus.collectLatest { state ->
                 when(state) {
                     is UiState.Loading -> {
                         progressLoadingDialog.showDialog()
@@ -715,19 +715,17 @@ class TourMapFragment
 
                         locationResult.locations.forEachIndexed { _, location ->
                             Log.e(TAG, "현재 위도 = ${location.latitude}, 경도 = ${location.longitude}")
+
                             getAddress(location.latitude, location.longitude)   // 현재 위치 주소 가져오기
 
                             val (nx, ny) = latLonToGrid(location.latitude, location.longitude)
                             Log.e(TAG,"X 좌표 = $nx, Y 좌표 = $ny")
 
                             with(tourMapViewModel) {
-                                getAroundTourList(location.latitude.toString(), location.longitude.toString()) // 현재 위치 근처 관광지 가져오기
+                                getAreaTourList(location.latitude.toString(), location.longitude.toString()) // 현재 위도, 경도로 20km 내에 있는 지역 관광지 정보 가져오기
 
-                                // 날씨 정보 가져오기
-                                // 위도, 경도 정수 값 필요
-                                // 현재 날짜 (yyyyMMdd) 형식 필요
-//                            Log.e(TAG, "현재 날짜(yyyyMMdd) = ${DateUtil.getCurrentDate()}")
-//                            Log.e(TAG, "현재 시간 = ${DateUtil.getCurrentHour()}")
+                                getNearbyTourList(location.latitude.toString(), location.longitude.toString()) // 현재 위도, 경도로 3km 내에 있는 근처 관광지 정보 가져오기
+
                                 when(DateUtil.getCurrentHour()) {
                                     in 6..23 -> {
                                         // if 현재시간 in 06 ~ 23 (오늘 날씨 정보 가져오기)
@@ -748,8 +746,7 @@ class TourMapFragment
                                     }
                                 }
 
-                                // 현재 위도, 경도로 근처 관광지 정보 가져오기
-                                getPlaceListByLocation(location.latitude.toString(), location.longitude.toString())
+
                             }
                         }
                     }

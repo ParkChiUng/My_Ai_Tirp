@@ -22,11 +22,11 @@ class TourMapViewModel(
     private val _weatherStatus = MutableStateFlow<UiState<WeatherApiResponse<WeatherItems>>>(UiState.Empty)
     val weatherStatus get() = _weatherStatus.asStateFlow()
 
-    private val _locationTourStatus = MutableStateFlow<UiState<ApiResponse<LocationBasedTourItems>>>(UiState.Empty)
-    val locationTourStatus get() = _locationTourStatus.asStateFlow()
+    private val _nearbyTourStatus = MutableStateFlow<UiState<ApiResponse<LocationBasedTourItems>>>(UiState.Empty)
+    val nearbyTourStatus get() = _nearbyTourStatus.asStateFlow()
 
-    private val _aroundPlaceStatus = MutableStateFlow<UiState<ApiResponse<LocationBasedTourItems>>>(UiState.Empty)
-    val aroundPlaceStatus get() = _aroundPlaceStatus.asStateFlow()
+    private val _areaTourStatus = MutableStateFlow<UiState<ApiResponse<LocationBasedTourItems>>>(UiState.Empty)
+    val areaTourStatus get() = _areaTourStatus.asStateFlow()
 
     fun getWeatherData(date: String, pointX: String, pointY: String) {
         viewModelScope.launch {
@@ -36,18 +36,18 @@ class TourMapViewModel(
         }
     }
 
-    fun getAroundTourList(latitude: String, longitude: String) {
+    fun getAreaTourList(latitude: String, longitude: String) {
         viewModelScope.launch {
-            tourRepository.getAroundPlaceList(latitude, longitude).collectLatest {
-                _aroundPlaceStatus.value = it
+            tourRepository.getAreaTourList(latitude, longitude).collectLatest {
+                _areaTourStatus.value = it
             }
         }
     }
 
-    fun getPlaceListByLocation(latitude: String, longitude: String) {
+    fun getNearbyTourList(latitude: String, longitude: String) {
         viewModelScope.launch {
-            tourRepository.getPlaceListByLocation(latitude, longitude).collectLatest {
-                _locationTourStatus.value = it
+            tourRepository.getNearbyTourList(latitude, longitude).collectLatest {
+                _nearbyTourStatus.value = it
             }
         }
     }

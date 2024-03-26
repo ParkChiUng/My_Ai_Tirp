@@ -26,15 +26,24 @@ class TourRepository(
     private val tourRemoteDataSource: TourRemoteDataSource
 ) {
     /**
-     * Get around place list
-     * 주변 기능에서 사용하는 사용자 현재 위치 근처 20km의 관광지 정보를 가져온다.
+     * [API] 현재 위도, 경도 근처 20km 내에 있는 지역의 관광지 목록을 가져온다.
      * @param latitude
      * @param longitude
      */
-    fun getAroundPlaceList(latitude: String, longitude: String) = flow {
+    fun getAreaTourList(latitude: String, longitude: String) = flow {
         emit(UiState.Loading)
         emit(UiState.Success(tourApiService.getLocationBasedData(latitude = latitude, longitude = longitude, radius = "20000")))
     }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
+
+    /**
+     * [API] 현재 위도, 경도 근처 3km 나의 근처에 있는 관광지 목록을 가져온다.
+     * @param latitude
+     * @param longitude
+     */
+    suspend fun getNearbyTourList(latitude: String, longitude: String) = flow {
+        emit(UiState.Loading)
+        emit(UiState.Success(tourApiService.getLocationBasedData(latitude = latitude, longitude = longitude, radius = "3000")))
+    }.catch { exception -> emit(UiState.Error(exception = exception, errorMessage = exception.localizedMessage)) }
 
     /**
      * Get around place list
@@ -109,11 +118,6 @@ class TourRepository(
             pagingSourceFactory = { TourPagingSource(tourDao = tourDao, area = area, category = category, inputText = inputText) }
         ).flow
     }
-
-    suspend fun getPlaceListByLocation(latitude: String, longitude: String) = flow {
-        emit(UiState.Loading)
-        emit(UiState.Success(tourApiService.getLocationBasedData(latitude = latitude, longitude = longitude)))
-    }.catch { exception -> emit(UiState.Error(exception = exception, errorMessage = exception.localizedMessage)) }
 
     /**
      * [공공 API] 관광지 전체 리스트 조회
