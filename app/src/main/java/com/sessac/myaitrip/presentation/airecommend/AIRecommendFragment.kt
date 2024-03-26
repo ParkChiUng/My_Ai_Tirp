@@ -11,6 +11,7 @@ import com.google.android.material.chip.Chip
 import com.sessac.myaitrip.R
 import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.databinding.FragmentAiRecommendBinding
+import com.sessac.myaitrip.presentation.common.CustomProgressLoadingDialog
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
@@ -55,12 +56,14 @@ class AIRecommendFragment :
     private lateinit var locationAdapter: AIRecommendLocationAdapter
     private lateinit var tourAdapter: AIRecommendTourAdapter
 
-    private var selectedLocation: String = "서울"     // Default: 서울
-
     private var recommendMap: Map<String, List<TourItem>>? = null
+
+    private lateinit var progressLoadingDialog: CustomProgressLoadingDialog
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        progressLoadingDialog = CustomProgressLoadingDialog(requireContext())
 
         initLocationAdapter()
         initRecommendTourAdapter()
@@ -76,17 +79,20 @@ class AIRecommendFragment :
             aiRecommendViewModel.aiResultStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Loading -> {
-                        // TODO. 프로그레스 다이얼로그 필수
+                        // 프로그레스 다이얼로그
+                        progressLoadingDialog.showDialog()
                     }
                     is UiState.Error -> {}
                     is UiState.Success -> {
+                        progressLoadingDialog.dismissDialog()   // Loading Dialog 제거
+
                         recommendMap = state.data  // key: 지역, value: 지역별 추천 관광지 목록
 
                         // 현재 선택된 지역 + 현재 날씨
                         recommendMap?.let { recommendMap ->
                             locationAdapter.setAreaList(recommendMap.keys.toList())
 
-                            recommendMap[selectedLocation]?.let {
+                            recommendMap[recommendMap.keys.first()]?.let {
                                 Log.e("GeminiTourList", "GeminiTourList = $it")
                                 tourAdapter.setTourList(it)
                             }
