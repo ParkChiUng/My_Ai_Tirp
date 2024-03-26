@@ -20,7 +20,7 @@
     <!-- Fragment AI -->
     <string name="ai_recommend_tour">AI 추천 여행지</string>
     <string name="sunny">#맑은 날</string>
-    <string name="rainy">#우중충 한 날</string>
+    <string name="rainy">#흐린 날</string>
     <string name="spring">#봄</string>
     <string name="summer">#여름</string>
     <string name="fall">#가을</string>

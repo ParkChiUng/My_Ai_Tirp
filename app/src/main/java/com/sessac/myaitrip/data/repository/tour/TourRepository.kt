@@ -57,6 +57,14 @@ class TourRepository(
     }
 
     /**
+     * [Room DB] keyword를 포함하는 관광지 리스트 조회
+     */
+    fun getAIRecommendTourList(prompt: String) = flow {
+        emit(UiState.Loading)
+        emit(UiState.Success(tourLocalDataSource.getAIRecommendMap(prompt)))
+    }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
+
+    /**
      * [Room DB] contentId List로 관광지 리스트 조회
      */
     fun getTourList(contentIdList: List<String>) = flow {
