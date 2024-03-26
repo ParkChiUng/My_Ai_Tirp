@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter
 
 object DateUtil {
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+    private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     fun getCurrentDate(): String{
         return LocalDateTime.now().format(dateFormatter)
     }
@@ -22,5 +23,9 @@ object DateUtil {
         val currentTime = LocalTime.now()
         val formatter = DateTimeFormatter.ofPattern("HH'00'")
         return currentTime.format(formatter)
+    }
+
+    fun getCurrentDateTime(): String {
+        return LocalDateTime.now().format(dateTimeFormatter)
     }
 }

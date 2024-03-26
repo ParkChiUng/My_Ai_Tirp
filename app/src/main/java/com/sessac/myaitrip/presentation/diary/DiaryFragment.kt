@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
@@ -24,9 +23,10 @@ import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.diary.adapter.ImageCardAdapter
 import com.sessac.myaitrip.presentation.tourDetail.adapter.ImageSliderAdapter
+import com.sessac.myaitrip.util.DateUtil.getCurrentDateTime
+import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import com.sessac.myaitrip.util.showToast
 
 /**
  * 다이어리 페이지
@@ -175,9 +175,12 @@ class DiaryFragment :
 
                         val diaryItem = DiaryItem(
                             contentId = parcelableTourItem?.contentId.toString(),
+                            tourTitle = parcelableTourItem?.title.toString(),
+                            tourAddress = parcelableTourItem?.address.toString(),
                             diaryTitle = binding.etDiaryTitle.text.toString(),
                             diaryReview = binding.etDiaryReview.text.toString(),
-                            diaryImage = userImageList
+                            diaryImage = userImageList,
+                            createDateTime = getCurrentDateTime()
                         )
 
                         diaryViewModel.addDiaryFromFireBase(userId, diaryItem)

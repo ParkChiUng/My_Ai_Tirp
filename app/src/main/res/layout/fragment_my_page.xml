@@ -35,40 +35,39 @@
         app:layout_constraintRight_toRightOf="@id/gl_right"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_setting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_setting"
-            android:layout_marginTop="@dimen/f_home_rcv_margin_top"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+<!--        <androidx.appcompat.widget.AppCompatImageView-->
+<!--            android:id="@+id/iv_setting"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:srcCompat="@drawable/ic_setting"-->
+<!--            android:layout_marginTop="@dimen/f_home_rcv_margin_top"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintRight_toRightOf="parent" />-->
 
         <LinearLayout
             android:id="@+id/layout_user"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/iv_setting"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/guide_image"
+                android:id="@+id/iv_user_img"
                 android:scaleType="centerCrop"
                 android:layout_width="@dimen/image_size_width"
                 android:layout_height="@dimen/image_size_height"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/splash_bg" />
+                android:layout_marginEnd="16dp" />
 
-            <TextView
-                android:id="@+id/tv_name"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_user_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_gravity="center"
                 android:textStyle="bold"
-                android:textSize="@dimen/f_home_tv_text_size"
-                android:text="@string/name" />
+                android:textSize="@dimen/f_home_tv_text_size" />
 
             <Button
                 android:id="@+id/ed_profile"
@@ -95,7 +94,7 @@
             app:layout_constraintTop_toBottomOf="@id/view_line"
             app:layout_constraintRight_toRightOf="parent">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_popular"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -106,35 +105,35 @@
                 android:textSize="@dimen/f_ai_tag_tv_text_size"
                 android:text="@string/popular" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_sort"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_sort" />
+<!--            <androidx.appcompat.widget.AppCompatImageView-->
+<!--                android:id="@+id/iv_sort"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:srcCompat="@drawable/ic_sort" />-->
 
-            <TextView
-                android:id="@+id/tv_sort"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/card_margin_text_layout"
-                android:layout_gravity="center"
-                android:textStyle="bold"
-                android:textSize="@dimen/f_ai_tag_tv_text_size"
-                android:text="@string/latest" />
+<!--            <com.google.android.material.textview.MaterialTextView-->
+<!--                android:id="@+id/tv_sort"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="@dimen/card_margin_text_layout"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:textStyle="bold"-->
+<!--                android:textSize="@dimen/f_ai_tag_tv_text_size"-->
+<!--                android:text="@string/latest" />-->
 
-            <TextView
-                android:id="@+id/tv_view_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/card_margin_text_layout"
-                android:layout_gravity="center"
-                android:textStyle="bold"
-                android:textSize="@dimen/f_ai_tag_tv_text_size"
-                android:text="@string/allView" />
+<!--            <com.google.android.material.textview.MaterialTextView-->
+<!--                android:id="@+id/tv_view_all"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="@dimen/card_margin_text_layout"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:textStyle="bold"-->
+<!--                android:textSize="@dimen/f_ai_tag_tv_text_size"-->
+<!--                android:text="@string/allView" />-->
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rcv_location_recommend"
+            android:id="@+id/rcv_like"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
@@ -143,16 +142,29 @@
             tools:listitem="@layout/item_small_tour_img_card"
             app:layout_constraintTop_toBottomOf="@id/layout_sort" />
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_like_list_empty"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:textStyle="bold"
+            android:textSize="@dimen/f_myPage_empty_list_text_size"
+            android:text="@string/like_list_empty"
+            android:gravity="center"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_sort"
+            app:layout_constraintBottom_toTopOf="@id/tv_diary"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_diary"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:textStyle="bold"
             android:textSize="@dimen/f_ai_tag_tv_text_size"
-            android:layout_marginTop="@dimen/margin_search_icon"
+            android:layout_marginTop="@dimen/f_diary_view_pager_marginTop"
             android:text="@string/diary"
-            app:layout_constraintTop_toBottomOf="@+id/rcv_location_recommend"
+            app:layout_constraintTop_toBottomOf="@+id/tv_like_list_empty"
             app:layout_constraintLeft_toLeftOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -166,6 +178,20 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            tools:listitem="@layout/item_full_tour_img_card" />
+            tools:listitem="@layout/item_diary_list" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_diary_list_empty"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:textStyle="bold"
+            android:textSize="@dimen/f_myPage_empty_list_text_size"
+            android:text="@string/diary_list_empty"
+            android:gravity="center"
+            android:visibility="invisible"
+            app:layout_constraintTop_toBottomOf="@id/tv_diary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -57,9 +57,7 @@ class TourRemoteDataSource : ITourRemoteDataSource {
                 .await()
 
             if (document != null) {
-                val contentIdList =
-                    (document.data?.get("contentId") as? List<*>)?.filterIsInstance<String>()
-                        ?: emptyList()
+                val contentIdList = (document.data?.get("contentId") as? List<*>)?.filterIsInstance<String>() ?: emptyList()
 
                 resultList[CONTENT_ID_LIST] = contentIdList
                 resultList[LIST_TYPE] = listType
@@ -192,6 +190,36 @@ class TourRemoteDataSource : ITourRemoteDataSource {
             }
 
             contentViewCountMap
+        }
+    }
+
+
+    /**
+     * user 정보 조회
+     */
+    override suspend fun getUserProfileFromFireBase(
+        userId: String
+    ): UiState<Map<String, Any>> {
+        return try {
+            val result = mutableMapOf<String, Any>()
+            val document = fireStore.collection("user")
+                .document(userId)
+                .get()
+                .await()
+
+            if (document.exists()) {
+                val data = document.data
+                if (data != null) {
+                    result["email"] = data["email"] ?: ""
+                    result["id"] = data["id"] ?: ""
+                    result["nickname"] = data["nickname"] ?: ""
+                    result["profileImgUrl"] = data["profileImgUrl"] ?: ""
+                }
+            }
+            UiState.Success(result)
+        } catch (exception: Exception) {
+            Log.d("TAG", "get failed ", exception)
+            UiState.Error(exception)
         }
     }
 }

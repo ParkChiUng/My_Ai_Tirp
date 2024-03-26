@@ -16,7 +16,7 @@
         android:title="@string/navi_tour"
         android:icon="@drawable/ic_tour"/>
 
-    <item android:id="@+id/UserFragment"
+    <item android:id="@+id/MyPageFragment"
         android:title="@string/navi_mypage"
         android:icon="@drawable/ic_user"/>
 </menu>

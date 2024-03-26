@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|top"
-            android:src="@drawable/ic_delete"
-            android:background="@drawable/oval_white" />
+            android:src="@drawable/ic_delete_white"
+            android:background="@drawable/oval_black" />
     </FrameLayout>
 </androidx.cardview.widget.CardView>

@@ -6,7 +6,6 @@ import androidx.paging.PagingState
 import com.sessac.myaitrip.data.database.TourDao
 import com.sessac.myaitrip.data.entities.TourItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class TourPagingSource(
@@ -27,14 +26,11 @@ class TourPagingSource(
              * 1. 지역과 카테고리로 관광지 리스트 조회
              * 2. 지역, 카테고리, 입력한 키워드로 관광지 리스트 조회
              */
-            val tourList = if (inputText == "null") {
-                withContext(Dispatchers.IO) {
+            val tourList = withContext(Dispatchers.IO) {
+                if (inputText == "null")
                     tourDao.getTourList(area, category, pageSize, offset)
-                }
-            } else {
-                withContext(Dispatchers.IO) {
+                else
                     tourDao.getTourList(area, category, inputText, pageSize, offset)
-                }
             }
 
             LoadResult.Page(

@@ -82,6 +82,9 @@
     <string name="allView">모두 보기</string>
     <string name="diary">내 다이어리 목록</string>
 
+    <string name="like_list_empty">좋아요 목록이 없습니다.</string>
+    <string name="diary_list_empty">다이어리 목록이 없습니다.</string>
+
     <!-- Login -->
     <string name="login_title">My Ai \'Trip</string>
     <string name="login_kakao">카카오로 시작하기</string>

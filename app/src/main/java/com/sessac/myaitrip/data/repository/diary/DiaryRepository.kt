@@ -33,4 +33,12 @@ class DiaryRepository(
     }.catch { exception ->
         if (exception is FirebaseException) emit(UiState.FirebaseApiError(exception))
     }
+
+    fun getDiaryFromFireBase(userId: String) = flow {
+        emit(UiState.Loading)
+        delay(300)
+        emit(diaryRemoteDataSource.getDiaryFromFireBase(userId))
+    }.catch { exception ->
+        if (exception is FirebaseException) emit(UiState.FirebaseApiError(exception))
+    }
 }

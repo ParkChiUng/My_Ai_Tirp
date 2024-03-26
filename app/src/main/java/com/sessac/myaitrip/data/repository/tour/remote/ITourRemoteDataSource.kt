@@ -16,4 +16,6 @@ interface ITourRemoteDataSource {
 
     suspend fun updateUserLikeFromFireBase(userId: String, contentId: String)
     suspend fun getTourViewCount(contentId: String): Long
+
+    suspend fun getUserProfileFromFireBase(userId: String): UiState<Map<String, Any>>
 }

@@ -17,6 +17,7 @@ import com.sessac.myaitrip.presentation.airecommend.AIRecommendViewModel
 import com.sessac.myaitrip.presentation.diary.DiaryViewModel
 import com.sessac.myaitrip.presentation.home.HomeViewModel
 import com.sessac.myaitrip.presentation.login.LoginViewModel
+import com.sessac.myaitrip.presentation.myPage.MyPageViewModel
 import com.sessac.myaitrip.presentation.progress.ProgressViewModel
 import com.sessac.myaitrip.presentation.register.RegisterViewModel
 import com.sessac.myaitrip.presentation.tourDetail.TourDetailViewModel
@@ -137,6 +138,26 @@ class ViewModelFactory : ViewModelProvider.Factory {
                 )
 
                 TourDetailBottomSheetViewModel(tourRepository) as T
+            }
+
+            modelClass.isAssignableFrom(MyPageViewModel::class.java) -> {
+                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore, tourDao)
+                val tourRemoteDataSource = TourRemoteDataSource()
+                val tourRepository = TourRepository(
+                    tourDao,
+                    tourApiService,
+                    tourLocalDataSource,
+                    tourRemoteDataSource
+                )
+
+                val userLocalDataSource = UserLocalDataSource(dataStore.userDataStore)
+                val diaryRemoteDataSource = DiaryRemoteDataSource()
+                val diaryRepository = DiaryRepository(
+                    userLocalDataSource,
+                    diaryRemoteDataSource
+                )
+
+                MyPageViewModel(tourRepository, userRepository, diaryRepository) as T
             }
 
             else -> {

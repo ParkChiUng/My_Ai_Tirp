@@ -1,5 +1,6 @@
 package com.sessac.myaitrip.data.repository.diary.remote
 
+import android.net.Uri
 import android.util.Log
 import com.sessac.myaitrip.common.MyAiTripApplication
 import com.sessac.myaitrip.data.entities.DiaryItem
@@ -7,6 +8,7 @@ import com.sessac.myaitrip.presentation.common.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.tasks.await
 
 class DiaryRemoteDataSource : IDiaryRemoteDataSource {
     private val fireStore = MyAiTripApplication.getInstance().getFireStore()
@@ -26,29 +28,34 @@ class DiaryRemoteDataSource : IDiaryRemoteDataSource {
         this.diaryItem = diaryItem
 
         return CoroutineScope(Dispatchers.IO).async {
-            /**
-             * 1. 이미지 fireStorage 저장
-             * 2. 저장한 이미지 Uri 다운로드
-             * 3. 다운로드한 Uri diaryItemUri 저장
-             */
-            diaryItem.diaryImage.forEachIndexed { index, uri ->
-                val profileImgRef = fireStorage.reference.child("diaryImage").child(userId).child("$timestamp-$index.png")
-                val uploadTask = profileImgRef.putFile(uri)
 
-                uploadTask.addOnSuccessListener {
-                    profileImgRef.downloadUrl.addOnSuccessListener {
-                        Log.d("FirebaseStorage", "File download successfully")
-                        diaryItemUri.add(it.toString())
+            if (diaryItem.diaryImage.isEmpty()) {
+                addDiaryFromFireStore()
+            } else {
+                /**
+                 * 1. 이미지 fireStorage 저장
+                 * 2. 저장한 이미지 Uri 다운로드
+                 * 3. 다운로드한 Uri diaryItemUri 저장
+                 */
+                diaryItem.diaryImage.forEachIndexed { index, uri ->
+                    val profileImgRef = fireStorage.reference.child("diaryImage").child(userId)
+                        .child("$timestamp-$index.png")
+                    val uploadTask = profileImgRef.putFile(uri)
 
-                        if (index == diaryItem.diaryImage.size - 1)
-                            addDiaryFromFireStore()
+                    uploadTask.addOnSuccessListener {
+                        profileImgRef.downloadUrl.addOnSuccessListener {
+                            Log.d("FirebaseStorage", "File download successfully")
+                            diaryItemUri.add(it.toString())
+
+                            if (index == diaryItem.diaryImage.size - 1)
+                                addDiaryFromFireStore()
+                        }
+                        Log.d("FirebaseStorage", "File uploaded successfully")
+                    }.addOnFailureListener { e ->
+                        Log.w("FirebaseStorage", "Failed to upload file", e)
                     }
-                    Log.d("FirebaseStorage", "File uploaded successfully")
-                }.addOnFailureListener { e ->
-                    Log.w("FirebaseStorage", "Failed to upload file", e)
                 }
             }
-
             UiState.Success(userId)
         }.await()
     }
@@ -58,10 +65,13 @@ class DiaryRemoteDataSource : IDiaryRemoteDataSource {
      */
     private fun addDiaryFromFireStore() {
         val diaryData = hashMapOf(
-            "diaryContentId" to diaryItem.contentId,
+            "contentId" to diaryItem.contentId,
+            "tourTitle" to diaryItem.tourTitle,
+            "tourAddress" to diaryItem.tourAddress,
             "diaryTitle" to diaryItem.diaryTitle,
             "diaryReview" to diaryItem.diaryReview,
-            "diaryImage" to diaryItemUri
+            "diaryImage" to diaryItemUri,
+            "createDateTime" to diaryItem.createDateTime
         )
 
         val diaryFireStore = fireStore.collection("user")
@@ -76,5 +86,51 @@ class DiaryRemoteDataSource : IDiaryRemoteDataSource {
             .addOnFailureListener { e ->
                 Log.w("Firestore", "Error writing document", e)
             }
+    }
+
+
+    /**
+     * user 다이어리 조회
+     */
+    override suspend fun getDiaryFromFireBase(
+        userId: String
+    ): UiState<MutableList<DiaryItem>> {
+        return try {
+            val result = mutableListOf<DiaryItem>()
+            val snapshot = fireStore.collection("user")
+                .document(userId)
+                .collection("diary")
+                .get()
+                .await()
+
+            for (document in snapshot.documents) {
+                val data = document.data
+                if (data != null) {
+                    val diaryImageList = (data["diaryImage"] as? List<*>)?.mapNotNull {
+                        it.toString().let { imgStr ->
+                            Uri.parse(imgStr)
+                        }
+                    } ?: listOf<Uri>()
+
+                    val diaryItem = DiaryItem(
+                        diaryId = document.id,
+                        contentId = data["contentId"].toString(),
+                        tourTitle = data["tourTitle"].toString(),
+                        tourAddress = data["tourAddress"].toString(),
+                        diaryTitle = data["diaryTitle"].toString(),
+                        diaryReview = data["diaryReview"].toString(),
+                        diaryImage = diaryImageList as MutableList<Uri>,
+                        createDateTime = data["createDateTime"].toString(),
+                    )
+
+                    result.add(diaryItem)
+                }
+            }
+
+            UiState.Success(result)
+        } catch (exception: Exception) {
+            Log.d("TAG", "get failed ", exception)
+            UiState.Error(exception)
+        }
     }
 }

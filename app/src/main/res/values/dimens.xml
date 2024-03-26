@@ -63,4 +63,6 @@
     <dimen name="f_diary_btn_text_size">20sp</dimen>
     <dimen name="f_diary_card_size">80dp</dimen>
 
+    <dimen name="f_myPage_empty_list_text_size">30sp</dimen>
+
 </resources>

@@ -195,6 +195,17 @@ class TourRepository(
         if (exception is FirebaseException) emit(UiState.FirebaseApiError(exception))
     }
 
+    /**
+     * [FireBase] 유저 좋아요 관광지 리스트 조회
+     */
+    fun getUserProfileFromFireBase(userId: String) = flow {
+        emit(UiState.Loading)
+        delay(300)
+        emit(tourRemoteDataSource.getUserProfileFromFireBase(userId))
+    }.catch { exception ->
+        if (exception is FirebaseException) emit(UiState.FirebaseApiError(exception))
+    }
+
 
 //    suspend fun getTourListByTitle(titles: List<String>): Flow<List<TourItem>> {
 //        val result = mutableListOf<String>()

@@ -52,10 +52,13 @@
     </fragment>
 
     <fragment
-        android:id="@+id/UserFragment"
-        android:name="com.sessac.myaitrip.presentation.UserFragment"
-        android:label="fragment_user"
-        tools:layout="@layout/fragment_user">
+        android:id="@+id/MyPageFragment"
+        android:name="com.sessac.myaitrip.presentation.myPage.MyPageFragment"
+        android:label="fragment_myPage"
+        tools:layout="@layout/fragment_my_page">
+        <action
+            android:id="@+id/action_MyPageFragment_to_TourDetailFragment"
+            app:destination="@id/TourDetailFragment" />
     </fragment>
 
     <fragment

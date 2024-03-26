@@ -91,7 +91,7 @@ class ProgressActivity :
                         val lastPageNumber = (totalCount + (DEFAULT_NUM_OF_ROWS - DEFAULT_PAGE_NUMBER)) / DEFAULT_NUM_OF_ROWS
 
                         if (checkTourItemFromApi(totalCount, lastPageNumber)) {
-                            ++prefPageNumber
+                            prefPageNumber++
                             prefTotalCount = totalCount
                             getTourItemFromApi()
                         } else {

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="150dp"
+    android:layout_height="270dp"
+    android:layout_marginHorizontal="5dp"
+    app:cardCornerRadius="12dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_item_diary_tour_img"
+        style="@style/tourImgRound"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/tourImgRound"
+        tools:src="@drawable/ic_app" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_item_diary_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_item_diary_tour_img"
+        app:layout_constraintBottom_toTopOf="@+id/tv_item_diary_tour_name"
+        tools:text="다이어리 명" />
+
+<!--    <androidx.appcompat.widget.AppCompatImageView-->
+<!--        android:id="@+id/iv_item_diary_tour_name"-->
+<!--        android:layout_width="15dp"-->
+<!--        android:layout_height="15dp"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:src="@drawable/ic_ai"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/tv_item_diary_title"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/tv_item_diary_title" />-->
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_item_diary_tour_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/gray_600"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_item_diary_title"
+        app:layout_constraintTop_toBottomOf="@id/tv_item_diary_title"
+        app:layout_constraintBottom_toTopOf="@+id/tv_item_diary_tour_address"
+        tools:text="경포대" />
+
+<!--    <androidx.appcompat.widget.AppCompatImageView-->
+<!--        android:id="@+id/iv_item_diary_tour_address"-->
+<!--        android:layout_width="15dp"-->
+<!--        android:layout_height="15dp"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:src="@drawable/ic_address"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/iv_item_diary_tour_name"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/iv_item_diary_tour_name" />-->
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_item_diary_tour_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/gray_600"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/tv_item_diary_tour_name"
+        app:layout_constraintTop_toBottomOf="@id/tv_item_diary_tour_name"
+        app:layout_constraintBottom_toTopOf="@+id/tv_item_diary_create_date_time"
+        tools:text="서울특별시 관악구 호암로 454-16" />
+
+<!--    <androidx.appcompat.widget.AppCompatImageView-->
+<!--        android:id="@+id/iv_item_diary_create_date_time"-->
+<!--        android:layout_width="15dp"-->
+<!--        android:layout_height="15dp"-->
+<!--        android:layout_marginTop="7dp"-->
+<!--        android:src="@drawable/ic_clock"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/iv_item_diary_tour_address"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/iv_item_diary_tour_address" />-->
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_item_diary_create_date_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/gray_600"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/tv_item_diary_tour_address"
+        app:layout_constraintTop_toBottomOf="@id/tv_item_diary_tour_address"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="2024-03-27 12:56:01" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
