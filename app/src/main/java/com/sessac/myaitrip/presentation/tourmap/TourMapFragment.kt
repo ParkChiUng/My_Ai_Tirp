@@ -55,7 +55,7 @@ import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.util.DateUtil
 import com.sessac.myaitrip.util.PermissionUtil
-import com.sessac.myaitrip.util.repeatOnStarted
+import com.sessac.myaitrip.util.repeatOnCreated
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -698,7 +698,7 @@ class TourMapFragment
      */
     @SuppressLint("MissingPermission")
     private fun updateMyLocation() {
-        repeatOnStarted {
+        repeatOnCreated {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
 
             val grantedResult = PermissionUtil.requestPermissionResultByCoroutine(*LOCATION_PERMISSIONS)
