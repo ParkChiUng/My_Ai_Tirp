@@ -18,6 +18,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.sessac.myaitrip.GlideApp
 import com.sessac.myaitrip.R
 import com.sessac.myaitrip.common.CONTENT_ID_LIST
 import com.sessac.myaitrip.common.LIST_TYPE
@@ -25,7 +26,6 @@ import com.sessac.myaitrip.common.TOUR_CONTENT_ID
 import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.data.entities.remote.LocationBasedTourItem
 import com.sessac.myaitrip.databinding.FragmentHomeBinding
-import com.sessac.myaitrip.presentation.common.CustomProgressLoadingDialog
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
@@ -65,8 +65,6 @@ class HomeFragment :
     private lateinit var userId: String
     private lateinit var tourLikeList: MutableList<String>
 
-    private lateinit var progressLoadingDialog: CustomProgressLoadingDialog
-
     private val homeViewModel: HomeViewModel by viewModels() { ViewModelFactory() }
 
     private lateinit var mContext: Context
@@ -85,8 +83,6 @@ class HomeFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        progressLoadingDialog = CustomProgressLoadingDialog(requireContext())
 
         areaList = resources.getStringArray(R.array.areas_home)
         cityName = areaList[0]
@@ -372,7 +368,7 @@ class HomeFragment :
                             }
                         }
 
-                        progressLoadingDialog.dismissDialog() // 로딩 다이얼로그 사라지게
+                        binding.ivHomeNearbyRecommendLoading.visibility = View.GONE // 로딩 창 안보이게
 
                         nearbyAdapter.setTourList(tourList)
                         nearbyRecyclerView.scrollToPosition(0)
@@ -383,7 +379,12 @@ class HomeFragment :
                     }
 
                     is UiState.Loading -> {
-                        progressLoadingDialog.showDialog() // 로딩 다이얼로그
+                        with(binding) {
+                            ivHomeNearbyRecommendLoading.visibility = View.VISIBLE // 로딩 창 보이게
+                            GlideApp.with(ivHomeNearbyRecommendLoading.context)
+                                .load(R.drawable.progress_animation)
+                                .into(ivHomeNearbyRecommendLoading)
+                        }
                     }
 
                     else -> {}
