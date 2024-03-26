@@ -1,5 +1,6 @@
 package com.sessac.myaitrip.data.repository.tour.local
 
+import android.text.TextUtils.replace
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.io.IOException
 
 class TourLocalDataSource(
@@ -64,50 +66,44 @@ class TourLocalDataSource(
             val recommendMap = hashMapOf<String, MutableList<TourItem>>()
 
             response.text?.let { responseText ->
-                Log.e("Gemini", responseText)
+//                Log.e("Gemini", responseText.replace(Regex("\\d+\\."), "").trim())
 
                 // key : 지역
                 // value: 지역 별 추천 관광지 목록
 
-                responseText.replace("**", "")  // 마크다운 형태 제거
-                    .lines()
-                    .filter { it.isNotBlank() }
-                    .forEach {
-                        Log.e("gemini", "response Line = $it")
-                        val locationName = it.split(": ")[0]
-                        Log.e("gemini", "locationName = $locationName")
-                        val locationAreaCode = CONTENT_TYPE_ID_AREA[locationName]
-                        Log.e("gemini","areaCode = $locationAreaCode")
+                val jsonObject = JSONObject(responseText.replace("```", "").replace("json", ""))
+                val keys = jsonObject.keys().forEach { locationName ->
+                    Log.e("gemini", "locationName = $locationName")
 
-                        val tourText = it.split(": ")[1]
-                        val keywords = tourText.split(", ")
-                        Log.e("gemini", "keywords = $keywords")
+                    val locationAreaCode = CONTENT_TYPE_ID_AREA[locationName]
+                    Log.e("gemini","areaCode = $locationAreaCode")
 
-                        keywords.forEach { keyword ->
-//                            Log.e("gemini", "keyword = $keyword")
-                            locationAreaCode?.let { areaCode ->
-                                tourDao.getRecommendTourList(keyword, areaCode)
-                                    .filter { tourItem -> tourItem.areaCode == locationAreaCode && tourItem.title.contains(keyword) }   // 지역에 해당하는 관광지로만
-                                    .filter { tourItem -> tourItem.firstImage.isNotBlank() || tourItem.firstImage2.isNotBlank() }   // 이미지가 있는 관광지만
-                                    .also { tourList ->
-                                        // keyword를 포함하는 관광지 리스트
+                    val keywords = jsonObject.getString(locationName).split(", ")
+
+                    keywords.forEach { keyword ->
+                            Log.e("gemini", "keyword = $keyword")
+                        locationAreaCode?.let { areaCode ->
+                            tourDao.getRecommendTourList(keyword, areaCode)
+                                .filter { tourItem -> tourItem.areaCode == locationAreaCode && tourItem.title.contains(keyword) }   // 지역에 해당하는 관광지로만
+                                .filter { tourItem -> tourItem.firstImage.isNotBlank() || tourItem.firstImage2.isNotBlank() }   // 이미지가 있는 관광지만
+                                .also { tourList ->
+                                    // keyword를 포함하는 관광지 리스트
 //                                        Log.e("gemini", "KeywordItems = $it")
-                                        if(tourList.isNotEmpty()) {
-                                            if(recommendMap[locationName] == null) {
-                                                recommendMap[locationName] = mutableListOf()
-                                            }
+                                    if(tourList.isNotEmpty()) {
+                                        if(recommendMap[locationName] == null) {
+                                            recommendMap[locationName] = mutableListOf()
+                                        }
 
-                                            recommendMap[locationName]?.let {
-                                                it.addAll(tourList)
-                                            } ?: {
-                                                recommendMap[locationName] = mutableListOf()
-                                                recommendMap[locationName]!!.addAll(tourList)
-                                            }
+                                        recommendMap[locationName]?.addAll(tourList) ?: {
+                                            recommendMap[locationName] = mutableListOf()
+                                            recommendMap[locationName]!!.addAll(tourList)
                                         }
                                     }
-                            }
+                                }
                         }
                     }
+
+                }
             }
             recommendMap
         }

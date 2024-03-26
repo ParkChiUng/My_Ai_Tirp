@@ -9,6 +9,9 @@ import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.databinding.ItemAiRecommendTourBinding
 import com.sessac.myaitrip.util.GlideUtil
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import reactivecircus.flowbinding.android.view.clicks
 
 class AIRecommendTourAdapter(
     private val onItemClick: (TourItem) -> (Unit),
@@ -29,21 +32,21 @@ class AIRecommendTourAdapter(
     }
 
     inner class AIRecommendTourViewHolder(private val binding: ItemAiRecommendTourBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(tour: TourItem) {
+        fun bind(tourItem: TourItem) {
             with(binding) {
-                if(tour.firstImage.isNotEmpty()) {
-                    GlideUtil.loadImage(ivItemAiTourImg.context, tour.firstImage, ivItemAiTourImg)
-                } else if(tour.firstImage2.isNotEmpty()) {
-                    GlideUtil.loadImage(ivItemAiTourImg.context, tour.firstImage2, ivItemAiTourImg)
+                if(tourItem.firstImage.isNotEmpty()) {
+                    GlideUtil.loadImage(ivItemAiTourImg.context, tourItem.firstImage, ivItemAiTourImg)
+                } else if(tourItem.firstImage2.isNotEmpty()) {
+                    GlideUtil.loadImage(ivItemAiTourImg.context, tourItem.firstImage2, ivItemAiTourImg)
                 } else {
                     // 이미지 없음
                 }
 
-                tvItemAiTourTitle.text = tour.title
+                tvItemAiTourTitle.text = tourItem.title
 
-                tvItemAiTourAddress.text = tour.address
+                tvItemAiTourAddress.text = tourItem.address
 
-                tvItemAiTourType.text= when(tour.contentTypeId) {
+                tvItemAiTourType.text= when(tourItem.contentTypeId) {
                     // 12:관광지, 14:문화시설, 15:축제공연행사, 25:여행코스, 28:레포츠, 32:숙박, 38:쇼핑, 39:음식점)
                     "12" -> "관광지"
                     "14" -> "문화시설"
@@ -54,6 +57,12 @@ class AIRecommendTourAdapter(
                     "38" -> "쇼핑"
                     else -> "음식점"
                 }
+
+
+                // 클릭 리스너 연결
+                root.clicks().onEach {
+                    onItemClick(tourItem)
+                }.launchIn(scope)
             }
         }
     }
