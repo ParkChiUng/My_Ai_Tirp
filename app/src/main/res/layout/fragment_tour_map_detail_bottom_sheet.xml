@@ -63,30 +63,34 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_tour_detail_bottom_sheet_address"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="150dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
         android:ellipsize="end"
-        android:maxLines="2"
+        android:maxLines="1"
         android:textColor="@color/black"
         android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_tour_detail_bottom_sheet_type"
         tools:text="서울시 종로구 123 123" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_tour_detail_bottom_sheet_sub_address"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:visibility="gone"
         android:ellipsize="end"
+        app:layout_constraintEnd_toEndOf="@id/tv_tour_detail_bottom_sheet_address"
         android:maxLines="1"
         android:textSize="14sp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/tv_tour_detail_bottom_sheet_address"
         app:layout_constraintTop_toBottomOf="@+id/tv_tour_detail_bottom_sheet_address"
-        tools:text="상세 주소" />
+        tools:text="상세 주소"
+        tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_tour_detail_bottom_sheet_distance"
@@ -96,6 +100,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/main_blue"
+        app:layout_constraintEnd_toEndOf="@id/tv_tour_detail_bottom_sheet_address"
         app:layout_constraintStart_toStartOf="@+id/tv_tour_detail_bottom_sheet_sub_address"
         app:layout_constraintTop_toBottomOf="@+id/tv_tour_detail_bottom_sheet_sub_address"
         tools:text="내 위치와 0.4km 떨어져 있어요!" />
@@ -104,13 +109,13 @@
         android:id="@+id/iv_tour_detail_bottom_sheet_like"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="4dp"
-        android:tint="@color/gray_500"
-        app:layout_constraintDimensionRatio="1:1"
-        android:layout_marginBottom="16dp"
         android:layout_marginStart="4dp"
-        app:layout_constraintEnd_toStartOf="@+id/tv_tour_detail_bottom_sheet_like_count"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="16dp"
+        android:tint="@color/gray_500"
         app:layout_constraintBottom_toBottomOf="@id/iv_tour_detail_bottom_sheet_img"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@+id/tv_tour_detail_bottom_sheet_like_count"
         app:layout_constraintStart_toStartOf="@id/tv_tour_detail_bottom_sheet_distance"
         app:srcCompat="@drawable/ic_like" />
 
