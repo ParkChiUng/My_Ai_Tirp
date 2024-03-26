@@ -28,21 +28,14 @@ class ViewModelFactory : ViewModelProvider.Factory {
         val dataStore = MyAiTripApplication.getInstance().getDataStore()
         val tourDao = MyAiTripApplication.getRoomDatabase().tourDao()
         val tourApiService = MyAiTripApplication.getTourApiService()
+        val userRepository = UserRepository(UserLocalDataSource(dataStore.userDataStore), UserRemoteDataSource())
 
         return when {
             modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
-                val userLocalDataSource = UserLocalDataSource(dataStore.userDataStore)
-                val userRemoteDataSource = UserRemoteDataSource()
-                val userRepository = UserRepository(userLocalDataSource, userRemoteDataSource)
-
                 LoginViewModel(userRepository) as T
             }
 
             modelClass.isAssignableFrom(RegisterViewModel::class.java) -> {
-                val userLocalDataSource = UserLocalDataSource(dataStore.userDataStore)
-                val userRemoteDataSource = UserRemoteDataSource()
-                val userRepository = UserRepository(userLocalDataSource, userRemoteDataSource)
-
                 RegisterViewModel(userRepository) as T
             }
 
@@ -84,7 +77,7 @@ class ViewModelFactory : ViewModelProvider.Factory {
                     tourRemoteDataSource
                 )
 
-                HomeViewModel(tourRepository) as T
+                HomeViewModel(tourRepository, userRepository) as T
             }
 
             modelClass.isAssignableFrom(TourDetailViewModel::class.java) -> {
@@ -96,7 +89,7 @@ class ViewModelFactory : ViewModelProvider.Factory {
                     tourLocalDataSource,
                     tourRemoteDataSource
                 )
-                TourDetailViewModel(tourRepository) as T
+                TourDetailViewModel(tourRepository, userRepository) as T
             }
 
             modelClass.isAssignableFrom(ToursViewModel::class.java) -> {
@@ -108,7 +101,7 @@ class ViewModelFactory : ViewModelProvider.Factory {
                     tourLocalDataSource,
                     tourRemoteDataSource
                 )
-                ToursViewModel(tourRepository) as T
+                ToursViewModel(tourRepository, userRepository) as T
             }
 
             modelClass.isAssignableFrom(DiaryViewModel::class.java) -> {

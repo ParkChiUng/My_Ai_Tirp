@@ -7,6 +7,7 @@ import android.widget.ProgressBar
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.sessac.myaitrip.MainActivity
+import com.sessac.myaitrip.common.API_ERROR_MASSAGE
 import com.sessac.myaitrip.common.DEFAULT_NUM_OF_ROWS
 import com.sessac.myaitrip.common.DEFAULT_PAGE_NUMBER
 import com.sessac.myaitrip.common.DEFAULT_TOTAL_COUNT
@@ -14,6 +15,8 @@ import com.sessac.myaitrip.databinding.ActivityProgressBinding
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseActivity
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
+import com.sessac.myaitrip.util.repeatOnCreated
+import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -38,7 +41,7 @@ class ProgressActivity :
     }
 
     private fun setUpCollect() {
-        lifecycleScope.launch {
+        repeatOnCreated {
             progressViewModel.tourPreferenceStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Success -> {
@@ -50,7 +53,7 @@ class ProgressActivity :
                     is UiState.Error -> {
                         errorCount++
                         if (errorCount >= 3) {
-                            Log.e("TourAPI HandleState", "API 연결이 5번 실패했습니다.")
+                            showToast(API_ERROR_MASSAGE)
                             moveToMain()
                         } else {
                             delay(2000)
@@ -78,24 +81,24 @@ class ProgressActivity :
          * 처음 설치 시, 아이템이 늘어난 경우, 마지막으로 저장한 pageNumber가 마지막이 아닌 경우 전체 리스트 조회 및 저장
          *
          */
-        lifecycleScope.launch {
+        repeatOnCreated {
             progressViewModel.tourApiStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Success -> {
                         val response = state.data.response.body
 
-                        val totalCount: Int = response.totalCount ?: 0
-                        val lastPageNumber =
-                            (totalCount + (DEFAULT_NUM_OF_ROWS - DEFAULT_PAGE_NUMBER)) / DEFAULT_NUM_OF_ROWS
+                        val totalCount: Int = response.totalCount
+                        val lastPageNumber = (totalCount + (DEFAULT_NUM_OF_ROWS - DEFAULT_PAGE_NUMBER)) / DEFAULT_NUM_OF_ROWS
 
                         if (checkTourItemFromApi(totalCount, lastPageNumber)) {
                             ++prefPageNumber
                             prefTotalCount = totalCount
                             getTourItemFromApi()
                         } else {
-                            progressViewModel.updateTourPreference(prefTotalCount, prefPageNumber)
                             moveToMain()
                         }
+
+                        progressViewModel.updateTourPreference(prefTotalCount, prefPageNumber)
 
                         response.items?.item?.takeIf { response.numOfRows == numOfRows }?.let {
                             progressViewModel.insertTour(it)
@@ -107,7 +110,7 @@ class ProgressActivity :
                         Log.e("TourAPI HandleState", "${state.errorMessage}")
                         errorCount++
                         if (errorCount >= 3) {
-                            Log.e("TourAPI HandleState", "API 연결이 5번 실패했습니다.")
+                            showToast(API_ERROR_MASSAGE)
                             moveToMain()
                         } else {
                             delay(2000)
@@ -149,12 +152,9 @@ class ProgressActivity :
 
     private fun updateProgress(progress: Int, max: Int) {
         val percentage = (progress.toFloat() / max.toFloat() * 100).toInt()
-        with(progressBar) {
-            this.max = max
-            this.progress = progress
-        }
-
         with(binding) {
+            progressBar.max = max
+            progressBar.progress = progress
             progressPercent.text = "$percentage%"
             progressCounting.text = "$progress / $max"
         }
