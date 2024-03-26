@@ -57,7 +57,6 @@ class TourDetailFragment :
         removeBottomNav()
         setUpCollect()
         getTourApi()
-        addCountingFromFireBase()
         clickEventHandler()
         getUserId()
         setupUserCollect()
@@ -242,6 +241,8 @@ class TourDetailFragment :
                     is UiState.Success -> {
                         tourItem = state.data
                         binding.tvTour.text = tourItem?.title
+
+                        addCountingFromFireBase()
                     }
 
                     is UiState.Error -> {
