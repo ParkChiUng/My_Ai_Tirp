@@ -34,7 +34,7 @@ import com.sessac.myaitrip.util.showToast
 class DiaryFragment :
     ViewBindingBaseFragment<FragmentDiaryBinding>(FragmentDiaryBinding::inflate) {
 
-    private val diaryViewModel: DiaryViewModel by viewModels() { ViewModelFactory(requireContext()) }
+    private val diaryViewModel: DiaryViewModel by viewModels() { ViewModelFactory() }
     private lateinit var bottomNav: BottomNavigationView
     private lateinit var imageSliderAdapter: ImageSliderAdapter
     private lateinit var userImageRecyclerView: RecyclerView

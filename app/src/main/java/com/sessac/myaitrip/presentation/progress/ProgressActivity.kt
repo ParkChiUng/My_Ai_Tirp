@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 class ProgressActivity :
     ViewBindingBaseActivity<ActivityProgressBinding>({ ActivityProgressBinding.inflate(it) }) {
 
-    private val progressViewModel: ProgressViewModel by viewModels() { ViewModelFactory(this) }
+    private val progressViewModel: ProgressViewModel by viewModels() { ViewModelFactory() }
     private lateinit var progressBar: ProgressBar
 
     private var prefTotalCount = DEFAULT_TOTAL_COUNT

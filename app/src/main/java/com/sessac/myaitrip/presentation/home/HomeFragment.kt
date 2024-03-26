@@ -51,7 +51,7 @@ class HomeFragment :
     private lateinit var userId: String
     private lateinit var tourLikeList: MutableList<String>
 
-    private val homeViewModel: HomeViewModel by viewModels() { ViewModelFactory(requireContext()) }
+    private val homeViewModel: HomeViewModel by viewModels() { ViewModelFactory() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -39,7 +39,7 @@ class ToursFragment :
     private lateinit var userId: String
     private lateinit var tourLikeList: MutableList<String>
 
-    private val toursViewModel: ToursViewModel by viewModels() { ViewModelFactory(requireContext()) }
+    private val toursViewModel: ToursViewModel by viewModels() { ViewModelFactory() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

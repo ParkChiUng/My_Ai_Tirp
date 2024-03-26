@@ -1,23 +1,32 @@
 package com.sessac.myaitrip.data.repository.tour.local
 
+import android.text.TextUtils.replace
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.sessac.myaitrip.common.CONTENT_TYPE_ID_AREA
 import com.sessac.myaitrip.common.DEFAULT_PAGE_NUMBER
 import com.sessac.myaitrip.common.DEFAULT_TOTAL_COUNT
+import com.sessac.myaitrip.common.MyAiTripApplication
+import com.sessac.myaitrip.data.database.TourDao
+import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.data.entities.local.TourPreferencesData
 import com.sessac.myaitrip.data.repository.tour.local.TourLocalDataSource.TourPreferenceKeys.KEY_PAGE_NUMBER
 import com.sessac.myaitrip.data.repository.tour.local.TourLocalDataSource.TourPreferenceKeys.KEY_TOTAL_COUNT
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.io.IOException
 
 class TourLocalDataSource(
-    private val tourDataStore: DataStore<Preferences>
+    private val tourDataStore: DataStore<Preferences>,
+    private val tourDao: TourDao
 ) : ITourLocalDataSource {
     private object TourPreferenceKeys {
         val KEY_TOTAL_COUNT = intPreferencesKey("TOTAL_COUNT")
@@ -47,6 +56,56 @@ class TourLocalDataSource(
         tourDataStore.edit { preferences ->
             preferences[KEY_TOTAL_COUNT] = totalCount
             preferences[KEY_PAGE_NUMBER] = pagerNumber
+        }
+    }
+
+    override suspend fun getAIRecommendMap(prompt: String): Map<String, List<TourItem>> {
+        val response = MyAiTripApplication.getGeminiModel().generateContent(prompt)
+
+        return withContext(Dispatchers.IO) {
+            val recommendMap = hashMapOf<String, MutableList<TourItem>>()
+
+            response.text?.let { responseText ->
+//                Log.e("Gemini", responseText.replace(Regex("\\d+\\."), "").trim())
+
+                // key : 지역
+                // value: 지역 별 추천 관광지 목록
+
+                val jsonObject = JSONObject(responseText.replace("```", "").replace("json", ""))
+                val keys = jsonObject.keys().forEach { locationName ->
+                    Log.e("gemini", "locationName = $locationName")
+
+                    val locationAreaCode = CONTENT_TYPE_ID_AREA[locationName]
+                    Log.e("gemini","areaCode = $locationAreaCode")
+
+                    val keywords = jsonObject.getString(locationName).split(", ")
+
+                    keywords.forEach { keyword ->
+                            Log.e("gemini", "keyword = $keyword")
+                        locationAreaCode?.let { areaCode ->
+                            tourDao.getRecommendTourList(keyword, areaCode)
+                                .filter { tourItem -> tourItem.areaCode == locationAreaCode && tourItem.title.contains(keyword) }   // 지역에 해당하는 관광지로만
+                                .filter { tourItem -> tourItem.firstImage.isNotBlank() || tourItem.firstImage2.isNotBlank() }   // 이미지가 있는 관광지만
+                                .also { tourList ->
+                                    // keyword를 포함하는 관광지 리스트
+//                                        Log.e("gemini", "KeywordItems = $it")
+                                    if(tourList.isNotEmpty()) {
+                                        if(recommendMap[locationName] == null) {
+                                            recommendMap[locationName] = mutableListOf()
+                                        }
+
+                                        recommendMap[locationName]?.addAll(tourList) ?: {
+                                            recommendMap[locationName] = mutableListOf()
+                                            recommendMap[locationName]!!.addAll(tourList)
+                                        }
+                                    }
+                                }
+                        }
+                    }
+
+                }
+            }
+            recommendMap
         }
     }
 }

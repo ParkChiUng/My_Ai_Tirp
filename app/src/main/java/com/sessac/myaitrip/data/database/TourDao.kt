@@ -17,6 +17,12 @@ interface TourDao {
 //    fun getContentIdByTitle(title: String): List<String>
 
     /**
+     * [Room DB] keyword를 포함하는 관광지 리스트 조회
+     */
+    @Query("SELECT * FROM tbl_tour WHERE title LIKE '%' || :keyword || '%' AND areaCode = :area")
+    fun getRecommendTourList(keyword: String, area: String): List<TourItem>
+
+    /**
      * [Room DB] contentId 1개의 관광지 리스트 조회
      */
     @Query("SELECT * FROM tbl_tour WHERE contentId IN (:contentId) AND firstImage != ''")

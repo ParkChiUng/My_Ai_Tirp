@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 class LoginActivity :
     ViewBindingBaseActivity<ActivityLoginBinding>({ ActivityLoginBinding.inflate(it) }) {
 
-    private val loginViewModel: LoginViewModel by viewModels() { ViewModelFactory(this) }
+    private val loginViewModel: LoginViewModel by viewModels() { ViewModelFactory() }
 
     private lateinit var userEmail: String
     private lateinit var userPassword: String

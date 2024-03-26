@@ -33,11 +33,11 @@
 
     <fragment
         android:id="@+id/AIRecommendFragment"
-        android:name="com.sessac.myaitrip.presentation.AIRecommendFragment"
+        android:name="com.sessac.myaitrip.presentation.airecommend.AIRecommendFragment"
         android:label="fragment_AIRecommend"
-        tools:layout="@layout/fragment_home">
+        tools:layout="@layout/fragment_ai_recommend">
         <action
-            android:id="@+id/action_AIRecommendFragment_to_TourDetailFragment"
+            android:id="@+id/action_AIRecommend_to_TourDetail"
             app:destination="@id/TourDetailFragment" />
     </fragment>
 

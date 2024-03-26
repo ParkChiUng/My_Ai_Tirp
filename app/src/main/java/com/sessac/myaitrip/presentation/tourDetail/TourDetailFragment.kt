@@ -29,7 +29,9 @@ import kotlinx.coroutines.launch
 class TourDetailFragment :
     ViewBindingBaseFragment<FragmentTourDetailBinding>(FragmentTourDetailBinding::inflate) {
 
-    private val tourDetailViewModel: TourDetailViewModel by viewModels { ViewModelFactory(requireContext())}
+    private val tourDetailViewModel: TourDetailViewModel by viewModels {
+        ViewModelFactory()
+    }
 
     private var tourItem: TourItem? = null
     private lateinit var bottomNav: BottomNavigationView
