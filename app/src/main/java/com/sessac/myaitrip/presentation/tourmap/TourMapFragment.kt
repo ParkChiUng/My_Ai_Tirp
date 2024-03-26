@@ -558,10 +558,10 @@ class TourMapFragment
             minZoom = 6.0
             maxZoom = 18.0
 
-            setOnSymbolClickListener { symbol ->
-                mContext.showToast(symbol.caption)
-                true
-            }
+//            setOnSymbolClickListener { symbol ->
+//                mContext.showToast(symbol.caption)
+//                true
+//            }
 
             // 카메라가 움직일 때 이벤트 처리 리스너
             addOnCameraChangeListener { reason, animated ->
