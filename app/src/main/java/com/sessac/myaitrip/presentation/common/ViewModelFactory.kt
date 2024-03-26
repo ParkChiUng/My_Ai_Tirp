@@ -126,6 +126,19 @@ class ViewModelFactory : ViewModelProvider.Factory {
                 AIRecommendViewModel(tourRepository) as T
             }
 
+            modelClass.isAssignableFrom(TourDetailBottomSheetViewModel::class.java) -> {
+                val tourLocalDataSource = TourLocalDataSource(dataStore.tourDataStore, tourDao)
+                val tourRemoteDataSource = TourRemoteDataSource()
+                val tourRepository = TourRepository(
+                    tourDao,
+                    tourApiService,
+                    tourLocalDataSource,
+                    tourRemoteDataSource
+                )
+
+                TourDetailBottomSheetViewModel(tourRepository) as T
+            }
+
             else -> {
                 throw IllegalArgumentException("Failed to create ViewModel : ${modelClass.name}")
             }

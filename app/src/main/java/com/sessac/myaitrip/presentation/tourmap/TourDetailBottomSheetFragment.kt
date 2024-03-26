@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.naver.maps.map.overlay.Marker
@@ -12,17 +13,24 @@ import com.sessac.myaitrip.R
 import com.sessac.myaitrip.data.entities.TourClusterItemData
 import com.sessac.myaitrip.data.entities.TourClusterItemKey
 import com.sessac.myaitrip.databinding.FragmentTourMapDetailBottomSheetBinding
+import com.sessac.myaitrip.presentation.common.TourDetailBottomSheetViewModel
+import com.sessac.myaitrip.presentation.common.UiState
+import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.util.GlideUtil
+import com.sessac.myaitrip.util.repeatOnCreated
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import reactivecircus.flowbinding.android.view.clicks
 
 class TourDetailBottomSheetFragment(
+    private val tourKey: TourClusterItemKey,
     private val tourData: TourClusterItemData,
     private val positionMarker: Marker? = null,
     val itemClick: () -> Unit
     ): BottomSheetDialogFragment() {
 
+    private val tourDetailBottomSheetViewModel: TourDetailBottomSheetViewModel by viewModels { ViewModelFactory() }
 
     private var _binding: FragmentTourMapDetailBottomSheetBinding? = null
     private val binding get() = _binding!!
@@ -55,6 +63,9 @@ class TourDetailBottomSheetFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupViewCountCollection()  // 조회수 Collector
+        tourDetailBottomSheetViewModel.getTourViewCount(tourKey.contentId)  // 조회수 가져오기
+
         with(binding) {
             tvTourDetailBottomSheetTitle.text = tourData.title // 제목
             tvTourDetailBottomSheetAddress.text = tourData.address
@@ -73,14 +84,27 @@ class TourDetailBottomSheetFragment(
             else if(tourData.subImageUrl.isNotEmpty())
                 GlideUtil.loadImage(ivTourDetailBottomSheetImg.context, tourData.subImageUrl, ivTourDetailBottomSheetImg)
 
-            // TODO. 좋아요 개수 or 조회수
-//            tvTourDetailBottomSheetLikeCount
 
             root.clicks().onEach {
                 itemClick()
 
                 dismiss()
             }.launchIn(lifecycleScope)
+        }
+    }
+
+    private fun setupViewCountCollection() {
+        repeatOnCreated {
+            tourDetailBottomSheetViewModel.viewCountStatus.collectLatest { state ->
+                when(state) {
+                    is UiState.Loading -> {}
+                    is UiState.Success -> {
+                        binding.tvTourDetailBottomSheetViewCount.text = state.data.toString()
+                    }
+                    is UiState.Error -> {}
+                    else -> {}
+                }
+            }
         }
     }
 

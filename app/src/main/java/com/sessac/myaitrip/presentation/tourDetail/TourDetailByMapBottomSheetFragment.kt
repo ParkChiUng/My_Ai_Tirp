@@ -5,12 +5,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.naver.maps.geometry.LatLng
 import com.sessac.myaitrip.R
 import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.databinding.FragmentTourMapDetailBottomSheetBinding
+import com.sessac.myaitrip.presentation.common.TourDetailBottomSheetViewModel
+import com.sessac.myaitrip.presentation.common.UiState
+import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.util.GlideUtil
+import com.sessac.myaitrip.util.repeatOnCreated
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -22,6 +32,8 @@ class TourDetailByMapBottomSheetFragment(
     private val tourData: TourItem,
     private val myLocatePosition: LatLng? = null
 ): BottomSheetDialogFragment() {
+
+    private val tourDetailBottomSheetViewModel: TourDetailBottomSheetViewModel by viewModels { ViewModelFactory() }
 
     private var _binding: FragmentTourMapDetailBottomSheetBinding? = null
     private val binding get() = _binding!!
@@ -49,6 +61,9 @@ class TourDetailByMapBottomSheetFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupViewCountCollection()  // 조회수 Collector
+        tourDetailBottomSheetViewModel.getTourViewCount(tourData.contentId) // 조회수 가져오기
+
         with(binding) {
             tvTourDetailBottomSheetTitle.text = tourData.title // 제목
             tvTourDetailBottomSheetAddress.text = tourData.address
@@ -62,10 +77,12 @@ class TourDetailByMapBottomSheetFragment(
 
             tvTourDetailBottomSheetDistance.visibility = View.GONE
 
-            calculateDistance()?.let {
-                Log.e("calculateDistance", "calculateDistance() = $it")
-                tvTourDetailBottomSheetDistance.visibility = View.VISIBLE
-                tvTourDetailBottomSheetDistance.text = resources.getString(R.string.distance_format, it) // 거리
+            lifecycleScope.launch {
+                calculateDistance()?.let {
+                    Log.e("calculateDistance", "calculateDistance() = $it")
+                    tvTourDetailBottomSheetDistance.visibility = View.VISIBLE
+                    tvTourDetailBottomSheetDistance.text = resources.getString(R.string.distance_format, it) // 거리
+                }
             }
 
             // 관광지 이미지
@@ -74,23 +91,38 @@ class TourDetailByMapBottomSheetFragment(
             else if(tourData.firstImage2.isNotEmpty())
                 GlideUtil.loadImage(ivTourDetailBottomSheetImg.context, tourData.firstImage2, ivTourDetailBottomSheetImg)
 
-            // TODO. 좋아요 개수 or 조회수
-//            tvTourDetailBottomSheetLikeCount
         }
     }
 
-    fun calculateDistance(): Double? {
+    private fun setupViewCountCollection() {
+        repeatOnCreated {
+            tourDetailBottomSheetViewModel.viewCountStatus.collectLatest { state ->
+                when(state) {
+                    is UiState.Loading -> {}
+                    is UiState.Success -> {
+                        binding.tvTourDetailBottomSheetViewCount.text = state.data.toString()
+                    }
+                    is UiState.Error -> {}
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private suspend fun calculateDistance() = withContext(Dispatchers.IO) {
         myLocatePosition?.let { myLocation ->
             val earthRadius = 6371.01 // 지구 반지름 (킬로미터 단위)
 
             val dLat = Math.toRadians(abs(myLocation.latitude - tourData.mapY.toDouble()))
             val dLon = Math.toRadians(abs(myLocation.longitude - tourData.mapX.toDouble()))
 
-            val a = sin(dLat / 2).pow(2.0) + cos(Math.toRadians(myLocation.latitude)) * cos(Math.toRadians(tourData.mapY.toDouble())) * sin(dLon / 2).pow(2.0)
+            val a = sin(dLat / 2).pow(2.0) + cos(Math.toRadians(myLocation.latitude)) * cos(
+                Math.toRadians(tourData.mapY.toDouble())
+            ) * sin(dLon / 2).pow(2.0)
             val c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
-            return earthRadius * c
-        } ?: return null
+            return@withContext earthRadius * c
+        } ?: return@withContext null
     }
 
     override fun onDestroyView() {

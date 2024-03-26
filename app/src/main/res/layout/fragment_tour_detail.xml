@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl_top"
@@ -32,173 +33,188 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.97" />
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
-        android:elevation="@dimen/card_elevation"
-        app:navigationIcon="@drawable/ic_back"
-        app:layout_constraintTop_toTopOf="parent"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_tour_detail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tv_tour"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:textSize="@dimen/f_home_tv_text_size" />
-    </com.google.android.material.appbar.MaterialToolbar>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_tour"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/f_home_rcv_margin_top"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintLeft_toLeftOf="@id/gl_left"
-        app:layout_constraintRight_toRightOf="@id/gl_right"
-        app:layout_constraintBottom_toTopOf="@id/layout_tools"
-        app:layout_constraintVertical_weight="2">
-
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/vp_tour"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <me.relex.circleindicator.CircleIndicator3
-            android:id="@+id/layout_Indicators"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:paddingBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="@id/vp_tour"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_like"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:tag="false"
-            android:layout_margin="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:src="@drawable/ic_like_white"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_tools"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/layout_tour"
-        app:layout_constraintLeft_toLeftOf="@id/gl_left"
-        app:layout_constraintRight_toRightOf="@id/gl_right"
-        app:layout_constraintBottom_toTopOf="@id/layout_description"
-        app:layout_constraintVertical_weight="0.5">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_map"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/tour_detail_map"
-                android:textColor="@color/black"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                app:strokeColor="@android:color/black"
-                app:strokeWidth="0.5dp"
-                android:drawableEnd="@drawable/ic_map"
-                style="?attr/materialButtonOutlinedStyle" />
-            <View
-                android:layout_width="8dp"
-                android:layout_height="match_parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_diary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/tour_detail_diary"
-                android:textColor="@color/black"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                app:strokeColor="@android:color/black"
-                app:strokeWidth="0.5dp"
-                android:drawableEnd="@drawable/ic_diary"
-                style="?attr/materialButtonOutlinedStyle" />
-
-            <View
-                android:layout_width="8dp"
-                android:layout_height="match_parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_share"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/tour_detail_share"
-                android:textColor="@color/black"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                app:strokeColor="@android:color/black"
-                app:strokeWidth="0.5dp"
-                android:drawableEnd="@drawable/ic_share"
-                style="?attr/materialButtonOutlinedStyle" />
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_description"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/layout_tools"
-        app:layout_constraintLeft_toLeftOf="@id/gl_left"
-        app:layout_constraintRight_toRightOf="@id/gl_right"
-        app:layout_constraintBottom_toTopOf="@id/gl_bottom"
-        app:layout_constraintVertical_weight="3">
-
-        <com.google.android.material.textfield.TextInputLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_tour_detail"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white"
+            app:navigationIcon="@drawable/ic_back">
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tv_description"
-                    android:layout_width="match_parent"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_tour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/f_home_tv_text_size"
+                android:textStyle="bold" />
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        app:layout_constraintTop_toBottomOf="@+id/appbar_tour_detail"
+        app:layout_constraintStart_toStartOf="@id/gl_left"
+        app:layout_constraintEnd_toEndOf="@id/gl_right"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="12dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/vp_tour"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="10:6"
+                android:scaleType="centerCrop"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
+
+            <me.relex.circleindicator.CircleIndicator3
+                android:id="@+id/layout_Indicators"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="@id/vp_tour"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_like"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:tag="false"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="@id/vp_tour"
+                app:layout_constraintRight_toRightOf="@id/vp_tour"
+                android:src="@drawable/ic_like_white"/>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_tour_detail_address"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="12dp"
+                app:layout_constraintTop_toBottomOf="@id/vp_tour"
+                app:layout_constraintStart_toStartOf="@id/vp_tour"
+                android:src="@drawable/ic_address"
+                app:tint="@color/gray_600"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_tour_detail_address"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:padding="12dp"
+                android:background="@drawable/rectangle_fill_gray_border_r20"
+                android:textAlignment="center"
+                tools:text="서울특별시 동대문구 청량리한양수자인 12345677890"
+                android:layout_marginEnd="4dp"
+                app:layout_constraintTop_toTopOf="@id/iv_tour_detail_address"
+                app:layout_constraintBottom_toBottomOf="@id/iv_tour_detail_address"
+                app:layout_constraintStart_toEndOf="@id/iv_tour_detail_address"
+                app:layout_constraintEnd_toEndOf="@id/vp_tour" />
+
+            <LinearLayout
+                android:id="@+id/layout_tour_detail_tools"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_tour_detail_address">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_map"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableEnd="@drawable/ic_map"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="@string/tour_detail_map"
                     android:textColor="@color/black"
-                    android:background="@drawable/button_border"
-                    android:enabled="false"/>
-            </ScrollView>
+                    app:strokeColor="@android:color/black"
+                    app:strokeWidth="0.5dp" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_diary"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableEnd="@drawable/ic_diary"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="@string/tour_detail_diary"
+                    android:textColor="@color/black"
+                    app:strokeColor="@android:color/black"
+                    app:strokeWidth="0.5dp" />
 
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_share"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableEnd="@drawable/ic_share"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="@string/tour_detail_share"
+                    android:textColor="@color/black"
+                    app:strokeColor="@android:color/black"
+                    app:strokeWidth="0.5dp" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_tour_detail_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:padding="16dp"
+                android:background="@drawable/rectangle_fill_gray_border_r20"
+                tools:text="서울특별시 동대문구 청량리한양수자인123123 12345677890321312312312312312312341241231231234124"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/layout_tour_detail_tools"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

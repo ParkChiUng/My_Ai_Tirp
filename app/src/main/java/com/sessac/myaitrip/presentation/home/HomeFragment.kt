@@ -1,6 +1,10 @@
 package com.sessac.myaitrip.presentation.home
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
@@ -8,18 +12,28 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.sessac.myaitrip.GlideApp
 import com.sessac.myaitrip.R
 import com.sessac.myaitrip.common.CONTENT_ID_LIST
 import com.sessac.myaitrip.common.LIST_TYPE
 import com.sessac.myaitrip.common.TOUR_CONTENT_ID
 import com.sessac.myaitrip.data.entities.TourItem
+import com.sessac.myaitrip.data.entities.remote.LocationBasedTourItem
 import com.sessac.myaitrip.databinding.FragmentHomeBinding
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.presentation.home.adapter.FullCardAdapter
 import com.sessac.myaitrip.presentation.home.adapter.SmallCardAdapter
+import com.sessac.myaitrip.util.PermissionUtil
 import com.sessac.myaitrip.util.repeatOnCreated
+import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -53,6 +67,20 @@ class HomeFragment :
 
     private val homeViewModel: HomeViewModel by viewModels() { ViewModelFactory() }
 
+    private lateinit var mContext: Context
+
+    // 위치
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
+
+    companion object {
+        private const val LOCATION_REQUEST_INTERVAL = 30 * 60 * 1000 // 30분
+        private val LOCATION_PERMISSIONS = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -62,12 +90,61 @@ class HomeFragment :
         tourLikeList = mutableListOf()
 
         init()
+
+        requestMyLocation()
     }
 
     private fun init() {
         getUserId()
         setupUserCollect()
         clickEventHandler()
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
+    /**
+     * Update my location
+     * 위치 권한이 있다면, 맵 실행시 사용자 현 위치로 이동
+     */
+    @SuppressLint("MissingPermission")
+    private fun requestMyLocation() {
+        lifecycleScope.launch {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
+
+            val grantedResult = PermissionUtil.requestPermissionResultByCoroutine(*LOCATION_PERMISSIONS)
+
+            if( grantedResult.isGranted ) {
+                val locationRequest = LocationRequest
+                    .Builder(Priority.PRIORITY_HIGH_ACCURACY, LOCATION_REQUEST_INTERVAL.toLong())
+                    .setWaitForAccurateLocation(false)
+                    .build()
+
+                locationCallback = object: LocationCallback() {
+                    override fun onLocationResult(locationResult: LocationResult) {
+                        super.onLocationResult(locationResult)
+
+                        locationResult.locations.forEachIndexed { _, location ->
+
+                            Log.e("Home 내 위치", "현재 위도 = ${location.latitude}, 경도 = ${location.longitude}")
+
+                            with(homeViewModel) {
+                                getRecommendAroundTourList(location.latitude.toString(), location.longitude.toString())
+                            }
+                        }
+                    }
+                }
+
+                fusedLocationClient.requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
+                    Looper.myLooper()
+                )
+            } else {
+                mContext.showToast("내 주변 관광지를 가져오려면, 위치 권한을 허용해주세요.")
+            }
+        }
     }
 
     private fun clickEventHandler() {
@@ -172,7 +249,6 @@ class HomeFragment :
          *
          * 1. popular   : 인기 관광지 리스트
          * 2. recommend : 추천 관광지 리스트
-         * 3. nearby    : 내 주변 추천 관광지 리스트
          */
         viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.fireBaseResult.collectLatest { state ->
@@ -226,7 +302,6 @@ class HomeFragment :
      *
      * 1. popular   : 인기 관광지 리스트
      * 2. recommend : 추천 관광지 리스트
-     * 3. nearby    : 내 주변 추천 관광지 리스트
      */
     private fun setupTourListCollect() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -281,11 +356,21 @@ class HomeFragment :
             }
         }
 
+        // 내 주변 관광지
         viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.nearbyTourList.collectLatest { state ->
                 when (state) {
                     is UiState.Success -> {
-                        nearbyAdapter.setTourList(state.data)
+                        val tourList = mutableListOf<TourItem>()
+                        state.data?.let { locationBasedTourItems: List<LocationBasedTourItem> ->
+                            locationBasedTourItems.forEach {
+                                tourList.add(it.toTourItem())
+                            }
+                        }
+
+                        binding.ivHomeNearbyRecommendLoading.visibility = View.GONE // 로딩 창 안보이게
+
+                        nearbyAdapter.setTourList(tourList)
                         nearbyRecyclerView.scrollToPosition(0)
                     }
 
@@ -294,7 +379,12 @@ class HomeFragment :
                     }
 
                     is UiState.Loading -> {
-
+                        with(binding) {
+                            ivHomeNearbyRecommendLoading.visibility = View.VISIBLE // 로딩 창 보이게
+                            GlideApp.with(ivHomeNearbyRecommendLoading.context)
+                                .load(R.drawable.progress_animation)
+                                .into(ivHomeNearbyRecommendLoading)
+                        }
                     }
 
                     else -> {}

@@ -28,7 +28,6 @@ data class LocationBasedTourItem(
     @SerializedName("modifiedtime") val modifiedTime: String,
     @SerializedName("sigungucode") val siGunGuCode: String,
     @SerializedName("tel") val telephone: String,
-    @SerializedName("zipcode") val zipCode: String
 ) {
     fun toMarkerKey() = TourClusterItemKey(
         contentId,
@@ -38,4 +37,8 @@ data class LocationBasedTourItem(
     fun toMarkerData() = TourClusterItemData(
         title, address, subAddress, contentTypeId, distance, imageUrl, subImageUrl
     )
+
+    fun toTourItem() = TourItem(
+        contentId, title, address, subAddress, areaCode, bookTour, category1, category2, category3, contentTypeId,
+        createdTime,imageUrl, subImageUrl, copyrightDivCode, longitude, latitude, mapLevel, modifiedTime, siGunGuCode, telephone, zipCode = "")
 }

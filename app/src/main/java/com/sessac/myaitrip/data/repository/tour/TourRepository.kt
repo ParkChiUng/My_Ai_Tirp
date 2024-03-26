@@ -27,13 +27,25 @@ class TourRepository(
 ) {
     /**
      * Get around place list
-     * 현재 지도의 카메라 센터 좌표(위도, 경도) 근처 20km의 관광지 정보를 가져온다.
+     * 주변 기능에서 사용하는 사용자 현재 위치 근처 20km의 관광지 정보를 가져온다.
      * @param latitude
      * @param longitude
      */
     fun getAroundPlaceList(latitude: String, longitude: String) = flow {
         emit(UiState.Loading)
         emit(UiState.Success(tourApiService.getLocationBasedData(latitude = latitude, longitude = longitude, radius = "20000")))
+    }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
+
+    /**
+     * Get around place list
+     * 홈 화면 내 주변 추천 관광지 가져오기
+     * 내 주변 3km 관광지 조회수 높은 순으로 가져오기
+     * @param latitude
+     * @param longitude
+     */
+    fun getRecommendAroundTourList(latitude: String, longitude: String) = flow {
+        emit(UiState.Loading)
+        emit(UiState.Success(tourRemoteDataSource.getRecommendAroundTourList(latitude, longitude)))
     }.catch { exception -> UiState.Error(exception, errorMessage = exception.localizedMessage) }
 
     /**
@@ -155,6 +167,15 @@ class TourRepository(
     suspend fun addCountingFromFireBase(contentId: String) {
         tourRemoteDataSource.addCountingFromFireBase(contentId)
     }
+
+    /**
+     * [FireBase] 관광지 조회수
+     * @param contentId
+     */
+    suspend fun getTourViewCount(contentId: String) = flow {
+        emit(UiState.Loading)
+        emit(UiState.Success(tourRemoteDataSource.getTourViewCount(contentId)))
+    }.catch { exception -> emit(UiState.Error(exception, errorMessage = exception.localizedMessage)) }
 
     /**
      * [FireBase] 유저 좋아요한 관광지 추가

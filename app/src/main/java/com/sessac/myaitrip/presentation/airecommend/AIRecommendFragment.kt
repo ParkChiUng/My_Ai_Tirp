@@ -3,8 +3,6 @@ package com.sessac.myaitrip.presentation.airecommend
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.core.view.children
-import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -17,8 +15,8 @@ import com.sessac.myaitrip.presentation.common.CustomProgressLoadingDialog
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
-import com.sessac.myaitrip.util.repeatOnStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /**
  * AI 추천 페이지
@@ -72,7 +70,7 @@ class AIRecommendFragment :
     }
 
     private fun setupRecommendResultStateCollection() {
-        repeatOnStarted {
+        viewLifecycleOwner.lifecycleScope.launch {
             aiRecommendViewModel.aiResultStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Loading -> {

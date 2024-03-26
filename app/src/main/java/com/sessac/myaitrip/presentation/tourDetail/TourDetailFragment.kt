@@ -46,7 +46,7 @@ class TourDetailFragment :
         tourContentId = arguments?.getString(TOUR_CONTENT_ID).toString()
         tourLikeList = mutableListOf()
 
-        binding.toolbar.setNavigationOnClickListener {
+        binding.toolbarTourDetail.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
 
@@ -57,7 +57,6 @@ class TourDetailFragment :
         removeBottomNav()
         setUpCollect()
         getTourApi()
-        addCountingFromFireBase()
         clickEventHandler()
         getUserId()
         setupUserCollect()
@@ -167,28 +166,29 @@ class TourDetailFragment :
                 when (state) {
                     is UiState.Success -> {
                         val response = state.data.response.body
-                        val description =
-                            response.items?.item?.mapNotNull { it.overview }.toString()
+                        val description = response.items?.item?.mapNotNull { it.overview }.toString().replace("[","").replace("]","")
+
+                        Log.e("tourDetail", description)
 
                         val sendText = if (description.contains("<br>")) {
                             Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY)
                         } else {
                             description
                         }
-                        binding.tvDescription.setText(sendText)
+                        binding.tvTourDetailDescription.text = sendText
                     }
 
                     is UiState.Error -> {
                         Log.d("TourAPI HandleState", "${state.errorMessage}")
                         if (state.errorMessage == "null")
-                            binding.tvDescription.setText(R.string.tour_no_detail)
+                            binding.tvTourDetailDescription.setText(R.string.tour_no_detail)
                         else
                             getTourApi()
                     }
 
                     else -> {
                         Log.d("TourAPI HandleState", "$state")
-                        binding.tvDescription.setText(R.string.tour_no_detail)
+                        binding.tvTourDetailDescription.setText(R.string.tour_no_detail)
                     }
                 }
             }
@@ -241,7 +241,18 @@ class TourDetailFragment :
                 when (state) {
                     is UiState.Success -> {
                         tourItem = state.data
-                        binding.tvTour.text = tourItem?.title
+                        tourItem?.let { tourItem ->
+                            with(binding) {
+                                tvTour.text = tourItem.title
+                                tvTourDetailAddress.text = if(tourItem.address2.isBlank()) {
+                                    tourItem.address
+                                } else {
+                                    tourItem.address + "\n" + tourItem.address2
+                                }
+                            }
+                        }
+
+                        addCountingFromFireBase()
                     }
 
                     is UiState.Error -> {
