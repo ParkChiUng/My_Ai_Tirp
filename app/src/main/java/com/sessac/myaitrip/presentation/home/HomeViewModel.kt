@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sessac.myaitrip.data.entities.TourItem
 import com.sessac.myaitrip.data.entities.local.UserPreferencesData
+import com.sessac.myaitrip.data.entities.remote.LocationBasedTourItem
 import com.sessac.myaitrip.data.repository.tour.TourRepository
 import com.sessac.myaitrip.data.repository.user.UserRepository
 import com.sessac.myaitrip.presentation.common.UiState
@@ -31,8 +32,7 @@ class HomeViewModel(
         MutableStateFlow<UiState<List<TourItem>>>(UiState.Empty)
     val areaRecommendTourList get() = _areaRecommendTourList.asStateFlow()
 
-    private val _nearbyTourList =
-        MutableStateFlow<UiState<List<TourItem>>>(UiState.Empty)
+    private val _nearbyTourList = MutableStateFlow<UiState<List<LocationBasedTourItem>?>>(UiState.Empty)
     val nearbyTourList get() = _nearbyTourList.asStateFlow()
 
     private val _fireBaseResult = MutableStateFlow<UiState<Map<String, Any>>>(UiState.Empty)
@@ -60,10 +60,17 @@ class HomeViewModel(
                     when (listType) {
                         ListType.POPULAR -> _popularTourList.value = tourList
                         ListType.AREA_RECOMMEND -> _areaRecommendTourList.value = tourList
-                        ListType.NEARBY -> _nearbyTourList.value = tourList
                     }
                 }
             }.await()
+        }
+    }
+
+    fun getRecommendAroundTourList(latitude: String, longitude: String) {
+        viewModelScope.launch {
+            tourRepository.getRecommendAroundTourList(latitude, longitude).collectLatest {
+                _nearbyTourList.value = it
+            }
         }
     }
 
@@ -130,8 +137,7 @@ class HomeViewModel(
      */
     enum class ListType {
         POPULAR,
-        AREA_RECOMMEND,
-        NEARBY
+        AREA_RECOMMEND
     }
 
     //    suspend fun geminiApi(prompt: String){

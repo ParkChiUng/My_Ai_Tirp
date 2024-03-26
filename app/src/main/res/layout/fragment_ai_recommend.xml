@@ -127,7 +127,7 @@
                 app:layout_constraintTop_toBottomOf="@id/hsv_recommend_tag"
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:layout_editor_absoluteX="-64dp"
-                tools:listitem="@layout/item_full_tour_img_card" />
+                tools:listitem="@layout/item_ai_recommend_tour" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

@@ -267,7 +267,7 @@ class TourMapFragment
     private fun initMyLocationTourAdapter() {
         locationBottomSheetTourAdapter = LocationBottomSheetTourAdapter(
             itemOnClick = { locationBasedTourItem ->
-                // TODO. 현재 위치 바텀 시트 관광지 클릭 시, 상세로 이동
+                // 현재 위치 바텀 시트 관광지 클릭 시, 상세로 이동
                 with(locationBasedTourItem) {
                     val position = LatLng(latitude.toDouble(), longitude.toDouble())
                     val moveAndZoomToPosition = CameraUpdate
@@ -300,6 +300,7 @@ class TourMapFragment
                         val tourDetailBottomSheet = TourDetailBottomSheetFragment(tourData, positionMarker,
                             itemClick =  {
                                 // 상세 바텀 시트 클릭
+                                Log.e("selectedTourId", tourKey.contentId)
                                 moveToDetail(tourKey)
                                 positionMarker.map = null
                             }

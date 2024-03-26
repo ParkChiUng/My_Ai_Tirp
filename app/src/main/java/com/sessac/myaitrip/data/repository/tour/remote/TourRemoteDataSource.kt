@@ -4,11 +4,15 @@ import android.util.Log
 import com.sessac.myaitrip.common.CONTENT_ID_LIST
 import com.sessac.myaitrip.common.LIST_TYPE
 import com.sessac.myaitrip.common.MyAiTripApplication
+import com.sessac.myaitrip.data.entities.remote.LocationBasedTourItem
 import com.sessac.myaitrip.presentation.common.UiState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class TourRemoteDataSource : ITourRemoteDataSource {
     private val fireStore = MyAiTripApplication.getInstance().getFireStore()
+    private val tourApiService = MyAiTripApplication.getTourApiService()
 
     /**
      * 인기 관광지 조회
@@ -135,6 +139,53 @@ class TourRemoteDataSource : ITourRemoteDataSource {
             fireStore.document(contentId).delete().await()
         } else {
             fireStore.document(contentId).set(mapOf("testData" to true)).await()
+        }
+    }
+
+    override suspend fun getRecommendAroundTourList(latitude: String, longitude: String): List<LocationBasedTourItem>? {
+
+        val locationBasedData = tourApiService.getLocationBasedData(latitude = latitude, longitude = longitude, radius = "3000")
+        val header = locationBasedData.response.header
+
+        return if( header.resultCode == "0000" && header.resultMsg == "OK" ) {
+            val body = locationBasedData.response.body
+            body.items?.let {
+                it.item?.let { tourList ->
+                    val contentIdList = tourList
+                        .filter { tourItem -> tourItem.imageUrl.isNotBlank() || tourItem.subImageUrl.isNotBlank() }
+                        .map{ tourItem -> tourItem.contentId }
+
+                    val contentViewCountMap = getContentViewCountMap(contentIdList)
+
+//                    Log.e("contentViewCountMap", contentViewCountMap.toList().sortedByDescending { it.second }.take(20).toMap().toString() )
+
+                    // 조회수 내림차순으로 정렬된 관광지 리스트 TOP 20
+                    val sortedByViewCountTourList = tourList.sortedByDescending { tourItem ->
+                        contentViewCountMap[tourItem.contentId]
+                    }.take(20)
+
+                    sortedByViewCountTourList
+                }
+            }
+        } else {
+            emptyList()
+        }
+    }
+
+    // Map[ContentId] = viewCount
+    private suspend fun getContentViewCountMap(tourContentIdList: List<String>): Map<String, Long> {
+        return withContext(Dispatchers.IO) {
+            val contentViewCountMap = hashMapOf<String, Long>()
+
+            tourContentIdList.forEach { tourContentId ->
+                val document = fireStore.collection("tour").document("data").collection("popular")
+                    .document(tourContentId)
+                    .get().await()
+
+                contentViewCountMap[tourContentId] = document.getLong("counting") ?: 0
+            }
+
+            contentViewCountMap
         }
     }
 }
