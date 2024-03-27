@@ -11,9 +11,12 @@ import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -49,13 +52,12 @@ import com.sessac.myaitrip.R
 import com.sessac.myaitrip.data.entities.TourClusterItemData
 import com.sessac.myaitrip.data.entities.TourClusterItemKey
 import com.sessac.myaitrip.databinding.FragmentTourMapBinding
-import com.sessac.myaitrip.presentation.common.CustomProgressLoadingDialog
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
 import com.sessac.myaitrip.util.DateUtil
 import com.sessac.myaitrip.util.PermissionUtil
-import com.sessac.myaitrip.util.repeatOnCreated
+import com.sessac.myaitrip.util.repeatOnStarted
 import com.sessac.myaitrip.util.showToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -76,7 +78,6 @@ class TourMapFragment
 
     private var locationBottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>? = null
     private lateinit var locationBottomSheetTourAdapter: LocationBottomSheetTourAdapter
-    private lateinit var progressLoadingDialog: CustomProgressLoadingDialog
 
     private lateinit var mapView: MapView
     private lateinit var naverMap: NaverMap
@@ -114,8 +115,10 @@ class TourMapFragment
             WEATHER_INFO_CATEGORY_HIGH_TEMPERATURE,
             WEATHER_INFO_CATEGORY_LOW_TEMPERATURE
         )
-        private const val WEATHER_INFO_CATEGORY_SKY_CODE = "SKY" // 하늘상태(SKY) 코드 : 맑음(1), 구름많음(3), 흐림(4)
-        private const val WEATHER_INFO_CATEGORY_RAINFALL_CODE = "PTY" // 강수형태(PTY) 코드 : 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)
+        private const val WEATHER_INFO_CATEGORY_SKY_CODE =
+            "SKY" // 하늘상태(SKY) 코드 : 맑음(1), 구름많음(3), 흐림(4)
+        private const val WEATHER_INFO_CATEGORY_RAINFALL_CODE =
+            "PTY" // 강수형태(PTY) 코드 : 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)
         private const val WEATHER_INFO_CATEGORY_RAINFALL_PROBABILITY = "POP" // 강수확률
         private const val WEATHER_INFO_CATEGORY_HUMIDITY = "REH" // 습도
     }
@@ -131,60 +134,59 @@ class TourMapFragment
         mapView = binding.mapViewTourMap.also {
             it.onCreate(savedInstanceState)
             it.getMapAsync(this)
-        }
 
-        progressLoadingDialog = CustomProgressLoadingDialog(mContext)
+        }
 
         setupWeatherStatusCollection()
         setUpNearbyTourCollection()
         setUpAreaTourCollection()
 
-        updateMyLocation()
         initMyLocationBottomSheet()
     }
 
     private fun setUpAreaTourCollection() {
         viewLifecycleOwner.lifecycleScope.launch {
             tourMapViewModel.areaTourStatus.collectLatest { state ->
-                when(state) {
+                when (state) {
                     is UiState.Loading -> {
-                        progressLoadingDialog.showDialog()
                     }
+
                     is UiState.Success -> {
                         val response = state.data.response
                         val header = response.header
                         val body = response.body
 
-                        if(header.resultCode == "0000" && header.resultMsg == "OK") {
-                           body.items?.let{ tourItems ->
-                               val tourList = tourItems.item
-                               tourList?.let { tourList ->
+                        if (header.resultCode == "0000" && header.resultMsg == "OK") {
+                            body.items?.let { tourItems ->
+                                val tourList = tourItems.item
+                                tourList?.let { tourList ->
+                                    val aroundTours =
+                                        tourList.filter { it.imageUrl.isNotEmpty() or it.subImageUrl.isNotEmpty() } // 이미지 있는 것만
 
-                                   val aroundTours = tourList.filter { it.imageUrl.isNotEmpty() or it.subImageUrl.isNotEmpty()  } // 이미지 있는 것만
+                                    clusterer?.clear() // 이전 클러스터링 마커 제거
 
-                                   clusterer?.clear() // 이전 클러스터링 마커 제거
-
-                                   // 관광지 마커 추가하기
-                                   CoroutineScope(Dispatchers.IO).launch {
-                                       val tourMap = buildMap<TourClusterItemKey, TourClusterItemData> {
-                                            aroundTours.forEach {
-                                                put(
-                                                    it.toMarkerKey(),
-                                                    it.toMarkerData()
-                                                )
+                                    // 관광지 마커 추가하기
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val tourMap =
+                                            buildMap<TourClusterItemKey, TourClusterItemData> {
+                                                aroundTours.forEach {
+                                                    put(
+                                                        it.toMarkerKey(),
+                                                        it.toMarkerData()
+                                                    )
+                                                }
                                             }
-                                       }
-                                       withContext(Dispatchers.Main) {
-                                           clusterer?.addAll(tourMap)
-                                           clusterer?.map = naverMap
-                                       }
-                                   }
-                               }
+                                        withContext(Dispatchers.Main) {
+                                            clusterer?.addAll(tourMap)
+                                            clusterer?.map = naverMap
+                                        }
+                                    }
+                                }
 
-                           }
+                            }
                         }
-                        progressLoadingDialog.dismissDialog()
                     }
+
                     is UiState.Error -> {}
                     else -> {}
                 }
@@ -194,66 +196,101 @@ class TourMapFragment
     }
 
     private fun setUpNearbyTourCollection() {
-        viewLifecycleOwner.lifecycleScope.launch {
+        repeatOnStarted {
             tourMapViewModel.nearbyTourStatus.collectLatest { state ->
-                when(state) {
+                when (state) {
                     is UiState.Loading -> {
-                        progressLoadingDialog.showDialog()
                     }
+
                     is UiState.Success -> {
                         val response = state.data.response
                         val header = response.header
                         val body = response.body
-                        if( header.resultCode == "0000" && header.resultMsg == "OK" ) {
+                        if (header.resultCode == "0000" && header.resultMsg == "OK") {
                             body.items?.let { tourItems ->
                                 val tourList = tourItems.item
                                 tourList?.let { tourList ->
-                                    if(tourList.isNotEmpty()) {
+                                    if (tourList.isNotEmpty()) {
 
                                         // 위치 바텀시트 관광지 어댑터
-                                        initMyLocationTourAdapter()
+                                        withContext(Dispatchers.Main) {
+                                            initMyLocationTourAdapter()
+                                        }
 
                                         val sortedTourList = tourList.sortedBy { tourItem ->
                                             tourItem.distance.toDouble() // 가까운 순으로 정렬
                                         }.filter {
                                             it.imageUrl.isNotEmpty() or it.subImageUrl.isNotEmpty() // 이미지 있는 것만
                                         }.also {
-                                            locationBottomSheetTourAdapter.setTourList(it)
+                                            withContext(Dispatchers.Main) {
+                                                locationBottomSheetTourAdapter.setTourList(it)
+                                            }
                                         }
 
                                         // 바텀시트 칩 그룹
-                                        with(binding.locationBottomSheetLayout.chipgroupLocationBottomSheetTag) {
-                                            removeAllViews() // 기존 칩들 제거 후 다시 추가
+                                        withContext(Dispatchers.Main) {
+                                            with(binding.locationBottomSheetLayout.chipgroupLocationBottomSheetTag) {
+                                                removeAllViews() // 기존 칩들 제거 후 다시 추가
 
-                                            sortedTourList.distinctBy { locationBasedTourItem -> locationBasedTourItem.contentTypeId } // content Type을 기준으로 중복 제거
-                                                .forEach { item ->
-                                                    val chip = Chip(context, null, R.attr.customChipStyle)
-                                                    when(item.contentTypeId.toInt()) {
-                                                        12 -> { chip.text = "#관광지" }
-                                                        14 -> { chip.text = "#문화시설" }
-                                                        15 -> { chip.text = "#축제•공연•행사" }
-                                                        25 -> { chip.text = "#여행코스" }
-                                                        28 -> { chip.text = "#레포츠" }
-                                                        32 -> { chip.text = "#숙박" }
-                                                        38 -> { chip.text = "#쇼핑" }
-                                                        else -> { chip.text = "#음식점" }
+                                                sortedTourList.distinctBy { locationBasedTourItem -> locationBasedTourItem.contentTypeId } // content Type을 기준으로 중복 제거
+                                                    .forEach { item ->
+                                                        val chip =
+                                                            Chip(context, null, R.attr.customChipStyle)
+                                                        when (item.contentTypeId.toInt()) {
+                                                            12 -> {
+                                                                chip.text = "#관광지"
+                                                            }
+
+                                                            14 -> {
+                                                                chip.text = "#문화시설"
+                                                            }
+
+                                                            15 -> {
+                                                                chip.text = "#축제•공연•행사"
+                                                            }
+
+                                                            25 -> {
+                                                                chip.text = "#여행코스"
+                                                            }
+
+                                                            28 -> {
+                                                                chip.text = "#레포츠"
+                                                            }
+
+                                                            32 -> {
+                                                                chip.text = "#숙박"
+                                                            }
+
+                                                            38 -> {
+                                                                chip.text = "#쇼핑"
+                                                            }
+
+                                                            else -> {
+                                                                chip.text = "#음식점"
+                                                            }
+                                                        }
+
+                                                        chip.id = item.contentTypeId.toInt()
+                                                        addView(chip)
                                                     }
 
-                                                    chip.id = item.contentTypeId.toInt()
-                                                    addView(chip)
-                                                }
-
-                                            setOnCheckedStateChangeListener{ _, checkedId ->
-                                                if(checkedId.isEmpty()) {
-                                                    locationBottomSheetTourAdapter.setTourList(sortedTourList)
-                                                } else {
-                                                    // val selectedChipText = findViewById<Chip>(checkedChipId).text.toString().substring(1)
-                                                    // Log.e(TAG,"SelectedChip = $selectedChipText")
+                                                setOnCheckedStateChangeListener { _, checkedId ->
+                                                    if (checkedId.isEmpty()) {
+                                                        locationBottomSheetTourAdapter.setTourList(
+                                                            sortedTourList
+                                                        )
+                                                    } else {
+                                                        // val selectedChipText = findViewById<Chip>(checkedChipId).text.toString().substring(1)
+                                                        // Log.e(TAG,"SelectedChip = $selectedChipText")
 //                                                    Log.e(TAG,"SelectedChipId = ${checkedId.first()}")
-                                                    sortedTourList.filter {
-                                                        it.contentTypeId == checkedId.first().toString()
-                                                    }.also {
-                                                        locationBottomSheetTourAdapter.setTourList(it)
+                                                        sortedTourList.filter {
+                                                            it.contentTypeId == checkedId.first()
+                                                                .toString()
+                                                        }.also {
+                                                            locationBottomSheetTourAdapter.setTourList(
+                                                                it
+                                                            )
+                                                        }
                                                     }
                                                 }
                                             }
@@ -264,8 +301,8 @@ class TourMapFragment
                             }
                         }
 
-                        progressLoadingDialog.dismissDialog()
                     }
+
                     is UiState.Error -> {}
                     else -> {}
                 }
@@ -306,14 +343,15 @@ class TourMapFragment
                         // 상세 바텀 시트 Show
                         val tourKey = toMarkerKey()
                         val tourData = toMarkerData()
-                        val tourDetailBottomSheet = TourDetailBottomSheetFragment(tourKey, tourData, positionMarker,
-                            itemClick =  {
-                                // 상세 바텀 시트 클릭
-                                Log.e("selectedTourId", tourKey.contentId)
-                                moveToDetail(tourKey)
-                                positionMarker.map = null
-                            }
-                        )
+                        val tourDetailBottomSheet =
+                            TourDetailBottomSheetFragment(tourKey, tourData, positionMarker,
+                                itemClick = {
+                                    // 상세 바텀 시트 클릭
+                                    Log.e("selectedTourId", tourKey.contentId)
+                                    moveToDetail(tourKey)
+                                    positionMarker.map = null
+                                }
+                            )
                         tourDetailBottomSheet.show(parentFragmentManager, tourDetailBottomSheet.tag)
                     }
                 }
@@ -325,7 +363,7 @@ class TourMapFragment
         }
     }
 
-    private fun moveToDetail(tourKey: TourClusterItemKey, /*tourClusterItemData: TourClusterItemData*/) {
+    private fun moveToDetail(tourKey: TourClusterItemKey /*tourClusterItemData: TourClusterItemData*/) {
         val bundle = Bundle().apply {
 //            tourKey.position.latitude
 //            tourKey.position.longitude
@@ -343,7 +381,7 @@ class TourMapFragment
         binding.locationBottomSheet.visibility = View.VISIBLE
         locationBottomSheetBehavior = BottomSheetBehavior.from(binding.locationBottomSheet)
 
-        locationBottomSheetBehavior?.let{
+        locationBottomSheetBehavior?.let {
             it.apply {
                 maxHeight = (0.9 * resources.displayMetrics.heightPixels).toInt()
                 isFitToContents = true
@@ -398,11 +436,10 @@ class TourMapFragment
     }
 
     private fun setupWeatherStatusCollection() {
-        viewLifecycleOwner.lifecycleScope.launch {
+        repeatOnStarted {
             tourMapViewModel.weatherStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Loading -> {
-                        progressLoadingDialog.showDialog()
                     }
 
                     is UiState.Success -> {
@@ -411,7 +448,7 @@ class TourMapFragment
 
                         weatherItems?.let { weatherInfoList ->
                             // 오늘 날씨 정보
-                            val todayWeatherList = weatherInfoList.filter {weatherInfo ->
+                            val todayWeatherList = weatherInfoList.filter { weatherInfo ->
                                 weatherInfo.forecastDate == DateUtil.getCurrentDate()
                             }
 
@@ -426,77 +463,117 @@ class TourMapFragment
                             }
 
                             todayTemperatureList.forEach { weatherInfo ->
-                                Log.d(TAG, "온도 정보 ${weatherInfo.dataCategory} = ${weatherInfo.forecastValue}")
+                                Log.d(
+                                    TAG,
+                                    "온도 정보 ${weatherInfo.dataCategory} = ${weatherInfo.forecastValue}"
+                                )
 
-                                when(weatherInfo.dataCategory) {
+                                when (weatherInfo.dataCategory) {
                                     WEATHER_INFO_CATEGORY_LOW_TEMPERATURE -> {
                                         // 오늘 일자에 TMN 값이 있다면
-                                        lowTemperature = weatherInfo.forecastValue.toDouble().roundToInt()
+                                        lowTemperature =
+                                            weatherInfo.forecastValue.toDouble().roundToInt()
                                     }
+
                                     WEATHER_INFO_CATEGORY_HIGH_TEMPERATURE -> {
                                         // 오늘 일자에 TMX 값이 있다면
-                                        highTemperature = weatherInfo.forecastValue.toDouble().roundToInt()
+                                        highTemperature =
+                                            weatherInfo.forecastValue.toDouble().roundToInt()
                                     }
                                 }
                             }
 
                             with(binding.locationBottomSheetLayout) {
-                                lowTemperature = lowTemperature ?: todayTemperatureList.minOf { weatherItems -> weatherItems.forecastValue.toDouble() }.roundToInt()
-                                highTemperature = highTemperature ?: todayTemperatureList.maxOf{ weatherItems -> weatherItems.forecastValue.toDouble() }.roundToInt()
+                                lowTemperature = lowTemperature
+                                    ?: todayTemperatureList.minOf { weatherItems -> weatherItems.forecastValue.toDouble() }
+                                        .roundToInt()
+                                highTemperature = highTemperature
+                                    ?: todayTemperatureList.maxOf { weatherItems -> weatherItems.forecastValue.toDouble() }
+                                        .roundToInt()
 
-                                tvLocationBottomSheetLowTemperature.text = getString(R.string.temperature_low_format, lowTemperature)
-                                tvLocationBottomSheetHighTemperature.text = getString(R.string.temperature_high_format, highTemperature)
+                                withContext(Dispatchers.Main) {
+                                    tvLocationBottomSheetLowTemperature.text =
+                                        getString(R.string.temperature_low_format, lowTemperature)
+                                    tvLocationBottomSheetHighTemperature.text =
+                                        getString(R.string.temperature_high_format, highTemperature)
 
-                                tvLocationBottomSheetSeparator.visibility = View.VISIBLE
+                                    tvLocationBottomSheetSeparator.visibility = View.VISIBLE
+                                }
                             }
 
                             var isRainOrSnow = true // 눈이나 비가 오는가?
 
                             // 현재 시간 날씨 정보
-                            val currentTimeWeatherInfoList = todayWeatherList.filter { weatherInfo ->
-                                weatherInfo.forecastTime == DateUtil.getCurrentHourWithFormatted() // 현재 시간에 맞는 관측 값 가져오기
-                            }
+                            val currentTimeWeatherInfoList =
+                                todayWeatherList.filter { weatherInfo ->
+                                    weatherInfo.forecastTime == DateUtil.getCurrentHourWithFormatted() // 현재 시간에 맞는 관측 값 가져오기
+                                }
 
                             currentTimeWeatherInfoList.forEach { weatherInfo ->
 //                                Log.d(TAG, "날씨 정보 = $weatherInfo")
+
                                 with(binding.locationBottomSheetLayout) {
-                                    when(weatherInfo.dataCategory) {
+                                    when (weatherInfo.dataCategory) {
                                         WEATHER_INFO_CATEGORY_TEMPERATURE -> {
                                             // 현재 시각 기온
-                                            tvLocationBottomSheetCurrentTemperature.text = getString(R.string.temperature_normal_format, weatherInfo.forecastValue.toDouble().roundToInt())
+                                            withContext(Dispatchers.Main) {
+                                                tvLocationBottomSheetCurrentTemperature.text =
+                                                    getString(
+                                                        R.string.temperature_normal_format,
+                                                        weatherInfo.forecastValue.toDouble()
+                                                            .roundToInt()
+                                                    )
+                                            }
                                         }
 
                                         WEATHER_INFO_CATEGORY_HUMIDITY -> {
                                             // 현재 시각 습도
-                                            ivLocationBottomSheetWater.visibility = View.VISIBLE
-                                            tvLocationBottomSheetHumidity.text = getString(R.string.humidity_format, weatherInfo.forecastValue.toInt())
+                                            withContext(Dispatchers.Main) {
+                                                ivLocationBottomSheetWater.visibility = View.VISIBLE
+                                                tvLocationBottomSheetHumidity.text = getString(
+                                                    R.string.humidity_format,
+                                                    weatherInfo.forecastValue.toInt()
+                                                )
+                                            }
                                         }
 
                                         WEATHER_INFO_CATEGORY_RAINFALL_PROBABILITY -> {
                                             // 현재 시각 강수확률
-                                            ivLocationBottomSheetWater.visibility = View.VISIBLE
-                                            tvLocationBottomSheetRainProbability.text = getString(R.string.rain_probability_format, weatherInfo.forecastValue.toInt())
+                                            withContext(Dispatchers.Main) {
+                                                ivLocationBottomSheetWater.visibility = View.VISIBLE
+                                                tvLocationBottomSheetRainProbability.text = getString(
+                                                    R.string.rain_probability_format,
+                                                    weatherInfo.forecastValue.toInt()
+                                                )
+                                            }
                                         }
 
                                         WEATHER_INFO_CATEGORY_RAINFALL_CODE -> {
                                             // 현재 시각 강수상태
                                             // 강수형태(PTY) 코드 : 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)
-                                            Log.e(TAG, "RAIN_FALL_CODE = ${weatherInfo.forecastValue}")
-                                            when(weatherInfo.forecastValue) {
+                                            Log.e(
+                                                TAG,
+                                                "RAIN_FALL_CODE = ${weatherInfo.forecastValue}"
+                                            )
+                                            when (weatherInfo.forecastValue) {
                                                 "0" -> {
                                                     isRainOrSnow = false // 눈이나 비가 오지 않으면 하늘 상태로
                                                 }
 
                                                 "1", "4" -> {
                                                     // 비 이미지로
-                                                    ivLocationBottomSheetWeather.visibility = View.VISIBLE
-                                                    ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_rainy)
+                                                    withContext(Dispatchers.Main) {
+                                                        ivLocationBottomSheetWeather.visibility = View.VISIBLE
+                                                        ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_rainy)
+                                                    }
                                                 }
 
                                                 "2", "3" -> {
                                                     // 눈 이미지로
-                                                    ivLocationBottomSheetWeather.visibility = View.VISIBLE
-                                                    ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_snowing)
+                                                    withContext(Dispatchers.Main) {
+                                                        ivLocationBottomSheetWeather.visibility = View.VISIBLE
+                                                        ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_snowing)
+                                                    }
                                                 }
 
                                                 else -> {}
@@ -513,27 +590,36 @@ class TourMapFragment
                             Log.e(TAG, "isRainOrSnow = $isRainOrSnow")
 
                             // 눈이나 비가 오지 않으면 하늘 상태로 이미지 적용
-                            if( !isRainOrSnow ) {
+                            if (!isRainOrSnow) {
                                 // 현재 시각 하늘상태
                                 currentTimeWeatherInfoList.filter {
                                     it.dataCategory == WEATHER_INFO_CATEGORY_SKY_CODE
                                 }.forEach { weatherInfo ->
                                     Log.e(TAG, "SKY_CODE = ${weatherInfo.forecastValue}")
                                     with(binding.locationBottomSheetLayout) {
-                                        when(weatherInfo.forecastValue) {
+                                        when (weatherInfo.forecastValue) {
                                             // 하늘상태(SKY) 코드 : 맑음(1), 구름많음(3), 흐림(4)
                                             "1" -> {
-                                                ivLocationBottomSheetWeather.visibility = View.VISIBLE
-                                                ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_sunny)
+                                                withContext(Dispatchers.Main) {
+                                                    ivLocationBottomSheetWeather.visibility = View.VISIBLE
+                                                    ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_sunny)
+                                                }
                                             }
+
                                             "3" -> {
-                                                ivLocationBottomSheetWeather.visibility = View.VISIBLE
-                                                ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_partly_cloudy)
+                                                withContext(Dispatchers.Main) {
+                                                    ivLocationBottomSheetWeather.visibility = View.VISIBLE
+                                                    ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_partly_cloudy)
+                                                }
                                             }
+
                                             "4" -> {
-                                                ivLocationBottomSheetWeather.visibility = View.VISIBLE
-                                                ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_cloudy)
+                                                withContext(Dispatchers.Main) {
+                                                    ivLocationBottomSheetWeather.visibility = View.VISIBLE
+                                                    ivLocationBottomSheetWeather.setImageResource(R.drawable.ic_weather_cloudy)
+                                                }
                                             }
+
                                             else -> {}
                                         }
                                     }
@@ -541,7 +627,6 @@ class TourMapFragment
                             }
                         }
 
-                        progressLoadingDialog.dismissDialog()
                     }
 
                     is UiState.Error -> {
@@ -560,7 +645,10 @@ class TourMapFragment
         clusterer = initClusterBuilder() // 마커 클러스터러
         initMapUi()
 
-        fusedLocationSource = FusedLocationSource(requireActivity(), LOCATION_PERMISSION_REQUEST_CODE)
+        updateMyLocation()
+
+        fusedLocationSource =
+            FusedLocationSource(requireActivity(), LOCATION_PERMISSION_REQUEST_CODE)
 
         with(naverMap) {
             locationSource = fusedLocationSource        // 현재 위치
@@ -589,11 +677,11 @@ class TourMapFragment
             addOnCameraIdleListener {
                 with(map.cameraPosition.target) {
 
-                    Log.e(TAG,"현재 센터 좌표 위도 = $latitude, 경도 = $longitude")
+//                    Log.e(TAG, "현재 센터 좌표 위도 = $latitude, 경도 = $longitude")
 
                     val latRes = String.format("%.10f", latitude)
                     val longRes = String.format("%.10f", longitude)
-                    Log.e(TAG, "소수점 10자리 위도 = $latRes, 경도 = $longRes")
+//                    Log.e(TAG, "소수점 10자리 위도 = $latRes, 경도 = $longRes")
 
                 }
             }
@@ -698,35 +786,42 @@ class TourMapFragment
      */
     @SuppressLint("MissingPermission")
     private fun updateMyLocation() {
-        repeatOnCreated {
+        repeatOnStarted {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
 
-            val grantedResult = PermissionUtil.requestPermissionResultByCoroutine(*LOCATION_PERMISSIONS)
+            val grantedResult =
+                PermissionUtil.requestPermissionResultByCoroutine(*LOCATION_PERMISSIONS)
 
-            if( grantedResult.isGranted ) {
+            if (grantedResult.isGranted) {
                 val locationRequest = LocationRequest
                     .Builder(Priority.PRIORITY_HIGH_ACCURACY, LOCATION_REQUEST_INTERVAL.toLong())
                     .setWaitForAccurateLocation(false)
                     .build()
 
-                locationCallback = object: LocationCallback() {
+                locationCallback = object : LocationCallback() {
                     override fun onLocationResult(locationResult: LocationResult) {
                         super.onLocationResult(locationResult)
 
                         locationResult.locations.forEachIndexed { _, location ->
-                            Log.e(TAG, "현재 위도 = ${location.latitude}, 경도 = ${location.longitude}")
+//                            Log.e(TAG, "현재 위도 = ${location.latitude}, 경도 = ${location.longitude}")
 
                             getAddress(location.latitude, location.longitude)   // 현재 위치 주소 가져오기
 
                             val (nx, ny) = latLonToGrid(location.latitude, location.longitude)
-                            Log.e(TAG,"X 좌표 = $nx, Y 좌표 = $ny")
+//                            Log.e(TAG,"X 좌표 = $nx, Y 좌표 = $ny")
 
                             with(tourMapViewModel) {
-                                getAreaTourList(location.latitude.toString(), location.longitude.toString()) // 현재 위도, 경도로 20km 내에 있는 지역 관광지 정보 가져오기
+                                getAreaTourList(
+                                    location.latitude.toString(),
+                                    location.longitude.toString()
+                                ) // 현재 위도, 경도로 20km 내에 있는 지역 관광지 정보 가져오기
 
-                                getNearbyTourList(location.latitude.toString(), location.longitude.toString()) // 현재 위도, 경도로 3km 내에 있는 근처 관광지 정보 가져오기
+                                getNearbyTourList(
+                                    location.latitude.toString(),
+                                    location.longitude.toString()
+                                ) // 현재 위도, 경도로 3km 내에 있는 근처 관광지 정보 가져오기
 
-                                when(DateUtil.getCurrentHour()) {
+                                when (DateUtil.getCurrentHour()) {
                                     in 6..23 -> {
                                         // if 현재시간 in 06 ~ 23 (오늘 날씨 정보 가져오기)
                                         getWeatherData(
@@ -759,20 +854,21 @@ class TourMapFragment
                 )
             } else {
                 mContext.showToast("현재 위치 기능을 사용하려면, 위치 권한을 허용해주세요.")
-                binding.locationBottomSheetLayout.tvLocationBottomSheetLocationName.text = "위치 권한을 허용해주세요."
+                binding.locationBottomSheetLayout.tvLocationBottomSheetLocationName.text =
+                    "위치 권한을 허용해주세요."
             }
         }
     }
 
     // 좌표 -> 주소 변환
     private fun getAddress(latitude: Double, longitude: Double) {
+        Log.e("getAddress", "getAddress()")
         val geoCoder = Geocoder(mContext, Locale.KOREA)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-
             val geocodeListener = @RequiresApi(33) object : Geocoder.GeocodeListener {
                 override fun onGeocode(addresses: MutableList<Address>) {
-                    if(addresses.isNotEmpty()) {
+                    if (addresses.isNotEmpty()) {
                         with(addresses[0]) {
                             // Log.e(TAG, "countryName = $countryName") // 대한민국
                             Log.e(TAG, "adminArea = $adminArea") // 서울특별시
@@ -781,18 +877,26 @@ class TourMapFragment
                             // Log.e(TAG, "thoroughfare = $thoroughfare") 신림동
 
                             // 바텀 시트 지역명 나타내주기
-                            val locationNameBuilder = StringBuilder()
-                            locationNameBuilder.append(adminArea)
-                                .append(" ")
+                            val locationNameBuilder = StringBuilder().apply {
+                                append(adminArea)
+                                append(" ")
 
-                            locality?.let {
-                                locationNameBuilder.append(it)
-                            } ?: locationNameBuilder.append(subLocality)
+                                locality?.let {
+                                    append(it)
+                                } ?: append(subLocality) ?: append("")
+                            }
 
-                            binding.locationBottomSheetLayout.tvLocationBottomSheetLocationName.text = locationNameBuilder.toString()
+                             Log.e("getAddress()", "주소 = $locationNameBuilder")
+
+                            CoroutineScope(Dispatchers.Main).launch {
+                                binding.locationBottomSheetLayout.tvLocationBottomSheetLocationName.text =
+                                    locationNameBuilder.toString()
+                            }
+
                         }
                     }
                 }
+
                 override fun onError(errorMessage: String?) {
                     mContext.showToast("주소가 발견되지 않았습니다 $errorMessage")
                 }
@@ -802,7 +906,7 @@ class TourMapFragment
 
         } else { // API 레벨이 33 미만인 경우
             val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
-            addresses?.let{
+            addresses?.let {
                 mContext.showToast(addresses[0].getAddressLine(0))
             }
         }

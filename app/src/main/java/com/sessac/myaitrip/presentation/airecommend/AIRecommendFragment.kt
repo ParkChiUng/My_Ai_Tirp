@@ -15,8 +15,10 @@ import com.sessac.myaitrip.presentation.common.CustomProgressLoadingDialog
 import com.sessac.myaitrip.presentation.common.UiState
 import com.sessac.myaitrip.presentation.common.ViewBindingBaseFragment
 import com.sessac.myaitrip.presentation.common.ViewModelFactory
+import com.sessac.myaitrip.util.repeatOnStarted
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * AI 추천 페이지
@@ -70,27 +72,32 @@ class AIRecommendFragment :
     }
 
     private fun setupRecommendResultStateCollection() {
-        viewLifecycleOwner.lifecycleScope.launch {
+        repeatOnStarted {
             aiRecommendViewModel.aiResultStatus.collectLatest { state ->
                 when (state) {
                     is UiState.Loading -> {
                         // 프로그레스 다이얼로그
-                        progressLoadingDialog.showDialog()
+                        withContext(Dispatchers.Main) {
+                            progressLoadingDialog.showDialog()
+                        }
                     }
                     is UiState.Error -> {}
                     is UiState.Success -> {
-                        progressLoadingDialog.dismissDialog()   // Loading Dialog 제거
-
                         recommendMap = state.data  // key: 지역, value: 지역별 추천 관광지 목록
 
-                        // 현재 선택된 지역 + 현재 날씨
-                        recommendMap?.let { recommendMap ->
-                            locationAdapter.setAreaList(recommendMap.keys.toList())
+                        withContext(Dispatchers.Main) {
 
-                            recommendMap[recommendMap.keys.first()]?.let {
-                                Log.e("GeminiTourList", "GeminiTourList = $it")
-                                tourAdapter.setTourList(it)
+                            // 현재 선택된 지역 + 현재 날씨
+                            recommendMap?.let { recommendMap ->
+                                locationAdapter.setAreaList(recommendMap.keys.toList())
+
+                                recommendMap[recommendMap.keys.first()]?.let {
+                                    Log.e("GeminiTourList", "GeminiTourList = $it")
+                                    tourAdapter.setTourList(it)
+                                }
                             }
+
+                            progressLoadingDialog.dismissDialog()   // Loading Dialog 제거
                         }
                     }
 
